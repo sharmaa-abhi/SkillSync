@@ -1,0 +1,227 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                  String   @id @default(cuid())
+  email               String   @unique
+  password            String
+  name                String
+  educationLevel      String?
+  learningGoals       String?
+  preferredStyle      String?
+  onboardingCompleted Boolean  @default(false)
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  assessments     Assessment[]
+  learningProfile LearningProfile[]
+  learningPlans   LearningPlan[]
+  tutorSessions   TutorSession[]
+  quizzes         Quiz[]
+  progressRecords ProgressRecord[]
+}
+
+model Subject {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  description String?
+  icon        String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+
+  topics      Topic[]
+  assessments Assessment[]
+}
+
+model Topic {
+  id            String   @id @default(cuid())
+  subjectId     String
+  name          String
+  description   String?
+  order         Int
+  difficulty    String   @default("intermediate")
+  createdAt     DateTime @default(now())
+
+  subject   Subject    @relation(fields: [subjectId], references: [id])
+  questions Question[]
+
+  @@unique([subjectId, name])
+}
+
+model Question {
+  id            String   @id @default(cuid())
+  topicId       String
+  text          String
+  options       Json
+  correctAnswer Int
+  explanation   String?
+  difficulty    String   @default("medium")
+  type          String   @default("assessment")
+  createdAt     DateTime @default(now())
+
+  topic Topic @relation(fields: [topicId], references: [id])
+
+  @@index([topicId])
+}
+
+model Assessment {
+  id              String    @id @default(cuid())
+  userId          String
+  subjectId       String
+  totalQuestions  Int
+  correctAnswers  Int       @default(0)
+  overallScore    Float     @default(0)
+  timeTakenSeconds Int?
+  status          String    @default("in_progress")
+  startedAt       DateTime  @default(now())
+  completedAt     DateTime?
+  createdAt       DateTime  @default(now())
+
+  user    User    @relation(fields: [userId], references: [id])
+  subject Subject @relation(fields: [subjectId], references: [id])
+  answers Answer[]
+  topicScores TopicScore[]
+
+  @@index([userId])
+}
+
+model Answer {
+  id             String   @id @default(cuid())
+  assessmentId   String
+  questionId     String
+  selectedOption Int?
+  isCorrect      Boolean  @default(false)
+  createdAt      DateTime @default(now())
+
+  assessment Assessment @relation(fields: [assessmentId], references: [id])
+
+  @@index([assessmentId])
+}
+
+model TopicScore {
+  id             String @id @default(cuid())
+  assessmentId   String
+  topicId        String
+  topicName      String
+  totalQuestions Int
+  correctAnswers Int
+  percentage     Float
+  createdAt      DateTime @default(now())
+
+  assessment Assessment @relation(fields: [assessmentId], references: [id])
+
+  @@index([assessmentId])
+}
+
+model LearningProfile {
+  id                String   @id @default(cuid())
+  userId            String
+  subjectId         String
+  overallMastery    Float    @default(0)
+  strengths         Json     @default("[]")
+  weaknesses        Json     @default("[]")
+  topicMastery      Json     @default("[]")
+  aiAnalysis        Json?
+  assessmentCount   Int      @default(0)
+  quizCount         Int      @default(0)
+  tutorSessionCount Int      @default(0)
+  totalStudyMinutes Int      @default(0)
+  lastAssessedAt    DateTime?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@unique([userId, subjectId])
+}
+
+model LearningPlan {
+  id                String   @id @default(cuid())
+  userId            String
+  subjectId         String
+  title             String
+  estimatedDuration String?
+  status            String   @default("active")
+  items             Json     @default("[]")
+  aiOutput          Json?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+}
+
+model TutorSession {
+  id           String    @id @default(cuid())
+  userId       String
+  topicId      String
+  topicName    String
+  subjectId    String
+  status       String    @default("active")
+  messageCount Int       @default(0)
+  context      Json?
+  startedAt    DateTime  @default(now())
+  endedAt      DateTime?
+  createdAt    DateTime  @default(now())
+
+  user     User           @relation(fields: [userId], references: [id])
+  messages TutorMessage[]
+
+  @@index([userId])
+}
+
+model TutorMessage {
+  id        String   @id @default(cuid())
+  sessionId String
+  role      String
+  content   String
+  createdAt DateTime @default(now())
+
+  session TutorSession @relation(fields: [sessionId], references: [id])
+
+  @@index([sessionId])
+}
+
+model Quiz {
+  id              String    @id @default(cuid())
+  userId          String
+  subjectId       String
+  targetTopics    Json
+  difficulty      String    @default("mixed")
+  totalQuestions  Int
+  correctAnswers  Int       @default(0)
+  score           Float?
+  status          String    @default("in_progress")
+  questions       Json      @default("[]")
+  answers         Json      @default("[]")
+  startedAt       DateTime  @default(now())
+  completedAt     DateTime?
+  createdAt       DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+}
+
+model ProgressRecord {
+  id             String   @id @default(cuid())
+  userId         String
+  subjectId      String
+  overallMastery Float
+  topicScores    Json
+  trigger        String
+  triggerId      String?
+  createdAt      DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([userId, subjectId])
+  @@index([createdAt])
+}
