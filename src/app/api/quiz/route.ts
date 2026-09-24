@@ -15,18 +15,18 @@ export async function POST(request: Request) {
     if (action === "generate") {
       // Get learning profile to target weak topics
       const profile = await prisma.learningProfile.findFirst({ where: { userId, ...(subjectId ? { subjectId } : {}) } });
-      const topicMastery = (profile?.topicMastery as Array<{ topicName: string; score: number; masteryLevel: string }>) || [];
+      const rawMastery = profile?.topicMastery;
+      const topicMastery = (typeof rawMastery === "string" ? JSON.parse(rawMastery) : rawMastery) || [];
 
       // Prioritize weak and medium topics
-      const targetTopics = topicMastery
+      const targetTopics = (topicMastery as Array<{ topicName: string; score: number; masteryLevel: string }>)
         .filter(t => t.masteryLevel !== "strong")
         .sort((a, b) => a.score - b.score)
         .slice(0, 3)
         .map(t => ({ topicName: t.topicName, mastery: t.score }));
 
       if (targetTopics.length === 0 && topicMastery.length > 0) {
-        // All strong — quiz on all topics
-        targetTopics.push(...topicMastery.slice(0, 3).map(t => ({ topicName: t.topicName, mastery: t.score })));
+        targetTopics.push(...(topicMastery as Array<{ topicName: string; score: number }>).slice(0, 3).map(t => ({ topicName: t.topicName, mastery: t.score })));
       }
 
       const questions = await generateQuiz(targetTopics, 5);
@@ -35,9 +35,9 @@ export async function POST(request: Request) {
         data: {
           userId,
           subjectId: subjectId || profile?.subjectId || "unknown",
-          targetTopics: JSON.parse(JSON.stringify(targetTopics.map(t => t.topicName))),
+          targetTopics: JSON.stringify(targetTopics.map(t => t.topicName)),
           totalQuestions: questions.length,
-          questions: JSON.parse(JSON.stringify(questions)),
+          questions: JSON.stringify(questions),
           status: "in_progress",
         },
       });
@@ -64,7 +64,7 @@ export async function POST(request: Request) {
       if (!quiz) return NextResponse.json({ error: "Quiz not found." }, { status: 404 });
       if (quiz.status === "completed") return NextResponse.json({ error: "Quiz already submitted." }, { status: 400 });
 
-      const questions = quiz.questions as Array<{ id: string; correctAnswer: number; explanation: string; topic: string }>;
+      const questions = (typeof quiz.questions === "string" ? JSON.parse(quiz.questions) : quiz.questions) as Array<{ id: string; correctAnswer: number; explanation: string; topic: string }>;
       let correct = 0;
       const results = [];
 
@@ -80,13 +80,14 @@ export async function POST(request: Request) {
 
       await prisma.quiz.update({
         where: { id: quizId },
-        data: { correctAnswers: correct, score, status: "completed", answers: JSON.parse(JSON.stringify(results)), completedAt: new Date() },
+        data: { correctAnswers: correct, score, status: "completed", answers: JSON.stringify(results), completedAt: new Date() },
       });
 
       // Update learning profile with quiz results
       const profile = await prisma.learningProfile.findFirst({ where: { userId, subjectId: quiz.subjectId } });
       if (profile) {
-        const topicMastery = (profile.topicMastery as Array<{ topicName: string; score: number; masteryLevel: string }>) || [];
+        const rawMastery = profile.topicMastery;
+        const topicMastery = ((typeof rawMastery === "string" ? JSON.parse(rawMastery) : rawMastery) || []) as Array<{ topicName: string; score: number; masteryLevel: string }>;
 
         // Calculate per-topic quiz scores
         const topicQuizScores = new Map<string, { correct: number; total: number }>();
@@ -120,9 +121,9 @@ export async function POST(request: Request) {
           where: { id: profile.id },
           data: {
             overallMastery: newOverall,
-            topicMastery: JSON.parse(JSON.stringify(updatedMastery)),
-            strengths: JSON.parse(JSON.stringify(newStrengths)),
-            weaknesses: JSON.parse(JSON.stringify(newWeaknesses)),
+            topicMastery: JSON.stringify(updatedMastery),
+            strengths: JSON.stringify(newStrengths),
+            weaknesses: JSON.stringify(newWeaknesses),
             quizCount: { increment: 1 },
           },
         });
@@ -133,7 +134,7 @@ export async function POST(request: Request) {
             userId,
             subjectId: quiz.subjectId,
             overallMastery: newOverall,
-            topicScores: JSON.parse(JSON.stringify(updatedMastery.map(t => ({ topicName: t.topicName, score: t.score })))),
+            topicScores: JSON.stringify(updatedMastery.map(t => ({ topicName: t.topicName, score: t.score }))),
             trigger: "quiz",
             triggerId: quizId,
           },

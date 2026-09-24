@@ -12,7 +12,7 @@ export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
     const subjectId = searchParams.get("subjectId");
 
-    const user = await prisma.user.findUnique({ where: { id: userId }, select: { name: true, educationLevel: true } });
+    const user = await prisma.user.findUnique({ where: { id: userId }, select: { name: true, educationLevel: true, preferredStyle: true, learningGoals: true } });
 
     // Get the latest profile
     const profile = subjectId
@@ -47,11 +47,30 @@ export async function GET(request: Request) {
       take: 5,
     });
 
+    const parsedProfile = profile ? {
+      ...profile,
+      strengths: typeof profile.strengths === "string" ? JSON.parse(profile.strengths) : profile.strengths,
+      weaknesses: typeof profile.weaknesses === "string" ? JSON.parse(profile.weaknesses) : profile.weaknesses,
+      topicMastery: typeof profile.topicMastery === "string" ? JSON.parse(profile.topicMastery) : profile.topicMastery,
+      aiAnalysis: typeof profile.aiAnalysis === "string" ? JSON.parse(profile.aiAnalysis) : profile.aiAnalysis,
+    } : null;
+
+    const parsedPlan = plan ? {
+      ...plan,
+      items: typeof plan.items === "string" ? JSON.parse(plan.items) : plan.items,
+      aiOutput: typeof plan.aiOutput === "string" ? JSON.parse(plan.aiOutput) : plan.aiOutput,
+    } : null;
+
+    const parsedProgress = progress.map(p => ({
+      ...p,
+      topicScores: typeof p.topicScores === "string" ? JSON.parse(p.topicScores) : p.topicScores,
+    }));
+
     return NextResponse.json({
       user,
-      profile,
-      plan,
-      progress,
+      profile: parsedProfile,
+      plan: parsedPlan,
+      progress: parsedProgress,
       recentActivity: [
         ...assessments.map(a => ({ type: "assessment" as const, subject: a.subject.name, score: a.overallScore, date: a.completedAt })),
         ...quizzes.map(q => ({ type: "quiz" as const, score: q.score, date: q.completedAt })),

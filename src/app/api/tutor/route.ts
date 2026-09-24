@@ -22,7 +22,8 @@ export async function POST(request: Request) {
     } else {
       // Get mastery info for context
       const profile = await prisma.learningProfile.findFirst({ where: { userId } });
-      const topicMastery = (profile?.topicMastery as Array<{ topicName: string; score: number; masteryLevel: string }>) || [];
+      const rawMastery = profile?.topicMastery;
+      const topicMastery = ((typeof rawMastery === "string" ? JSON.parse(rawMastery) : rawMastery) || []) as Array<{ topicName: string; score: number; masteryLevel: string }>;
       const currentTopic = topicMastery.find(t => t.topicName === topicName);
 
       tutorSession = await prisma.tutorSession.create({
@@ -31,7 +32,7 @@ export async function POST(request: Request) {
           topicId: topicId || "unknown",
           topicName: topicName || "General",
           subjectId: subjectId || "unknown",
-          context: JSON.parse(JSON.stringify({ mastery: currentTopic?.score || 0, masteryLevel: currentTopic?.masteryLevel || "unknown" })),
+          context: JSON.stringify({ mastery: currentTopic?.score || 0, masteryLevel: currentTopic?.masteryLevel || "unknown" }),
         },
       });
     }
@@ -49,7 +50,8 @@ export async function POST(request: Request) {
 
     // Get profile context
     const profile = await prisma.learningProfile.findFirst({ where: { userId } });
-    const topicMastery = (profile?.topicMastery as Array<{ topicName: string; score: number; masteryLevel: string }>) || [];
+    const rawMastery = profile?.topicMastery;
+    const topicMastery = ((typeof rawMastery === "string" ? JSON.parse(rawMastery) : rawMastery) || []) as Array<{ topicName: string; score: number; masteryLevel: string }>;
     const currentTopic = topicMastery.find(t => t.topicName === tutorSession.topicName);
 
     // Get AI response
