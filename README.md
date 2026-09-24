@@ -150,13 +150,13 @@ Profile Updates → New Recommendations → Continue Learning
 └──────────────┴───────────────────────────────┘
 ```
 
-See [ARCHITECTURE.md](file:///c:/Users/ABHI%20SHARMA/OneDrive/Desktop/loopAi/ARCHITECTURE.md) for full details.
+See [ARCHITECTURE.md](file:///c:/Users/ABHI%20SHARMA/OneDrive/Desktop/loopAi/docs/ARCHITECTURE.md) for full details.
 
 ---
 
 ## AI Workflow
 
-See [AI_WORKFLOW.md](file:///c:/Users/ABHI%20SHARMA/OneDrive/Desktop/loopAi/AI_WORKFLOW.md) for the complete AI workflow documentation.
+See [AI_WORKFLOW.md](file:///c:/Users/ABHI%20SHARMA/OneDrive/Desktop/loopAi/docs/AI_WORKFLOW.md) for the complete AI workflow documentation.
 
 ---
 
@@ -178,7 +178,7 @@ See [AI_WORKFLOW.md](file:///c:/Users/ABHI%20SHARMA/OneDrive/Desktop/loopAi/AI_W
 
 ## Database Overview
 
-See [DATABASE.md](file:///c:/Users/ABHI%20SHARMA/OneDrive/Desktop/loopAi/DATABASE.md) for complete schema documentation.
+See [DATABASE.md](file:///c:/Users/ABHI%20SHARMA/OneDrive/Desktop/loopAi/docs/DATABASE.md) for complete schema documentation.
 
 Core models: Users, Subjects, Topics, Questions, Assessments, Answers, LearningProfiles, LearningPlans, StudySessions, TutorSessions, ProgressRecords.
 
@@ -219,7 +219,7 @@ npm run dev
 
 ### Environment Variables
 
-See [ENVIRONMENT.md](file:///c:/Users/ABHI%20SHARMA/OneDrive/Desktop/loopAi/ENVIRONMENT.md) for complete details.
+See [ENVIRONMENT.md](file:///c:/Users/ABHI%20SHARMA/OneDrive/Desktop/loopAi/docs/ENVIRONMENT.md) for complete details.
 
 ```env
 DATABASE_URL=postgresql://user:password@localhost:5432/learnloop
@@ -249,7 +249,7 @@ npm run seed         # Seed database with initial data
 
 ## Testing
 
-See [TESTING.md](file:///c:/Users/ABHI%20SHARMA/OneDrive/Desktop/loopAi/TESTING.md) for the complete testing strategy.
+See [TESTING.md](file:///c:/Users/ABHI%20SHARMA/OneDrive/Desktop/loopAi/docs/TESTING.md) for the complete testing strategy.
 
 ---
 
@@ -257,13 +257,13 @@ See [TESTING.md](file:///c:/Users/ABHI%20SHARMA/OneDrive/Desktop/loopAi/TESTING.
 
 Planned deployment target: **Vercel** with a managed PostgreSQL instance.
 
-See [ENVIRONMENT.md](file:///c:/Users/ABHI%20SHARMA/OneDrive/Desktop/loopAi/ENVIRONMENT.md) for deployment configuration.
+See [ENVIRONMENT.md](file:///c:/Users/ABHI%20SHARMA/OneDrive/Desktop/loopAi/docs/ENVIRONMENT.md) for deployment configuration.
 
 ---
 
 ## Demo
 
-See [DEMO_FLOW.md](file:///c:/Users/ABHI%20SHARMA/OneDrive/Desktop/loopAi/DEMO_FLOW.md) for the complete 2–3 minute hackathon demo script.
+See [DEMO_FLOW.md](file:///c:/Users/ABHI%20SHARMA/OneDrive/Desktop/loopAi/docs/DEMO_FLOW.md) for the complete 2–3 minute hackathon demo script.
 
 ---
 
@@ -271,7 +271,7 @@ See [DEMO_FLOW.md](file:///c:/Users/ABHI%20SHARMA/OneDrive/Desktop/loopAi/DEMO_F
 
 > **Current State: Pre-Implementation**
 >
-> All features are currently in the planning/documentation phase. See [PROJECT_STATUS.md](file:///c:/Users/ABHI%20SHARMA/OneDrive/Desktop/loopAi/PROJECT_STATUS.md) for detailed status.
+> All features are currently in the planning/documentation phase. See [PROJECT_STATUS.md](file:///c:/Users/ABHI%20SHARMA/OneDrive/Desktop/loopAi/docs/PROJECT_STATUS.md) for detailed status.
 
 ---
 
@@ -280,21 +280,21 @@ See [DEMO_FLOW.md](file:///c:/Users/ABHI%20SHARMA/OneDrive/Desktop/loopAi/DEMO_F
 | Document | Purpose |
 | --- | --- |
 | [README.md](file:///c:/Users/ABHI%20SHARMA/OneDrive/Desktop/loopAi/README.md) | Project overview |
-| [PRD.md](file:///c:/Users/ABHI%20SHARMA/OneDrive/Desktop/loopAi/PRD.md) | Product requirements |
-| [ARCHITECTURE.md](file:///c:/Users/ABHI%20SHARMA/OneDrive/Desktop/loopAi/ARCHITECTURE.md) | Technical architecture |
-| [AI_WORKFLOW.md](file:///c:/Users/ABHI%20SHARMA/OneDrive/Desktop/loopAi/AI_WORKFLOW.md) | AI workflow details |
-| [DATABASE.md](file:///c:/Users/ABHI%20SHARMA/OneDrive/Desktop/loopAi/DATABASE.md) | Database schema |
-| [API.md](file:///c:/Users/ABHI%20SHARMA/OneDrive/Desktop/loopAi/API.md) | API reference |
-| [UI_UX.md](file:///c:/Users/ABHI%20SHARMA/OneDrive/Desktop/loopAi/UI_UX.md) | UI/UX specification |
-| [AI_CODING_RULES.md](file:///c:/Users/ABHI%20SHARMA/OneDrive/Desktop/loopAi/AI_CODING_RULES.md) | AI coding agent rules |
-| [TESTING.md](file:///c:/Users/ABHI%20SHARMA/OneDrive/Desktop/loopAi/TESTING.md) | Testing strategy |
-| [DEMO_FLOW.md](file:///c:/Users/ABHI%20SHARMA/OneDrive/Desktop/loopAi/DEMO_FLOW.md) | Hackathon demo script |
-| [ROADMAP.md](file:///c:/Users/ABHI%20SHARMA/OneDrive/Desktop/loopAi/ROADMAP.md) | Development roadmap |
-| [CONTRIBUTING.md](file:///c:/Users/ABHI%20SHARMA/OneDrive/Desktop/loopAi/CONTRIBUTING.md) | Contribution guide |
-| [SECURITY.md](file:///c:/Users/ABHI%20SHARMA/OneDrive/Desktop/loopAi/SECURITY.md) | Security documentation |
-| [ENVIRONMENT.md](file:///c:/Users/ABHI%20SHARMA/OneDrive/Desktop/loopAi/ENVIRONMENT.md) | Environment setup |
-| [CHANGELOG.md](file:///c:/Users/ABHI%20SHARMA/OneDrive/Desktop/loopAi/CHANGELOG.md) | Change history |
-| [PROJECT_STATUS.md](file:///c:/Users/ABHI%20SHARMA/OneDrive/Desktop/loopAi/PROJECT_STATUS.md) | Current project status |
+| [PRD.md](file:///c:/Users/ABHI%20SHARMA/OneDrive/Desktop/loopAi/docs/PRD.md) | Product requirements |
+| [ARCHITECTURE.md](file:///c:/Users/ABHI%20SHARMA/OneDrive/Desktop/loopAi/docs/ARCHITECTURE.md) | Technical architecture |
+| [AI_WORKFLOW.md](file:///c:/Users/ABHI%20SHARMA/OneDrive/Desktop/loopAi/docs/AI_WORKFLOW.md) | AI workflow details |
+| [DATABASE.md](file:///c:/Users/ABHI%20SHARMA/OneDrive/Desktop/loopAi/docs/DATABASE.md) | Database schema |
+| [API.md](file:///c:/Users/ABHI%20SHARMA/OneDrive/Desktop/loopAi/docs/API.md) | API reference |
+| [UI_UX.md](file:///c:/Users/ABHI%20SHARMA/OneDrive/Desktop/loopAi/docs/UI_UX.md) | UI/UX specification |
+| [AI_CODING_RULES.md](file:///c:/Users/ABHI%20SHARMA/OneDrive/Desktop/loopAi/docs/AI_CODING_RULES.md) | AI coding agent rules |
+| [TESTING.md](file:///c:/Users/ABHI%20SHARMA/OneDrive/Desktop/loopAi/docs/TESTING.md) | Testing strategy |
+| [DEMO_FLOW.md](file:///c:/Users/ABHI%20SHARMA/OneDrive/Desktop/loopAi/docs/DEMO_FLOW.md) | Hackathon demo script |
+| [ROADMAP.md](file:///c:/Users/ABHI%20SHARMA/OneDrive/Desktop/loopAi/docs/ROADMAP.md) | Development roadmap |
+| [CONTRIBUTING.md](file:///c:/Users/ABHI%20SHARMA/OneDrive/Desktop/loopAi/docs/CONTRIBUTING.md) | Contribution guide |
+| [SECURITY.md](file:///c:/Users/ABHI%20SHARMA/OneDrive/Desktop/loopAi/docs/SECURITY.md) | Security documentation |
+| [ENVIRONMENT.md](file:///c:/Users/ABHI%20SHARMA/OneDrive/Desktop/loopAi/docs/ENVIRONMENT.md) | Environment setup |
+| [CHANGELOG.md](file:///c:/Users/ABHI%20SHARMA/OneDrive/Desktop/loopAi/docs/CHANGELOG.md) | Change history |
+| [PROJECT_STATUS.md](file:///c:/Users/ABHI%20SHARMA/OneDrive/Desktop/loopAi/docs/PROJECT_STATUS.md) | Current project status |
 
 ---
 
@@ -307,8 +307,3 @@ See [DEMO_FLOW.md](file:///c:/Users/ABHI%20SHARMA/OneDrive/Desktop/loopAi/DEMO_F
 ## License
 
 MIT
-#    S k i l l S y n c 
- 
- 
-
-By Abhishek Sharma
