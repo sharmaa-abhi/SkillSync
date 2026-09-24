@@ -23,7 +23,7 @@ export async function POST(request: Request) {
       t.questions.map(q => ({
         id: q.id,
         text: q.text,
-        options: q.options,
+        options: typeof q.options === "string" ? JSON.parse(q.options) : q.options,
         topicId: t.id,
         topicName: t.name,
         difficulty: q.difficulty,
