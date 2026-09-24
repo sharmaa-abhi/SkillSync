@@ -100,7 +100,7 @@ async function main() {
       data: {
         topicId,
         text: q.text,
-        options: q.options,
+        options: JSON.stringify(q.options),
         correctAnswer: q.correctAnswer,
         explanation: q.explanation,
         difficulty: q.difficulty,

@@ -3,7 +3,7 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "sqlite"
   url      = env("DATABASE_URL")
 }
 
@@ -58,7 +58,7 @@ model Question {
   id            String   @id @default(cuid())
   topicId       String
   text          String
-  options       Json
+  options       String   // JSON string of options array
   correctAnswer Int
   explanation   String?
   difficulty    String   @default("medium")
@@ -124,10 +124,10 @@ model LearningProfile {
   userId            String
   subjectId         String
   overallMastery    Float    @default(0)
-  strengths         Json     @default("[]")
-  weaknesses        Json     @default("[]")
-  topicMastery      Json     @default("[]")
-  aiAnalysis        Json?
+  strengths         String   @default("[]")   // JSON string array
+  weaknesses        String   @default("[]")   // JSON string array
+  topicMastery      String   @default("[]")   // JSON string array of objects
+  aiAnalysis        String?                   // JSON string object
   assessmentCount   Int      @default(0)
   quizCount         Int      @default(0)
   tutorSessionCount Int      @default(0)
@@ -148,8 +148,8 @@ model LearningPlan {
   title             String
   estimatedDuration String?
   status            String   @default("active")
-  items             Json     @default("[]")
-  aiOutput          Json?
+  items             String   @default("[]")   // JSON string array
+  aiOutput          String?                   // JSON string object
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
 
@@ -166,7 +166,7 @@ model TutorSession {
   subjectId    String
   status       String    @default("active")
   messageCount Int       @default(0)
-  context      Json?
+  context      String?                    // JSON string
   startedAt    DateTime  @default(now())
   endedAt      DateTime?
   createdAt    DateTime  @default(now())
@@ -193,14 +193,14 @@ model Quiz {
   id              String    @id @default(cuid())
   userId          String
   subjectId       String
-  targetTopics    Json
+  targetTopics    String    @default("[]")   // JSON string array
   difficulty      String    @default("mixed")
   totalQuestions  Int
   correctAnswers  Int       @default(0)
   score           Float?
   status          String    @default("in_progress")
-  questions       Json      @default("[]")
-  answers         Json      @default("[]")
+  questions       String    @default("[]")   // JSON string array
+  answers         String    @default("[]")   // JSON string array
   startedAt       DateTime  @default(now())
   completedAt     DateTime?
   createdAt       DateTime  @default(now())
@@ -215,7 +215,7 @@ model ProgressRecord {
   userId         String
   subjectId      String
   overallMastery Float
-  topicScores    Json
+  topicScores    String   @default("[]")   // JSON string
   trigger        String
   triggerId      String?
   createdAt      DateTime @default(now())
