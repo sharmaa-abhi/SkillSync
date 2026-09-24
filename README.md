@@ -36,7 +36,7 @@ LearnLoop AI creates an **adaptive learning loop** — a continuous cycle where:
 ## Core AI Capabilities
 
 | Capability | Description |
-|---|---|
+| --- | --- |
 | **Diagnostic Assessment** | Evaluates topic-level mastery across a subject |
 | **Weakness Detection** | Identifies specific topics where understanding is low |
 | **Learning Profile** | Builds and maintains a structured model of each student's knowledge |
@@ -121,7 +121,7 @@ Profile Updates → New Recommendations → Continue Learning
 ## Technology Stack
 
 | Layer | Technology |
-|---|---|
+| --- | --- |
 | **Frontend** | Next.js 14 (App Router), React 18, TypeScript |
 | **Styling** | Tailwind CSS |
 | **Backend** | Next.js API Routes (Route Handlers) |
@@ -163,7 +163,7 @@ See [AI_WORKFLOW.md](file:///c:/Users/ABHI%20SHARMA/OneDrive/Desktop/loopAi/AI_W
 ## Main Pages
 
 | Page | Purpose |
-|---|---|
+| --- | --- |
 | Landing | Product introduction and sign-up CTA |
 | Login | User authentication |
 | Register | New account creation |
@@ -278,7 +278,7 @@ See [DEMO_FLOW.md](file:///c:/Users/ABHI%20SHARMA/OneDrive/Desktop/loopAi/DEMO_F
 ## Documentation Index
 
 | Document | Purpose |
-|---|---|
+| --- | --- |
 | [README.md](file:///c:/Users/ABHI%20SHARMA/OneDrive/Desktop/loopAi/README.md) | Project overview |
 | [PRD.md](file:///c:/Users/ABHI%20SHARMA/OneDrive/Desktop/loopAi/PRD.md) | Product requirements |
 | [ARCHITECTURE.md](file:///c:/Users/ABHI%20SHARMA/OneDrive/Desktop/loopAi/ARCHITECTURE.md) | Technical architecture |
@@ -307,5 +307,8 @@ See [DEMO_FLOW.md](file:///c:/Users/ABHI%20SHARMA/OneDrive/Desktop/loopAi/DEMO_F
 ## License
 
 MIT
-#   S k i l l S y n c  
+#    S k i l l S y n c 
  
+ 
+
+By Abhishek Sharma
