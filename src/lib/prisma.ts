@@ -57,7 +57,7 @@ function resolveDatabaseUrl(): string {
     return sanitizeDatabaseUrl(process.env.DIRECT_URL);
   }
 
-  // Attempt to read from .env.local or .env in project root
+  // Attempt to read from .env.local or .env in project root if process.env was not populated
   const envFiles = [".env.local", ".env"];
   for (const envFile of envFiles) {
     try {
@@ -86,29 +86,34 @@ function resolveDatabaseUrl(): string {
     }
   }
 
-  // Fallback connection string to prevent Prisma schema initialization crashes
-  return "postgresql://postgres.gjkiumovdcpbyaqkuwyz:sharmaa%4013245656@aws-0-ap-northeast-2.pooler.supabase.com:6543/postgres?pgbouncer=true";
+  return "";
 }
 
 const activeDbUrl = resolveDatabaseUrl();
 
 // Ensure process.env has DATABASE_URL set so Prisma's schema validation passes
-process.env.DATABASE_URL = activeDbUrl;
-if (!process.env.DIRECT_URL) {
-  process.env.DIRECT_URL = activeDbUrl;
+if (activeDbUrl) {
+  process.env.DATABASE_URL = activeDbUrl;
+  if (!process.env.DIRECT_URL) {
+    process.env.DIRECT_URL = activeDbUrl;
+  }
 }
 
 const globalForPrisma = globalThis as unknown as { prisma: PrismaClient };
 
 export const prisma =
   globalForPrisma.prisma ||
-  new PrismaClient({
-    datasources: {
-      db: {
-        url: activeDbUrl,
-      },
-    },
-  });
+  new PrismaClient(
+    activeDbUrl
+      ? {
+          datasources: {
+            db: {
+              url: activeDbUrl,
+            },
+          },
+        }
+      : undefined
+  );
 
 if (process.env.NODE_ENV !== "production") {
   globalForPrisma.prisma = prisma;
