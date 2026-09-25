@@ -352,6 +352,24 @@ export default function DashboardPage() {
                   &ldquo;{nextAction.reason}&rdquo;
                 </p>
               </div>
+
+              {/* Visual Dependency Chain */}
+              <div className="pt-2 flex flex-wrap items-center gap-2 text-xs">
+                <span className="text-indigo-300 font-bold text-[10px] uppercase tracking-wider flex items-center gap-1">
+                  <Network className="w-3.5 h-3.5" /> Dependency Chain:
+                </span>
+                <span className="px-2.5 py-1 rounded-lg bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 font-medium">
+                  {activeSubject === "Maths" ? "Algebraic Manipulation (84% ✓)" : "ER Modeling (82% ✓)"}
+                </span>
+                <span className="text-indigo-400 font-bold">→</span>
+                <span className="px-2.5 py-1 rounded-lg bg-rose-500/30 text-rose-200 border border-rose-400/50 font-bold ring-2 ring-rose-400/30 animate-pulse">
+                  ⚠️ {activeSubject === "Maths" ? "Factorisation (38% Prerequisite Gap)" : "Normalization (35% Gap)"}
+                </span>
+                <span className="text-indigo-400 font-bold">→</span>
+                <span className="px-2.5 py-1 rounded-lg bg-white/10 text-white/70 border border-white/20">
+                  {activeSubject === "Maths" ? "Quadratic Equations (Blocked 🚫)" : "Transactions (Blocked 🚫)"}
+                </span>
+              </div>
             </div>
 
             <div className="flex flex-col sm:flex-row lg:flex-col gap-3 flex-shrink-0">
@@ -371,6 +389,69 @@ export default function DashboardPage() {
                 <HelpCircle className="w-4 h-4" />
                 <span>Practice 5 Targeted Questions</span>
               </Link>
+            </div>
+          </div>
+        </div>
+
+        {/* ========================================================================= */}
+        {/* INTERACTIVE LEARNING LOOP COCKPIT (Diagnose -> Map -> Teach -> Practice) */}
+        {/* ========================================================================= */}
+        <div className="p-4 sm:p-5 rounded-2xl bg-white border border-slate-200/90 shadow-sm animate-fade-in-up">
+          <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+            <div className="flex items-center gap-2">
+              <span className="w-6 h-6 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold text-xs">
+                🔄
+              </span>
+              <h4 className="text-xs font-bold text-slate-900 uppercase tracking-wider">
+                SkillSync Autonomous Learning Loop
+              </h4>
+            </div>
+            <span className="text-[10px] font-bold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-full border border-indigo-100">
+              Stage 2 of 7 Active
+            </span>
+          </div>
+
+          <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2 pt-3 text-center">
+            <div className="p-2.5 rounded-xl bg-emerald-50/70 border border-emerald-200">
+              <span className="text-[10px] font-extrabold text-emerald-800 uppercase block">1. DIAGNOSE</span>
+              <span className="text-xs font-bold text-emerald-700 block mt-0.5">Completed ✓</span>
+              <span className="text-[10px] text-emerald-600">5 Questions</span>
+            </div>
+
+            <div className="p-2.5 rounded-xl bg-indigo-600 text-white shadow-xs ring-2 ring-indigo-300">
+              <span className="text-[10px] font-extrabold text-indigo-200 uppercase block">2. MAP</span>
+              <span className="text-xs font-extrabold block mt-0.5">Skill Graph 🧠</span>
+              <span className="text-[10px] text-indigo-100">Gap Located</span>
+            </div>
+
+            <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200">
+              <span className="text-[10px] font-bold text-slate-500 uppercase block">3. TEACH</span>
+              <span className="text-xs font-bold text-slate-800 block mt-0.5">AI Coach</span>
+              <span className="text-[10px] text-slate-400">Socratic</span>
+            </div>
+
+            <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200">
+              <span className="text-[10px] font-bold text-slate-500 uppercase block">4. PRACTICE</span>
+              <span className="text-xs font-bold text-slate-800 block mt-0.5">10-Min Task</span>
+              <span className="text-[10px] text-slate-400">Adaptive</span>
+            </div>
+
+            <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200">
+              <span className="text-[10px] font-bold text-slate-500 uppercase block">5. FEEDBACK</span>
+              <span className="text-xs font-bold text-slate-800 block mt-0.5">Instant Logic</span>
+              <span className="text-[10px] text-slate-400">Pedagogical</span>
+            </div>
+
+            <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200">
+              <span className="text-[10px] font-bold text-slate-500 uppercase block">6. PROGRESS</span>
+              <span className="text-xs font-bold text-slate-800 block mt-0.5">Mastery +14%</span>
+              <span className="text-[10px] text-slate-400">Calibrated</span>
+            </div>
+
+            <div className="p-2.5 rounded-xl bg-amber-50 border border-amber-200">
+              <span className="text-[10px] font-extrabold text-amber-800 uppercase block">7. NEXT ACTION</span>
+              <span className="text-xs font-bold text-amber-900 block mt-0.5">Auto-Refreshed</span>
+              <span className="text-[10px] text-amber-700">Daily Loop</span>
             </div>
           </div>
         </div>
