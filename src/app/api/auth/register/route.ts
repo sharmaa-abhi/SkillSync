@@ -29,8 +29,34 @@ export async function POST(request: Request) {
     return NextResponse.json({ user }, { status: 201 });
   } catch (error: any) {
     console.error("[register error]", error);
+
+    // Handle unique constraint violation cleanly
+    if (error?.code === "P2002") {
+      return NextResponse.json(
+        { error: "An account with this email already exists." },
+        { status: 409 }
+      );
+    }
+
+    // Guard against raw internal Prisma/database stack traces leaking to UI
+    const errorMsg = String(error?.message || "");
+    const isDbError =
+      errorMsg.includes("prisma") ||
+      errorMsg.includes("Prisma") ||
+      errorMsg.includes("DATABASE_URL") ||
+      errorMsg.includes("Can't reach database") ||
+      errorMsg.includes("Environment variable not found") ||
+      error?.name?.includes("Prisma");
+
+    if (isDbError) {
+      return NextResponse.json(
+        { error: "Account service is currently experiencing connectivity issues. Please try again shortly." },
+        { status: 503 }
+      );
+    }
+
     return NextResponse.json(
-      { error: error?.message || "An unexpected error occurred." },
+      { error: "An unexpected error occurred while creating your account. Please try again." },
       { status: 500 }
     );
   }
