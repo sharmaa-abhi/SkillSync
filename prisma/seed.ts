@@ -1,116 +1,357 @@
 import { PrismaClient } from "@prisma/client";
+import bcrypt from "bcryptjs";
 
 const prisma = new PrismaClient();
 
 async function main() {
-  console.log("🌱 Seeding database...");
+  console.log("🌱 Seeding SkillSync AI database...");
 
-  // Create DBMS Subject
+  // ---------------------------------------------------------
+  // 1. Create Mathematics Subject (Flagship Pitch Deck Track)
+  // ---------------------------------------------------------
+  const maths = await prisma.subject.upsert({
+    where: { name: "Mathematics" },
+    update: {},
+    create: {
+      name: "Mathematics",
+      description: "High-yield foundational to advanced algebra: Algebraic Manipulation, Factorisation, and Quadratic Equations.",
+      icon: "📐",
+    },
+  });
+  console.log(`✅ Subject: ${maths.name}`);
+
+  const mathsTopicsData = [
+    { name: "Algebraic Manipulation", description: "Expanding brackets, collecting like terms, and working with algebraic fractions", order: 1, difficulty: "beginner" },
+    { name: "Factorisation", description: "Factoring out GCF, grouping, difference of two squares, and monic trinomial factoring", order: 2, difficulty: "intermediate" },
+    { name: "Quadratic Equations", description: "Standard form ax² + bx + c = 0, discriminant test, and quadratic formula application", order: 3, difficulty: "intermediate" },
+    { name: "Polynomials", description: "Degree, roots, polynomial division, and the Factor / Remainder theorems", order: 4, difficulty: "intermediate" },
+    { name: "Coordinate Geometry", description: "Parabolas, vertex form, axis of symmetry, and intercepts on the Cartesian plane", order: 5, difficulty: "advanced" },
+  ];
+
+  const mathsTopics: Record<string, string> = {};
+  for (const t of mathsTopicsData) {
+    const topic = await prisma.topic.upsert({
+      where: { subjectId_name: { subjectId: maths.id, name: t.name } },
+      update: {},
+      create: { ...t, subjectId: maths.id },
+    });
+    mathsTopics[t.name] = topic.id;
+    console.log(`  ✅ Maths Topic: ${t.name}`);
+  }
+
+  // Maths Diagnostic & Practice Questions
+  const mathsQuestions = [
+    // Algebraic Manipulation
+    {
+      topicName: "Algebraic Manipulation",
+      text: "What is the expanded form of 3(2x - 5)?",
+      options: ["6x - 15", "6x - 5", "5x - 15", "6x + 15"],
+      correctAnswer: 0,
+      explanation: "Distribute 3 across both terms inside brackets: 3 * 2x = 6x, and 3 * (-5) = -15. Result: 6x - 15.",
+      difficulty: "easy",
+    },
+    {
+      topicName: "Algebraic Manipulation",
+      text: "Simplify the expression: 4x + 7 - 2x + 3",
+      options: ["2x + 10", "6x + 10", "2x + 4", "6x + 4"],
+      correctAnswer: 0,
+      explanation: "Combine like terms: (4x - 2x) = 2x, and constants (7 + 3) = 10. Result: 2x + 10.",
+      difficulty: "easy",
+    },
+    {
+      topicName: "Algebraic Manipulation",
+      text: "What is (x + 3)(x - 4) expanded?",
+      options: ["x² - x - 12", "x² + x - 12", "x² - 7x - 12", "x² - 12"],
+      correctAnswer: 0,
+      explanation: "Using FOIL: x*x = x², x*(-4) = -4x, 3*x = 3x, 3*(-4) = -12. Combining middle terms gives -x: x² - x - 12.",
+      difficulty: "medium",
+    },
+
+    // Factorisation (Prerequisite Gap Focus)
+    {
+      topicName: "Factorisation",
+      text: "Factor completely: x² - 9",
+      options: ["(x - 3)(x + 3)", "(x - 3)²", "(x + 3)²", "x(x - 9)"],
+      correctAnswer: 0,
+      explanation: "This is a difference of two squares: a² - b² = (a - b)(a + b). Here a = x and b = 3, so (x - 3)(x + 3).",
+      difficulty: "easy",
+    },
+    {
+      topicName: "Factorisation",
+      text: "What are the factors of the quadratic trinomial x² + 5x + 6?",
+      options: ["(x + 2)(x + 3)", "(x + 1)(x + 6)", "(x - 2)(x - 3)", "(x + 5)(x + 1)"],
+      correctAnswer: 0,
+      explanation: "We need two numbers that multiply to 6 and add to 5. Those numbers are 2 and 3: (x + 2)(x + 3).",
+      difficulty: "medium",
+    },
+    {
+      topicName: "Factorisation",
+      text: "Factor out the greatest common factor from 6x³ - 9x²:",
+      options: ["3x²(2x - 3)", "3x(2x² - 3x)", "x²(6x - 9)", "9x²(x - 1)"],
+      correctAnswer: 0,
+      explanation: "The GCD of 6 and 9 is 3, and the lowest power of x is x². Factoring out 3x² leaves (2x - 3).",
+      difficulty: "medium",
+    },
+    {
+      topicName: "Factorisation",
+      text: "Factor the expression 2x² + 7x + 3:",
+      options: ["(2x + 1)(x + 3)", "(2x + 3)(x + 1)", "(2x - 1)(x - 3)", "(x + 7)(2x + 1)"],
+      correctAnswer: 0,
+      explanation: "Splitting the middle term: ac = 6. Numbers multiplying to 6 and adding to 7 are 6 and 1: 2x² + 6x + x + 3 = 2x(x + 3) + 1(x + 3) = (2x + 1)(x + 3).",
+      difficulty: "hard",
+    },
+
+    // Quadratic Equations (Current Focus at 72%)
+    {
+      topicName: "Quadratic Equations",
+      text: "What are the solutions to (x - 2)(x + 5) = 0?",
+      options: ["x = 2 or x = -5", "x = -2 or x = 5", "x = 2 or x = 5", "x = -2 or x = -5"],
+      correctAnswer: 0,
+      explanation: "By the zero-product property, either x - 2 = 0 (so x = 2) or x + 5 = 0 (so x = -5).",
+      difficulty: "easy",
+    },
+    {
+      topicName: "Quadratic Equations",
+      text: "For the quadratic equation ax² + bx + c = 0, what is the formula for the discriminant?",
+      options: ["b² - 4ac", "b² + 4ac", "√(b² - 4ac)", "-b ± √(b² - 4ac)"],
+      correctAnswer: 0,
+      explanation: "The discriminant Δ is given by b² - 4ac. If Δ > 0 there are two distinct real roots; if Δ = 0, one real repeated root; if Δ < 0, complex roots.",
+      difficulty: "medium",
+    },
+    {
+      topicName: "Quadratic Equations",
+      text: "If the discriminant of a quadratic equation is negative (b² - 4ac < 0), what does it indicate about the roots?",
+      options: ["Two complex / non-real roots", "Two distinct real roots", "Exactly one real root", "Infinite real roots"],
+      correctAnswer: 0,
+      explanation: "A negative discriminant means the square root is non-real, giving two complex conjugate roots.",
+      difficulty: "medium",
+    },
+    {
+      topicName: "Quadratic Equations",
+      text: "Solve x² - 6x + 9 = 0:",
+      options: ["x = 3 (repeated root)", "x = -3 (repeated root)", "x = 3 or x = -3", "x = 0 or x = 6"],
+      correctAnswer: 0,
+      explanation: "x² - 6x + 9 is a perfect square: (x - 3)² = 0. Therefore x = 3 is a double root.",
+      difficulty: "easy",
+    },
+
+    // Polynomials
+    {
+      topicName: "Polynomials",
+      text: "According to the Remainder Theorem, if polynomial P(x) is divided by (x - a), the remainder is:",
+      options: ["P(a)", "P(-a)", "P(0)", "P(x) / a"],
+      correctAnswer: 0,
+      explanation: "The Remainder Theorem states that evaluating P(x) at x = a yields exactly the remainder of division by (x - a).",
+      difficulty: "medium",
+    },
+    {
+      topicName: "Polynomials",
+      text: "If (x - 2) is a factor of P(x), what must be true about P(2)?",
+      options: ["P(2) = 0", "P(2) = 2", "P(2) = -2", "P(2) > 0"],
+      correctAnswer: 0,
+      explanation: "By the Factor Theorem, (x - c) is a factor of P(x) if and only if P(c) = 0.",
+      difficulty: "easy",
+    },
+
+    // Coordinate Geometry
+    {
+      topicName: "Coordinate Geometry",
+      text: "What is the vertex of the parabola represented by y = (x - 3)² + 4?",
+      options: ["(3, 4)", "(-3, 4)", "(3, -4)", "(4, 3)"],
+      correctAnswer: 0,
+      explanation: "In vertex form y = a(x - h)² + k, the vertex coordinates are (h, k). Here h = 3 and k = 4, so (3, 4).",
+      difficulty: "easy",
+    },
+  ];
+
+  for (const q of mathsQuestions) {
+    const topicId = mathsTopics[q.topicName];
+    if (topicId) {
+      await prisma.question.create({
+        data: {
+          topicId,
+          text: q.text,
+          options: JSON.stringify(q.options),
+          correctAnswer: q.correctAnswer,
+          explanation: q.explanation,
+          difficulty: q.difficulty,
+          type: "assessment",
+        },
+      });
+    }
+  }
+  console.log(`✅ Seeded ${mathsQuestions.length} Mathematics questions`);
+
+  // ---------------------------------------------------------
+  // 2. Create DBMS Subject
+  // ---------------------------------------------------------
   const dbms = await prisma.subject.upsert({
     where: { name: "Database Management Systems" },
     update: {},
     create: {
       name: "Database Management Systems",
-      description: "Study of database design, SQL, normalization, transactions, and more.",
+      description: "Relational database design, SQL, normalization, transactions, and concurrency protocols.",
       icon: "🗄️",
     },
   });
-
   console.log(`✅ Subject: ${dbms.name}`);
 
-  // Create Topics
-  const topicsData = [
-    { name: "ER Model", description: "Entity-Relationship modeling and diagram design", order: 1, difficulty: "beginner" },
-    { name: "Relational Model", description: "Relational algebra, keys, and constraints", order: 2, difficulty: "beginner" },
-    { name: "SQL Fundamentals", description: "SELECT, INSERT, UPDATE, DELETE, JOINs, and subqueries", order: 3, difficulty: "intermediate" },
-    { name: "Normalization", description: "Functional dependencies, 1NF through BCNF", order: 4, difficulty: "intermediate" },
-    { name: "Transactions", description: "ACID properties, isolation levels, and anomalies", order: 5, difficulty: "intermediate" },
-    { name: "Indexing", description: "B-tree, hash indexing, and query optimization", order: 6, difficulty: "advanced" },
-    { name: "Concurrency Control", description: "Lock-based and timestamp-based protocols, deadlocks", order: 7, difficulty: "advanced" },
-  ];
+  // ---------------------------------------------------------
+  // 3. Pre-configure Alex Rivera Demo Student (Section 22 of prompt)
+  // ---------------------------------------------------------
+  const demoEmail = "alex@skillsync.ai";
+  const hashedPassword = await bcrypt.hash("password123", 12);
 
-  const topics: Record<string, string> = {};
+  const demoUser = await prisma.user.upsert({
+    where: { email: demoEmail },
+    update: {
+      name: "Alex Rivera",
+      educationLevel: "Grade 11 / CBSE Class 11",
+      learningGoals: "Improve in Mathematics — Master Quadratic Equations & Clear Prerequisite Gaps",
+      preferredStyle: "Interactive Socratic & Visual Graphs",
+      onboardingCompleted: true,
+    },
+    create: {
+      email: demoEmail,
+      name: "Alex Rivera",
+      password: hashedPassword,
+      educationLevel: "Grade 11 / CBSE Class 11",
+      learningGoals: "Improve in Mathematics — Master Quadratic Equations & Clear Prerequisite Gaps",
+      preferredStyle: "Interactive Socratic & Visual Graphs",
+      onboardingCompleted: true,
+    },
+  });
+  console.log(`✅ Demo User: ${demoUser.name} (${demoUser.email})`);
 
-  for (const t of topicsData) {
-    const topic = await prisma.topic.upsert({
-      where: { subjectId_name: { subjectId: dbms.id, name: t.name } },
-      update: {},
-      create: { ...t, subjectId: dbms.id },
-    });
-    topics[t.name] = topic.id;
-    console.log(`  ✅ Topic: ${t.name}`);
-  }
-
-  // Create Questions
-  const questionsData = [
-    // ER Model (5)
-    { topicName: "ER Model", text: "Which of the following is NOT a component of an ER diagram?", options: ["Entity", "Attribute", "Relationship", "Tuple"], correctAnswer: 3, explanation: "A tuple is a row in a relational table, not a component of an ER diagram. ER diagrams use entities, attributes, and relationships.", difficulty: "easy" },
-    { topicName: "ER Model", text: "In an ER diagram, a double rectangle represents:", options: ["Strong entity", "Weak entity", "Relationship", "Attribute"], correctAnswer: 1, explanation: "A double rectangle represents a weak entity — an entity that cannot be uniquely identified by its own attributes alone.", difficulty: "easy" },
-    { topicName: "ER Model", text: "A multivalued attribute in an ER diagram is represented by:", options: ["Single oval", "Double oval", "Dashed oval", "Rectangle"], correctAnswer: 1, explanation: "A double oval represents a multivalued attribute — an attribute that can hold multiple values for a single entity.", difficulty: "medium" },
-    { topicName: "ER Model", text: "Total participation of an entity in a relationship is shown by:", options: ["Single line", "Double line", "Dashed line", "Arrow"], correctAnswer: 1, explanation: "Total participation means every instance of the entity must participate in the relationship, shown by a double line.", difficulty: "medium" },
-    { topicName: "ER Model", text: "Which cardinality means one entity in A is related to at most one entity in B?", options: ["1:N", "M:N", "1:1", "N:1"], correctAnswer: 2, explanation: "A 1:1 cardinality means each entity in A maps to at most one entity in B, and vice versa.", difficulty: "easy" },
-
-    // Relational Model (4)
-    { topicName: "Relational Model", text: "A superkey is:", options: ["A minimal set of attributes that uniquely identifies a tuple", "Any set of attributes that uniquely identifies a tuple", "The primary key of a relation", "A foreign key reference"], correctAnswer: 1, explanation: "A superkey is any set of attributes that uniquely identifies a tuple. A candidate key is the minimal superkey.", difficulty: "medium" },
-    { topicName: "Relational Model", text: "Which integrity constraint ensures that a foreign key value must exist in the referenced table?", options: ["Domain constraint", "Key constraint", "Referential integrity", "Entity integrity"], correctAnswer: 2, explanation: "Referential integrity ensures that a foreign key value in one relation must match a primary key value in the referenced relation.", difficulty: "medium" },
-    { topicName: "Relational Model", text: "The relational algebra operation that selects rows satisfying a condition is:", options: ["Project (π)", "Select (σ)", "Join (⋈)", "Union (∪)"], correctAnswer: 1, explanation: "The Select operation (σ) filters rows based on a given condition, similar to WHERE in SQL.", difficulty: "easy" },
-    { topicName: "Relational Model", text: "Entity integrity states that:", options: ["Foreign keys cannot be null", "Primary keys cannot be null", "All attributes must have values", "No duplicate rows allowed"], correctAnswer: 1, explanation: "Entity integrity requires that primary key attributes cannot have NULL values, ensuring every tuple is uniquely identifiable.", difficulty: "easy" },
-
-    // SQL Fundamentals (5)
-    { topicName: "SQL Fundamentals", text: "Which SQL clause is used to filter groups?", options: ["WHERE", "HAVING", "GROUP BY", "ORDER BY"], correctAnswer: 1, explanation: "HAVING filters groups after GROUP BY, while WHERE filters individual rows before grouping.", difficulty: "easy" },
-    { topicName: "SQL Fundamentals", text: "What does a LEFT JOIN return?", options: ["Only matching rows from both tables", "All rows from the left table and matching rows from the right", "All rows from both tables", "Rows that don't match"], correctAnswer: 1, explanation: "LEFT JOIN returns all rows from the left table and the matching rows from the right table. Non-matching right rows appear as NULL.", difficulty: "medium" },
-    { topicName: "SQL Fundamentals", text: "Which aggregate function counts non-NULL values?", options: ["COUNT(*)", "COUNT(column)", "SUM(column)", "AVG(column)"], correctAnswer: 1, explanation: "COUNT(column) counts non-NULL values in that column, while COUNT(*) counts all rows including NULLs.", difficulty: "medium" },
-    { topicName: "SQL Fundamentals", text: "A correlated subquery is one that:", options: ["Runs only once", "References the outer query", "Uses UNION", "Returns multiple rows"], correctAnswer: 1, explanation: "A correlated subquery references a column from the outer query and is re-evaluated for each row of the outer query.", difficulty: "hard" },
-    { topicName: "SQL Fundamentals", text: "Which statement is used to remove a table from the database?", options: ["DELETE TABLE", "DROP TABLE", "REMOVE TABLE", "TRUNCATE TABLE"], correctAnswer: 1, explanation: "DROP TABLE removes the table structure and all its data. DELETE removes rows, and TRUNCATE removes all rows but keeps the structure.", difficulty: "easy" },
-
-    // Normalization (5)
-    { topicName: "Normalization", text: "A relation is in 1NF if:", options: ["It has no partial dependencies", "All attributes are atomic", "It has no transitive dependencies", "It has a primary key"], correctAnswer: 1, explanation: "1NF requires that all attributes contain only atomic (indivisible) values — no repeating groups or arrays.", difficulty: "easy" },
-    { topicName: "Normalization", text: "A partial dependency exists when:", options: ["A non-key attribute depends on the entire primary key", "A non-key attribute depends on part of the primary key", "A non-key attribute depends on another non-key attribute", "A key attribute depends on a non-key attribute"], correctAnswer: 1, explanation: "A partial dependency occurs when a non-prime attribute is functionally dependent on only part of a composite primary key.", difficulty: "medium" },
-    { topicName: "Normalization", text: "Which normal form eliminates transitive dependencies?", options: ["1NF", "2NF", "3NF", "BCNF"], correctAnswer: 2, explanation: "3NF eliminates transitive dependencies — where a non-key attribute depends on another non-key attribute.", difficulty: "medium" },
-    { topicName: "Normalization", text: "Given R(A,B,C) with FDs {A→B, B→C}, the relation is in:", options: ["1NF only", "2NF but not 3NF", "3NF", "BCNF"], correctAnswer: 1, explanation: "A→B is fine, but B→C creates a transitive dependency (A→B→C). This violates 3NF, so the relation is in 2NF but not 3NF.", difficulty: "hard" },
-    { topicName: "Normalization", text: "BCNF is stricter than 3NF because:", options: ["It requires atomic attributes", "Every determinant must be a candidate key", "It eliminates all redundancy", "It requires foreign keys"], correctAnswer: 1, explanation: "BCNF requires that for every functional dependency X→Y, X must be a superkey. 3NF allows some exceptions for candidate keys.", difficulty: "hard" },
-
-    // Transactions (5)
-    { topicName: "Transactions", text: "Which ACID property ensures that a transaction is an all-or-nothing operation?", options: ["Atomicity", "Consistency", "Isolation", "Durability"], correctAnswer: 0, explanation: "Atomicity ensures that either all operations in a transaction are completed, or none of them are.", difficulty: "easy" },
-    { topicName: "Transactions", text: "A dirty read occurs when:", options: ["A transaction reads committed data", "A transaction reads data written by an uncommitted transaction", "Two transactions write to the same data", "A transaction reads the same data twice with different results"], correctAnswer: 1, explanation: "A dirty read happens when one transaction reads data that has been modified but not yet committed by another transaction.", difficulty: "medium" },
-    { topicName: "Transactions", text: "Which isolation level prevents dirty reads but allows non-repeatable reads?", options: ["Read Uncommitted", "Read Committed", "Repeatable Read", "Serializable"], correctAnswer: 1, explanation: "Read Committed prevents dirty reads by only allowing a transaction to read committed data, but non-repeatable reads can still occur.", difficulty: "medium" },
-    { topicName: "Transactions", text: "The ACID property that ensures changes survive system failures is:", options: ["Atomicity", "Consistency", "Isolation", "Durability"], correctAnswer: 3, explanation: "Durability ensures that once a transaction is committed, its changes persist even if the system crashes.", difficulty: "easy" },
-    { topicName: "Transactions", text: "A phantom read occurs when:", options: ["A transaction reads uncommitted data", "New rows appear in a repeated query within the same transaction", "A transaction reads old data", "Two transactions deadlock"], correctAnswer: 1, explanation: "A phantom read occurs when a transaction re-executes a query and finds new rows that were inserted by another committed transaction.", difficulty: "hard" },
-
-    // Indexing (4)
-    { topicName: "Indexing", text: "A B+ tree index stores data pointers at:", options: ["Internal nodes only", "Leaf nodes only", "Both internal and leaf nodes", "Root node only"], correctAnswer: 1, explanation: "In a B+ tree, actual data pointers are stored only at leaf nodes. Internal nodes contain only keys for navigation.", difficulty: "medium" },
-    { topicName: "Indexing", text: "A clustered index determines:", options: ["Which columns are indexed", "The physical order of data in the table", "The logical order of queries", "The number of indexes allowed"], correctAnswer: 1, explanation: "A clustered index determines the physical storage order of rows in the table. A table can have only one clustered index.", difficulty: "medium" },
-    { topicName: "Indexing", text: "Hash indexing is best for:", options: ["Range queries", "Exact match queries", "Pattern matching", "Sorting"], correctAnswer: 1, explanation: "Hash indexes are optimized for exact match lookups (equality conditions) but cannot efficiently support range queries.", difficulty: "easy" },
-    { topicName: "Indexing", text: "Which is NOT an advantage of indexing?", options: ["Faster data retrieval", "Faster writes and inserts", "Efficient sorting", "Quick lookups"], correctAnswer: 1, explanation: "Indexes speed up reads but slow down writes because the index must be updated every time data is inserted, updated, or deleted.", difficulty: "easy" },
-
-    // Concurrency Control (4)
-    { topicName: "Concurrency Control", text: "Two-phase locking (2PL) ensures:", options: ["Deadlock prevention", "Serializability", "No starvation", "Faster transactions"], correctAnswer: 1, explanation: "Two-phase locking guarantees serializability by dividing a transaction into a growing phase (acquiring locks) and a shrinking phase (releasing locks).", difficulty: "medium" },
-    { topicName: "Concurrency Control", text: "A deadlock occurs when:", options: ["A transaction takes too long", "Two or more transactions wait for each other indefinitely", "A transaction fails to commit", "A lock is never released"], correctAnswer: 1, explanation: "A deadlock occurs when two or more transactions are each waiting for a lock held by the other, creating a circular wait.", difficulty: "easy" },
-    { topicName: "Concurrency Control", text: "In timestamp-based concurrency control, if T1 has an earlier timestamp than T2:", options: ["T1 must wait for T2", "T2 must wait for T1", "T1 should access data before T2", "Either can go first"], correctAnswer: 2, explanation: "Timestamp ordering ensures that transactions execute in timestamp order. If T1 is older, it should logically access data before T2.", difficulty: "hard" },
-    { topicName: "Concurrency Control", text: "Which deadlock handling technique rolls back one of the deadlocked transactions?", options: ["Deadlock prevention", "Deadlock avoidance", "Deadlock detection and recovery", "Timeout"], correctAnswer: 2, explanation: "Deadlock detection and recovery allows deadlocks to occur, then detects them (usually via a wait-for graph) and recovers by rolling back a victim transaction.", difficulty: "medium" },
-  ];
-
-  for (const q of questionsData) {
-    const topicId = topics[q.topicName];
-    if (!topicId) {
-      console.error(`  ❌ Topic not found: ${q.topicName}`);
-      continue;
-    }
-    await prisma.question.create({
-      data: {
-        topicId,
-        text: q.text,
-        options: JSON.stringify(q.options),
-        correctAnswer: q.correctAnswer,
-        explanation: q.explanation,
-        difficulty: q.difficulty,
-        type: "assessment",
+  // Learning Profile for Mathematics (72% overall, weak Factorisation prerequisite gap)
+  const mathProfileData = {
+    overallMastery: 72,
+    strengths: JSON.stringify(["Algebraic Manipulation", "Polynomials"]),
+    weaknesses: JSON.stringify(["Factorisation"]),
+    topicMastery: JSON.stringify([
+      { topicName: "Algebraic Manipulation", score: 84, masteryLevel: "strong" },
+      { topicName: "Factorisation", score: 38, masteryLevel: "weak" },
+      { topicName: "Quadratic Equations", score: 72, masteryLevel: "medium" },
+      { topicName: "Polynomials", score: 65, masteryLevel: "medium" },
+      { topicName: "Coordinate Geometry", score: 40, masteryLevel: "weak" },
+    ]),
+    aiAnalysis: JSON.stringify({
+      summary: "Strong algebra mechanics and formula understanding (72%), but a critical prerequisite gap in Factorisation (38%) is bottlenecking quadratic equation solving.",
+      reasoning: [
+        "Diagnostic identified prerequisite gap: Factorisation score is 38%. Missed trinomial decomposition questions.",
+        "Quadratic equations score is 72%: Knows the quadratic formula, but gets stuck when factoring is required.",
+      ],
+      recommendations: [
+        "Review Factorisation (10 min session) before proceeding to quadratic formula derivations.",
+        "Take a 5-question adaptive practice quiz on monic trinomial factoring.",
+      ],
+      nextBestAction: {
+        title: "Review Factorisation",
+        topicName: "Factorisation",
+        durationMinutes: 10,
+        difficulty: "Level 2",
+        reason: "Your last 3 diagnostic answers show a prerequisite gap. Factorisation is required before quadratic solving.",
+        actionType: "tutor",
       },
-    });
-  }
+      streak: 8,
+      weeklyGoal: { current: 4, target: 5 },
+      reteachRate: "28%",
+    }),
+    assessmentCount: 2,
+    quizCount: 4,
+    totalStudyMinutes: 65,
+  };
 
-  console.log(`✅ Created ${questionsData.length} questions`);
-  console.log("🎉 Seeding complete!");
+  await prisma.learningProfile.upsert({
+    where: { userId_subjectId: { userId: demoUser.id, subjectId: maths.id } },
+    update: mathProfileData,
+    create: {
+      userId: demoUser.id,
+      subjectId: maths.id,
+      ...mathProfileData,
+    },
+  });
+
+  // 7-Day Personalized Learning Plan for Alex Rivera
+  await prisma.learningPlan.upsert({
+    where: { id: "demo-maths-plan-1" },
+    update: {},
+    create: {
+      id: "demo-maths-plan-1",
+      userId: demoUser.id,
+      subjectId: maths.id,
+      title: "7-Day Mathematics Mastery Roadmap",
+      estimatedDuration: "1.5 hours total (10-15 mins/day)",
+      status: "active",
+      items: JSON.stringify([
+        {
+          order: 1,
+          topic: "Factorisation",
+          activity: "Common Factors & Difference of Two Squares",
+          durationMinutes: 10,
+          priority: "critical",
+          reason: "Identified prerequisite gap: Core mechanical foundation for quadratics.",
+          isCompleted: false,
+        },
+        {
+          order: 2,
+          topic: "Factorisation",
+          activity: "Monic Trinomial Decomposition Practice",
+          durationMinutes: 12,
+          priority: "high",
+          reason: "Required before factoring standard form quadratics.",
+          isCompleted: false,
+        },
+        {
+          order: 3,
+          topic: "Quadratic Equations",
+          activity: "Solving Quadratics by Factoring",
+          durationMinutes: 15,
+          priority: "high",
+          reason: "Current focus: Connects prerequisite factoring into equation solutions.",
+          isCompleted: false,
+        },
+        {
+          order: 4,
+          topic: "Quadratic Equations",
+          activity: "Completing the Square Intuition",
+          durationMinutes: 10,
+          priority: "medium",
+          reason: "Provides the geometric bridge to the quadratic formula.",
+          isCompleted: false,
+        },
+        {
+          order: 5,
+          topic: "Quadratic Equations",
+          activity: "Discriminant & Nature of Roots Test",
+          durationMinutes: 12,
+          priority: "medium",
+          reason: "Ensures speed and accuracy for exam conditions.",
+          isCompleted: false,
+        },
+        {
+          order: 6,
+          topic: "Polynomials",
+          activity: "Factor Theorem Applications",
+          durationMinutes: 15,
+          priority: "low",
+          reason: "Expands quadratic methods to cubic polynomials.",
+          isCompleted: false,
+        },
+        {
+          order: 7,
+          topic: "Mathematics",
+          activity: "Adaptive Milestone Practice & Skill Graph Update",
+          durationMinutes: 15,
+          priority: "high",
+          reason: "Verifies whether prerequisite gap has shifted from Weak to Mastered.",
+          isCompleted: false,
+        },
+      ]),
+    },
+  });
+
+  console.log("🎉 Complete seeding finished successfully!");
 }
 
 main()

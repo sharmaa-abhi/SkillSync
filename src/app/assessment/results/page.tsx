@@ -105,41 +105,77 @@ function ResultsContent() {
     }
 
     function loadDemoResults() {
-      setOverallScore(63);
-      setTopicScores([
-        { topicName: "SQL Fundamentals", totalQuestions: 5, correctAnswers: 4, percentage: 84, masteryLevel: "strong" },
-        { topicName: "Indexing", totalQuestions: 4, correctAnswers: 3, percentage: 71, masteryLevel: "strong" },
-        { topicName: "Transactions", totalQuestions: 5, correctAnswers: 3, percentage: 56, masteryLevel: "medium" },
-        { topicName: "Normalization", totalQuestions: 5, correctAnswers: 2, percentage: 42, masteryLevel: "weak" },
-        { topicName: "ER Model", totalQuestions: 5, correctAnswers: 3, percentage: 60, masteryLevel: "medium" },
-      ]);
-      setAiAnalysis({
-        summary: "You are strong in SQL fundamentals and Indexing, but need focused practice with Normalization and Transactions.",
-        strengths: ["SQL Fundamentals", "Indexing"],
-        weaknesses: ["Normalization", "Transactions"],
-        priorityTopics: ["Normalization", "Transactions"],
-        recommendations: [
-          "Study functional dependencies and 2NF vs 3NF decomposition.",
-          "Review ACID isolation levels and anomaly prevention.",
-        ],
-        reasoning: [
-          "You missed 3 of 5 Normalization questions, specifically confusing 2NF with 3NF transitive dependencies.",
-          "Transaction questions showed uncertainty with dirty reads versus non-repeatable reads.",
-        ],
-        topicMastery: [
-          { topicName: "SQL Fundamentals", score: 84, masteryLevel: "strong" },
-          { topicName: "Indexing", score: 71, masteryLevel: "strong" },
-          { topicName: "Transactions", score: 56, masteryLevel: "medium" },
-          { topicName: "Normalization", score: 42, masteryLevel: "weak" },
-          { topicName: "ER Model", score: 60, masteryLevel: "medium" },
-        ],
-      });
+      const subjectParam = (searchParams.get("subject") || "").toLowerCase();
+      const isDbms = subjectParam.includes("dbms") || subjectParam.includes("database");
+
+      if (isDbms) {
+        setOverallScore(63);
+        setTopicScores([
+          { topicName: "SQL Fundamentals", totalQuestions: 5, correctAnswers: 4, percentage: 84, masteryLevel: "strong" },
+          { topicName: "Indexing", totalQuestions: 4, correctAnswers: 3, percentage: 71, masteryLevel: "strong" },
+          { topicName: "Transactions", totalQuestions: 5, correctAnswers: 3, percentage: 56, masteryLevel: "medium" },
+          { topicName: "Normalization", totalQuestions: 5, correctAnswers: 2, percentage: 42, masteryLevel: "weak" },
+          { topicName: "ER Model", totalQuestions: 5, correctAnswers: 3, percentage: 60, masteryLevel: "medium" },
+        ]);
+        setAiAnalysis({
+          summary: "You are strong in SQL fundamentals and Indexing, but need focused practice with Normalization and Transactions.",
+          strengths: ["SQL Fundamentals", "Indexing"],
+          weaknesses: ["Normalization", "Transactions"],
+          priorityTopics: ["Normalization", "Transactions"],
+          recommendations: [
+            "Study functional dependencies and 2NF vs 3NF decomposition.",
+            "Review ACID isolation levels and anomaly prevention.",
+          ],
+          reasoning: [
+            "You missed 3 of 5 Normalization questions, specifically confusing 2NF with 3NF transitive dependencies.",
+            "Transaction questions showed uncertainty with dirty reads versus non-repeatable reads.",
+          ],
+          topicMastery: [
+            { topicName: "SQL Fundamentals", score: 84, masteryLevel: "strong" },
+            { topicName: "Indexing", score: 71, masteryLevel: "strong" },
+            { topicName: "Transactions", score: 56, masteryLevel: "medium" },
+            { topicName: "Normalization", score: 42, masteryLevel: "weak" },
+            { topicName: "ER Model", score: 60, masteryLevel: "medium" },
+          ],
+        });
+      } else {
+        // Flagship Hackathon Mathematics Track
+        setOverallScore(72);
+        setTopicScores([
+          { topicName: "Algebraic Manipulation", totalQuestions: 5, correctAnswers: 4, percentage: 84, masteryLevel: "strong" },
+          { topicName: "Quadratic Equations", totalQuestions: 5, correctAnswers: 4, percentage: 72, masteryLevel: "medium" },
+          { topicName: "Polynomials", totalQuestions: 4, correctAnswers: 3, percentage: 65, masteryLevel: "medium" },
+          { topicName: "Coordinate Geometry", totalQuestions: 5, correctAnswers: 2, percentage: 40, masteryLevel: "weak" },
+          { topicName: "Factorisation", totalQuestions: 5, correctAnswers: 2, percentage: 38, masteryLevel: "weak" },
+        ]);
+        setAiAnalysis({
+          summary: "Strong algebra mechanics and formula understanding (72%), but a critical prerequisite gap in Factorisation (38%) is bottlenecking quadratic equation solving.",
+          strengths: ["Algebraic Manipulation", "Polynomials"],
+          weaknesses: ["Factorisation", "Coordinate Geometry"],
+          priorityTopics: ["Factorisation"],
+          recommendations: [
+            "Review Factorisation (10 min session) — master monic trinomials before quadratic solving.",
+            "Take 5-minute targeted practice on splitting the middle term.",
+          ],
+          reasoning: [
+            "Prerequisite Gap Identified: Factorisation score is 38%. Missed trinomial decomposition questions.",
+            "Quadratic Equations at 72%: You understand the discriminant formula, but get stuck when factoring ax² + bx + c = 0 is required.",
+          ],
+          topicMastery: [
+            { topicName: "Algebraic Manipulation", score: 84, masteryLevel: "strong" },
+            { topicName: "Quadratic Equations", score: 72, masteryLevel: "medium" },
+            { topicName: "Polynomials", score: 65, masteryLevel: "medium" },
+            { topicName: "Coordinate Geometry", score: 40, masteryLevel: "weak" },
+            { topicName: "Factorisation", score: 38, masteryLevel: "weak" },
+          ],
+        });
+      }
       setLoading(false);
       setAnalyzing(false);
     }
 
     loadAndAnalyze();
-  }, [assessmentId]);
+  }, [assessmentId, searchParams]);
 
   if (loading || analyzing) {
     return (
@@ -155,7 +191,12 @@ function ResultsContent() {
     );
   }
 
-  const weakestTopic = topicScores.find((t) => t.masteryLevel === "weak")?.topicName || "Normalization";
+  const weakestTopicObj = topicScores.find((t) => t.masteryLevel === "weak") || topicScores[topicScores.length - 1];
+  const weakestTopic = weakestTopicObj?.topicName || "Factorisation";
+  const weakestScore = weakestTopicObj?.percentage || 38;
+  const strongestTopicObj = topicScores.find((t) => t.masteryLevel === "strong") || topicScores[0];
+  const strongestTopic = strongestTopicObj?.topicName || "Algebraic Manipulation";
+  const strongestScore = strongestTopicObj?.percentage || 84;
 
   return (
     <div className="min-h-screen bg-slate-50 py-10 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
@@ -172,7 +213,7 @@ function ResultsContent() {
             Your Diagnostic Assessment Results
           </h1>
           <p className="text-sm text-slate-600 mt-2 max-w-xl mx-auto">
-            SkillSync has identified your conceptual strengths and pinpointed weak topics to generate your adaptive learning path.
+            SkillSync has analyzed your conceptual strengths and identified prerequisite gaps to calibrate your next best action.
           </p>
         </div>
 
@@ -187,7 +228,7 @@ function ResultsContent() {
               {overallScore}%
             </div>
             <p className="text-xs text-slate-500 mt-2">
-              {overallScore >= 70 ? "Proficient Baseline" : "Targeted Improvement Needed"}
+              {overallScore >= 70 ? "Solid Baseline Mastery" : "Targeted Remediation Needed"}
             </p>
           </div>
 
@@ -199,36 +240,36 @@ function ResultsContent() {
                 <span>Strongest Area</span>
               </div>
               <h4 className="text-lg font-bold text-slate-900">
-                {aiAnalysis?.strengths?.[0] || "SQL Fundamentals"}
+                {aiAnalysis?.strengths?.[0] || strongestTopic}
               </h4>
               <p className="text-xs text-slate-500 mt-1">
-                Demonstrated high accuracy with filtering, joins, and relational operations.
+                Demonstrated high accuracy with core principles and foundational formulas.
               </p>
             </div>
             <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs">
               <span className="text-slate-500">Mastery Level:</span>
               <span className="font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-100">
-                Strong (84%)
+                Strong ({strongestScore}%)
               </span>
             </div>
           </div>
 
-          {/* Primary Focus Needed */}
+          {/* Primary Focus Needed / Prerequisite Gap */}
           <div className="bg-white rounded-2xl border border-indigo-100 p-6 flex flex-col justify-between shadow-sm bg-gradient-to-br from-indigo-50/40 to-purple-50/30 card-hover-lift animate-fade-in-up delay-200">
             <div>
               <div className="flex items-center gap-2 text-indigo-700 text-xs font-bold uppercase tracking-wider mb-2">
                 <AlertTriangle className="w-4 h-4 text-amber-500" />
-                <span>Priority Focus</span>
+                <span>Prerequisite Gap Detected</span>
               </div>
               <h4 className="text-lg font-bold text-slate-900">{weakestTopic}</h4>
               <p className="text-xs text-slate-600 mt-1">
-                Highest priority for immediate review before tackling advanced transactions.
+                Foundational concept required before successfully advancing to higher-tier problems.
               </p>
             </div>
             <div className="mt-4 pt-3 border-indigo-100 flex items-center justify-between text-xs">
               <span className="text-slate-500">Current Mastery:</span>
               <span className="font-semibold text-rose-700 bg-rose-50 px-2 py-0.5 rounded-md border border-rose-100">
-                Needs Attention (42%)
+                Needs Attention ({weakestScore}%)
               </span>
             </div>
           </div>
