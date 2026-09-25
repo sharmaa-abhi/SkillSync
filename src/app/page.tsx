@@ -50,28 +50,28 @@ export default function LandingPage() {
       {/* Hero Section */}
       <section className="pt-32 pb-16 px-6">
         <div className="max-w-4xl mx-auto text-center">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-50 text-indigo-700 text-xs font-semibold mb-6 border border-indigo-100">
-            <Zap className="w-3.5 h-3.5 fill-current" />
+          <div className="animate-fade-in-down inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-50 text-indigo-700 text-xs font-semibold mb-6 border border-indigo-100 shadow-xs animate-bounce-gentle">
+            <Zap className="w-3.5 h-3.5 fill-current text-indigo-600" />
             <span>AI-Powered Adaptive Education Engine</span>
           </div>
 
-          <h1 className="text-4xl sm:text-6xl font-extrabold text-slate-900 leading-tight tracking-tight mb-6">
+          <h1 className="animate-fade-in-up delay-75 text-4xl sm:text-6xl font-extrabold text-slate-900 leading-tight tracking-tight mb-6">
             Learn what you need.
             <br />
-            <span className="text-indigo-600 bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-indigo-500">
+            <span className="text-indigo-600 bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 via-indigo-500 to-purple-600 animate-gradient">
               Not what everyone else gets.
             </span>
           </h1>
 
-          <p className="text-base sm:text-lg text-slate-600 max-w-2xl mx-auto mb-8 leading-relaxed">
+          <p className="animate-fade-in-up delay-150 text-base sm:text-lg text-slate-600 max-w-2xl mx-auto mb-8 leading-relaxed">
             SkillSync AI adapts your learning path to what you actually understand. Take a fast diagnostic,
             get an AI learning analysis, study with a context-aware tutor, and watch your mastery update in real time.
           </p>
 
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-14">
+          <div className="animate-fade-in-up delay-200 flex flex-col sm:flex-row items-center justify-center gap-3 mb-14">
             <Link
               href="/register"
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 rounded-xl transition-all shadow-md shadow-indigo-200"
+              className="interactive-btn w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 rounded-xl transition-all shadow-md shadow-indigo-200 hover:shadow-indigo-300"
             >
               <span>Start Learning</span>
               <ArrowRight className="w-4 h-4" />
@@ -79,7 +79,7 @@ export default function LandingPage() {
 
             <Link
               href="/login"
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 text-xs font-bold text-indigo-700 bg-indigo-50 hover:bg-indigo-100/70 border border-indigo-200 rounded-xl transition-colors shadow-2xs"
+              className="interactive-btn w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 text-xs font-bold text-indigo-700 bg-indigo-50 hover:bg-indigo-100/70 border border-indigo-200 rounded-xl transition-colors shadow-2xs"
             >
               <Sparkles className="w-4 h-4 text-indigo-600" />
               <span>Instant Demo Mode (Alex Rivera)</span>
@@ -87,14 +87,14 @@ export default function LandingPage() {
 
             <a
               href="#how-it-works"
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 text-xs font-bold text-slate-600 hover:text-slate-900 border border-slate-200 bg-white hover:bg-slate-50 rounded-xl transition-colors"
+              className="interactive-btn w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 text-xs font-bold text-slate-600 hover:text-slate-900 border border-slate-200 bg-white hover:bg-slate-50 rounded-xl transition-colors"
             >
               See How It Works
             </a>
           </div>
 
           {/* Product Preview / Adaptive Loop Visual */}
-          <div className="max-w-4xl mx-auto bg-white rounded-3xl border border-slate-200/90 shadow-xl overflow-hidden p-6 sm:p-8 text-left">
+          <div className="animate-fade-in-up delay-300 max-w-4xl mx-auto bg-white rounded-3xl border border-slate-200/90 shadow-xl overflow-hidden p-6 sm:p-8 text-left card-hover-lift">
             <div className="flex items-center justify-between border-b border-slate-100 pb-4 mb-6">
               <div className="flex items-center gap-2">
                 <span className="w-3 h-3 rounded-full bg-rose-400" />
@@ -102,7 +102,7 @@ export default function LandingPage() {
                 <span className="w-3 h-3 rounded-full bg-emerald-400" />
                 <span className="text-xs font-mono text-slate-400 ml-2">skillsync.ai/dashboard</span>
               </div>
-              <div className="flex items-center gap-2 text-xs font-semibold text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-100">
+              <div className="animate-pulse-glow flex items-center gap-2 text-xs font-semibold text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-100">
                 <CheckCircle2 className="w-3.5 h-3.5" />
                 Adaptive Loop Active
               </div>
@@ -110,7 +110,7 @@ export default function LandingPage() {
 
             {/* Loop Visual Flow */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="p-4 rounded-2xl bg-slate-50 border border-slate-100 space-y-2">
+              <div className="card-hover-lift p-4 rounded-2xl bg-slate-50 border border-slate-100 space-y-2">
                 <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">
                   1. Diagnostic Assessment
                 </span>
@@ -119,12 +119,12 @@ export default function LandingPage() {
                   <span className="font-mono font-bold text-rose-600">42% (Weak)</span>
                 </div>
                 <div className="w-full bg-slate-200 h-1.5 rounded-full overflow-hidden">
-                  <div className="bg-rose-500 h-full w-[42%]" />
+                  <div className="bg-rose-500 h-full w-[42%] transition-all duration-1000 ease-out" />
                 </div>
                 <p className="text-[11px] text-slate-500">Missed 2NF vs 3NF transitive dependencies.</p>
               </div>
 
-              <div className="p-4 rounded-2xl bg-indigo-50/50 border border-indigo-100 space-y-2">
+              <div className="card-hover-lift p-4 rounded-2xl bg-indigo-50/50 border border-indigo-100 space-y-2">
                 <span className="text-[10px] font-bold uppercase tracking-wider text-indigo-700 block">
                   2. AI Tutor & Plan
                 </span>
@@ -137,7 +137,7 @@ export default function LandingPage() {
                 </p>
               </div>
 
-              <div className="p-4 rounded-2xl bg-emerald-50/50 border border-emerald-100 space-y-2">
+              <div className="card-hover-lift p-4 rounded-2xl bg-emerald-50/50 border border-emerald-100 space-y-2">
                 <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-700 block">
                   3. Practice & Updated Mastery
                 </span>
@@ -146,7 +146,7 @@ export default function LandingPage() {
                   <span className="font-mono font-bold text-emerald-600">68% (+26%)</span>
                 </div>
                 <div className="w-full bg-slate-200 h-1.5 rounded-full overflow-hidden">
-                  <div className="bg-emerald-500 h-full w-[68%]" />
+                  <div className="bg-emerald-500 h-full w-[68%] transition-all duration-1000 ease-out" />
                 </div>
                 <p className="text-[11px] text-emerald-800 font-medium">Next priority unlocked: Transactions.</p>
               </div>

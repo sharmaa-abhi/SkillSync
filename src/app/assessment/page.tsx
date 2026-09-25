@@ -221,7 +221,7 @@ function AssessmentContent() {
         </div>
 
         {/* Question Card */}
-        <div className="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-6 sm:p-8">
+        <div key={currentQ.id} className="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-6 sm:p-8 animate-fade-in-up">
           <h2 className="text-base sm:text-lg font-bold text-slate-900 leading-snug mb-6">
             {currentQ.text}
           </h2>
@@ -236,16 +236,16 @@ function AssessmentContent() {
                   key={optIdx}
                   type="button"
                   onClick={() => handleSelectOption(optIdx)}
-                  className={`w-full flex items-start gap-3.5 p-3.5 rounded-xl border text-left text-sm transition-all ${
+                  className={`w-full flex items-start gap-3.5 p-3.5 rounded-xl border text-left text-sm transition-all duration-200 interactive-btn ${
                     checked
-                      ? "border-indigo-600 bg-indigo-50/70 text-indigo-950 font-medium ring-2 ring-indigo-600/15"
+                      ? "border-indigo-600 bg-indigo-50/70 text-indigo-950 font-medium ring-2 ring-indigo-600/15 translate-x-1"
                       : "border-slate-200 hover:border-slate-300 hover:bg-slate-50/60 text-slate-800"
                   }`}
                 >
                   <span
-                    className={`w-6 h-6 rounded-lg flex items-center justify-center text-xs font-bold flex-shrink-0 transition-colors ${
+                    className={`w-6 h-6 rounded-lg flex items-center justify-center text-xs font-bold flex-shrink-0 transition-all ${
                       checked
-                        ? "bg-indigo-600 text-white"
+                        ? "bg-indigo-600 text-white animate-pop shadow-xs"
                         : "bg-slate-100 text-slate-600 border border-slate-200"
                     }`}
                   >
@@ -263,7 +263,7 @@ function AssessmentContent() {
               type="button"
               onClick={handlePrev}
               disabled={currentIndex === 0}
-              className="flex items-center gap-1.5 px-4 py-2 rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-50 text-xs font-semibold disabled:opacity-30 disabled:pointer-events-none transition-colors"
+              className="flex items-center gap-1.5 px-4 py-2 rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-50 text-xs font-semibold disabled:opacity-30 disabled:pointer-events-none transition-all duration-200 interactive-btn"
             >
               <ArrowLeft className="w-3.5 h-3.5" />
               Previous
@@ -274,17 +274,17 @@ function AssessmentContent() {
                 type="button"
                 disabled={submitting}
                 onClick={handleSubmit}
-                className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold transition-all shadow-md shadow-indigo-100 disabled:opacity-50"
+                className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold transition-all duration-200 shadow-md shadow-indigo-100 interactive-btn disabled:opacity-50"
               >
                 {submitting ? (
                   <>
-                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                    <span>Grading & Analyzing...</span>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    <span>Submitting Answers...</span>
                   </>
                 ) : (
                   <>
-                    <span>Submit Assessment</span>
-                    <Check className="w-4 h-4" />
+                    <span>Submit Diagnostic</span>
+                    <Sparkles className="w-4 h-4" />
                   </>
                 )}
               </button>
@@ -292,9 +292,9 @@ function AssessmentContent() {
               <button
                 type="button"
                 onClick={handleNext}
-                className="flex items-center gap-1.5 px-5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold transition-all shadow-sm"
+                className="flex items-center gap-1.5 px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold transition-all duration-200 shadow-md shadow-indigo-100 interactive-btn"
               >
-                Next
+                <span>Next Question</span>
                 <ArrowRight className="w-3.5 h-3.5" />
               </button>
             )}

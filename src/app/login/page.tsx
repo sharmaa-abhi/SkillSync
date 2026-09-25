@@ -77,9 +77,9 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
-      <div className="sm:mx-auto sm:w-full sm:max-w-md text-center">
-        <Link href="/" className="inline-flex items-center gap-2">
-          <div className="w-10 h-10 rounded-xl bg-indigo-600 flex items-center justify-center text-white shadow-md shadow-indigo-200">
+      <div className="sm:mx-auto sm:w-full sm:max-w-md text-center animate-fade-in-down">
+        <Link href="/" className="inline-flex items-center gap-2 group">
+          <div className="w-10 h-10 rounded-xl bg-indigo-600 flex items-center justify-center text-white shadow-md shadow-indigo-200 transition-transform duration-200 group-hover:scale-105">
             <Zap className="w-5 h-5 fill-current" />
           </div>
           <span className="text-2xl font-bold text-slate-900 tracking-tight">SkillSync AI</span>
@@ -89,21 +89,21 @@ export default function LoginPage() {
         </h2>
         <p className="mt-2 text-sm text-slate-600">
           Or{" "}
-          <Link href="/register" className="font-semibold text-indigo-600 hover:text-indigo-500">
+          <Link href="/register" className="font-semibold text-indigo-600 hover:text-indigo-500 transition-colors">
             create a new student account
           </Link>
         </p>
       </div>
 
-      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md px-4 sm:px-0">
-        <div className="bg-white py-8 px-6 shadow-sm border border-slate-200/80 rounded-2xl sm:px-10">
+      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md px-4 sm:px-0 animate-scale-in delay-100">
+        <div className="bg-white py-8 px-6 shadow-sm hover:shadow-md border border-slate-200/80 rounded-2xl sm:px-10 transition-shadow duration-300">
           {/* Quick Demo Login Option */}
           <div className="mb-6 pb-6 border-b border-slate-100">
             <button
               type="button"
               onClick={handleDemoLogin}
               disabled={demoLoading || loading}
-              className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border border-indigo-200 bg-indigo-50/70 hover:bg-indigo-100/70 text-indigo-700 font-semibold text-sm transition-all shadow-sm"
+              className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border border-indigo-200 bg-indigo-50/70 hover:bg-indigo-100/70 text-indigo-700 font-semibold text-sm transition-all duration-200 shadow-sm interactive-btn active:scale-98"
             >
               {demoLoading ? (
                 <Loader2 className="w-4 h-4 animate-spin" />
@@ -119,7 +119,7 @@ export default function LoginPage() {
 
           <form className="space-y-5" onSubmit={handleSubmit}>
             {error && (
-              <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-sm">
+              <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-sm animate-shake">
                 {error}
               </div>
             )}
@@ -138,7 +138,7 @@ export default function LoginPage() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="student@example.com"
-                  className="block w-full pl-10 pr-3.5 py-2.5 border border-slate-200 rounded-xl text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:border-transparent text-sm transition-colors"
+                  className="block w-full pl-10 pr-3.5 py-2.5 border border-slate-200 rounded-xl text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:border-transparent text-sm transition-all duration-200 focus:shadow-xs"
                 />
               </div>
             </div>
@@ -157,12 +157,12 @@ export default function LoginPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="block w-full pl-10 pr-10 py-2.5 border border-slate-200 rounded-xl text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:border-transparent text-sm transition-colors"
+                  className="block w-full pl-10 pr-10 py-2.5 border border-slate-200 rounded-xl text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:border-transparent text-sm transition-all duration-200 focus:shadow-xs"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600"
+                  className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600 transition-colors"
                 >
                   {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
@@ -172,14 +172,14 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={loading || demoLoading}
-              className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-sm transition-all shadow-md shadow-indigo-100 disabled:opacity-50"
+              className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-sm transition-all duration-200 shadow-md shadow-indigo-100 interactive-btn disabled:opacity-50"
             >
               {loading ? (
                 <Loader2 className="w-4 h-4 animate-spin" />
               ) : (
                 <>
                   <span>Sign In</span>
-                  <ArrowRight className="w-4 h-4" />
+                  <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
                 </>
               )}
             </button>

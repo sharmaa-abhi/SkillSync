@@ -106,7 +106,7 @@ export default function ProgressPage() {
     <AppLayout>
       <div className="max-w-4xl mx-auto space-y-6">
         {/* Header */}
-        <div>
+        <div className="animate-fade-in-down">
           <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-indigo-50 text-indigo-700 text-xs font-semibold mb-1 border border-indigo-100">
             <TrendingUp className="w-3.5 h-3.5" />
             <span>Learning Trajectory</span>
@@ -120,30 +120,30 @@ export default function ProgressPage() {
         </div>
 
         {/* Milestone Stats */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <div className="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-5">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 animate-fade-in-up delay-75">
+          <div className="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-5 card-hover-lift">
             <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider block">
               Current Overall Mastery
             </span>
             <div className="flex items-baseline gap-2 mt-1">
-              <span className="text-3xl font-extrabold font-mono text-indigo-600">{overallMastery}%</span>
+              <span className="text-3xl font-extrabold font-mono text-indigo-600 animate-pop">{overallMastery}%</span>
               <span className="text-xs font-bold text-emerald-600">+18% this week</span>
             </div>
           </div>
 
-          <div className="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-5">
+          <div className="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-5 card-hover-lift">
             <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider block">
               Active Study Streak
             </span>
             <div className="flex items-baseline gap-2 mt-1">
               <span className="text-3xl font-extrabold font-mono text-slate-900">{streakDays} Days</span>
               <span className="text-xs font-bold text-amber-600 flex items-center gap-0.5">
-                <Flame className="w-3.5 h-3.5 fill-current" /> Active
+                <Flame className="w-3.5 h-3.5 fill-current animate-bounce-gentle" /> Active
               </span>
             </div>
           </div>
 
-          <div className="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-5">
+          <div className="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-5 card-hover-lift">
             <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider block">
               Total Focused Time
             </span>
@@ -155,7 +155,7 @@ export default function ProgressPage() {
         </div>
 
         {/* Before vs After Topic Progress Cards */}
-        <div className="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-6 sm:p-8">
+        <div className="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-6 sm:p-8 animate-fade-in-up delay-150">
           <div className="flex items-center justify-between mb-4">
             <div>
               <h3 className="text-base font-bold text-slate-900">Before vs After Performance</h3>

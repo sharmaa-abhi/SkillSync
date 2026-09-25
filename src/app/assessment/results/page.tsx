@@ -18,6 +18,7 @@ import {
   BarChart3,
   Award,
 } from "lucide-react";
+import Confetti from "@/components/Confetti";
 
 interface TopicScore {
   topicName: string;
@@ -157,11 +158,13 @@ function ResultsContent() {
   const weakestTopic = topicScores.find((t) => t.masteryLevel === "weak")?.topicName || "Normalization";
 
   return (
-    <div className="min-h-screen bg-slate-50 py-10 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-slate-50 py-10 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+      <Confetti durationMs={4000} particleCount={90} />
+
       <div className="max-w-4xl mx-auto space-y-8">
         {/* Header */}
-        <div className="text-center">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs font-semibold mb-3 border border-emerald-200">
+        <div className="text-center animate-fade-in-down">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs font-semibold mb-3 border border-emerald-200 animate-pop">
             <CheckCircle2 className="w-3.5 h-3.5" />
             <span>Assessment Cycle Complete</span>
           </div>
@@ -176,11 +179,11 @@ function ResultsContent() {
         {/* Score Overview Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {/* Overall Score */}
-          <div className="bg-white rounded-2xl border border-slate-200/90 p-6 flex flex-col items-center justify-center text-center shadow-sm">
+          <div className="bg-white rounded-2xl border border-slate-200/90 p-6 flex flex-col items-center justify-center text-center shadow-sm card-hover-lift animate-scale-in delay-75">
             <span className="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">
               Overall Baseline Mastery
             </span>
-            <div className="text-5xl font-extrabold text-indigo-600 font-mono tracking-tight">
+            <div className="text-5xl font-extrabold text-indigo-600 font-mono tracking-tight animate-pop">
               {overallScore}%
             </div>
             <p className="text-xs text-slate-500 mt-2">
@@ -189,7 +192,7 @@ function ResultsContent() {
           </div>
 
           {/* Primary Strength */}
-          <div className="bg-white rounded-2xl border border-slate-200/90 p-6 flex flex-col justify-between shadow-sm">
+          <div className="bg-white rounded-2xl border border-slate-200/90 p-6 flex flex-col justify-between shadow-sm card-hover-lift animate-fade-in-up delay-150">
             <div>
               <div className="flex items-center gap-2 text-emerald-600 text-xs font-bold uppercase tracking-wider mb-2">
                 <Award className="w-4 h-4" />
@@ -211,7 +214,7 @@ function ResultsContent() {
           </div>
 
           {/* Primary Focus Needed */}
-          <div className="bg-white rounded-2xl border border-indigo-100 p-6 flex flex-col justify-between shadow-sm bg-gradient-to-br from-indigo-50/40 to-purple-50/30">
+          <div className="bg-white rounded-2xl border border-indigo-100 p-6 flex flex-col justify-between shadow-sm bg-gradient-to-br from-indigo-50/40 to-purple-50/30 card-hover-lift animate-fade-in-up delay-200">
             <div>
               <div className="flex items-center gap-2 text-indigo-700 text-xs font-bold uppercase tracking-wider mb-2">
                 <AlertTriangle className="w-4 h-4 text-amber-500" />
@@ -222,7 +225,7 @@ function ResultsContent() {
                 Highest priority for immediate review before tackling advanced transactions.
               </p>
             </div>
-            <div className="mt-4 pt-3 border-t border-indigo-100 flex items-center justify-between text-xs">
+            <div className="mt-4 pt-3 border-indigo-100 flex items-center justify-between text-xs">
               <span className="text-slate-500">Current Mastery:</span>
               <span className="font-semibold text-rose-700 bg-rose-50 px-2 py-0.5 rounded-md border border-rose-100">
                 Needs Attention (42%)

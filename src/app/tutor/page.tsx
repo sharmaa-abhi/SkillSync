@@ -228,7 +228,7 @@ function TutorContent() {
                   key={action.label}
                   type="button"
                   onClick={() => handleSendMessage(action.prompt)}
-                  className="px-2.5 py-1 rounded-full bg-white border border-slate-200 hover:border-indigo-300 hover:bg-indigo-50/50 text-slate-700 text-[11px] font-semibold transition-all whitespace-nowrap shadow-xs"
+                  className="px-2.5 py-1 rounded-full bg-white border border-slate-200 hover:border-indigo-300 hover:bg-indigo-50/70 text-slate-700 text-[11px] font-semibold transition-all duration-200 whitespace-nowrap shadow-xs interactive-btn"
                 >
                   {action.label}
                 </button>
@@ -243,7 +243,9 @@ function TutorContent() {
               return (
                 <div
                   key={idx}
-                  className={`flex gap-3 max-w-2xl ${isTutor ? "" : "ml-auto flex-row-reverse"}`}
+                  className={`flex gap-3 max-w-2xl ${
+                    isTutor ? "animate-slide-in-left" : "ml-auto flex-row-reverse animate-slide-in-right"
+                  }`}
                 >
                   <div
                     className={`w-8 h-8 rounded-xl flex items-center justify-center text-xs font-bold flex-shrink-0 shadow-xs ${
@@ -274,12 +276,16 @@ function TutorContent() {
             })}
 
             {loading && (
-              <div className="flex gap-3 max-w-xl">
+              <div className="flex gap-3 max-w-xl animate-fade-in">
                 <div className="w-8 h-8 rounded-xl bg-indigo-600 text-white flex items-center justify-center flex-shrink-0 shadow-xs">
                   <Zap className="w-4 h-4 fill-current" />
                 </div>
-                <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 text-slate-600 text-xs flex items-center gap-2">
-                  <Loader2 className="w-4 h-4 animate-spin text-indigo-600" />
+                <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 text-slate-600 text-xs flex items-center gap-3">
+                  <div className="flex items-center gap-1">
+                    <span className="w-2 h-2 rounded-full bg-indigo-600 animate-bounce-gentle"></span>
+                    <span className="w-2 h-2 rounded-full bg-indigo-600 animate-bounce-gentle delay-100"></span>
+                    <span className="w-2 h-2 rounded-full bg-indigo-600 animate-bounce-gentle delay-200"></span>
+                  </div>
                   <span>AI Tutor formulating explanation based on your profile...</span>
                 </div>
               </div>
@@ -301,12 +307,12 @@ function TutorContent() {
                 value={inputMessage}
                 onChange={(e) => setInputMessage(e.target.value)}
                 placeholder={`Ask anything about ${currentTopic} (e.g. "Can you explain BCNF vs 3NF with an example?")...`}
-                className="flex-1 px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:bg-white transition-all"
+                className="flex-1 px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:bg-white transition-all duration-200"
               />
               <button
                 type="submit"
                 disabled={loading || !inputMessage.trim()}
-                className="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all shadow-sm shadow-indigo-100 disabled:opacity-40"
+                className="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all duration-200 shadow-sm shadow-indigo-100 interactive-btn disabled:opacity-40"
               >
                 <span>Send</span>
                 <Send className="w-3.5 h-3.5" />

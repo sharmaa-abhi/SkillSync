@@ -118,10 +118,10 @@ export default function ProfilePage() {
     <AppLayout>
       <div className="max-w-4xl mx-auto space-y-6">
         {/* Profile Card Header */}
-        <div className="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-6 sm:p-8">
+        <div className="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-6 sm:p-8 card-hover-lift animate-scale-in delay-75">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
             <div className="flex items-center gap-4">
-              <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-indigo-600 to-indigo-500 text-white flex items-center justify-center font-extrabold text-2xl shadow-md shadow-indigo-100">
+              <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-indigo-600 to-indigo-500 text-white flex items-center justify-center font-extrabold text-2xl shadow-md shadow-indigo-100 animate-float">
                 {user?.name?.charAt(0) || "A"}
               </div>
               <div>
@@ -141,7 +141,7 @@ export default function ProfilePage() {
                 <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider block">
                   Overall Mastery
                 </span>
-                <span className="text-3xl font-extrabold font-mono text-indigo-600">
+                <span className="text-3xl font-extrabold font-mono text-indigo-600 animate-pop">
                   {profile?.overallMastery || 68}%
                 </span>
               </div>
@@ -166,8 +166,8 @@ export default function ProfilePage() {
         </div>
 
         {/* Learning Goals & Preferences */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-6 space-y-2">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 animate-fade-in-up delay-150">
+          <div className="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-6 space-y-2 card-hover-lift">
             <div className="flex items-center gap-2 text-indigo-700 font-bold text-xs uppercase tracking-wider">
               <Target className="w-4 h-4" />
               <span>Current Learning Goal</span>
@@ -180,7 +180,7 @@ export default function ProfilePage() {
             </p>
           </div>
 
-          <div className="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-6 space-y-2">
+          <div className="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-6 space-y-2 card-hover-lift">
             <div className="flex items-center gap-2 text-indigo-700 font-bold text-xs uppercase tracking-wider">
               <BookOpen className="w-4 h-4" />
               <span>Learning Style & Pace</span>
@@ -195,7 +195,7 @@ export default function ProfilePage() {
         </div>
 
         {/* Strengths & Weaknesses Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 animate-fade-in-up delay-200">
           {/* Strengths */}
           <div className="bg-white rounded-2xl border border-emerald-100 shadow-sm p-6 bg-gradient-to-br from-emerald-50/20 to-white">
             <div className="flex items-center gap-2 text-emerald-700 font-bold text-xs uppercase tracking-wider mb-4">

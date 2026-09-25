@@ -21,6 +21,7 @@ import {
   Layers,
   ChevronRight,
   Loader2,
+  RotateCcw,
 } from "lucide-react";
 
 interface DashboardData {
@@ -176,9 +177,24 @@ export default function DashboardPage() {
   if (loading) {
     return (
       <AppLayout>
-        <div className="min-h-[60vh] flex flex-col items-center justify-center">
-          <Loader2 className="w-8 h-8 text-indigo-600 animate-spin mb-3" />
-          <p className="text-xs text-slate-500 font-medium">Loading your personalized dashboard...</p>
+        <div className="space-y-6 animate-fade-in">
+          <div className="flex items-center justify-between">
+            <div className="space-y-2">
+              <div className="h-7 w-48 skeleton rounded-lg" />
+              <div className="h-4 w-72 skeleton rounded-md" />
+            </div>
+            <div className="flex gap-2">
+              <div className="h-9 w-32 skeleton rounded-xl" />
+              <div className="h-9 w-28 skeleton rounded-xl" />
+            </div>
+          </div>
+          <div className="h-44 w-full skeleton rounded-2xl" />
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5">
+            {[1, 2, 3, 4].map((i) => (
+              <div key={i} className="h-20 skeleton rounded-2xl" />
+            ))}
+          </div>
+          <div className="h-64 w-full skeleton rounded-2xl" />
         </div>
       </AppLayout>
     );
@@ -194,7 +210,7 @@ export default function DashboardPage() {
     <AppLayout>
       <div className="space-y-6">
         {/* Welcome Section */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 animate-fade-in-down">
           <div>
             <h1 className="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight">
               Good morning, {user?.name?.split(" ")[0] || "Student"} 👋
@@ -207,15 +223,15 @@ export default function DashboardPage() {
           <div className="flex items-center gap-2">
             <Link
               href="/assessment"
-              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white border border-slate-200 text-xs font-semibold text-slate-700 hover:bg-slate-50 shadow-sm transition-colors"
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white border border-slate-200 text-xs font-semibold text-slate-700 hover:bg-slate-50 shadow-sm interactive-btn"
             >
-              <RefreshCwIcon className="w-3.5 h-3.5 text-slate-400" />
+              <RotateCcw className="w-3.5 h-3.5 text-slate-400" />
               <span>Retake Diagnostic</span>
             </Link>
 
             <Link
               href="/practice"
-              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-indigo-600 text-xs font-semibold text-white hover:bg-indigo-700 shadow-sm shadow-indigo-100 transition-colors"
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-indigo-600 text-xs font-semibold text-white hover:bg-indigo-700 shadow-sm shadow-indigo-100 interactive-btn"
             >
               <Zap className="w-3.5 h-3.5 fill-current" />
               <span>Adaptive Quiz</span>
@@ -224,13 +240,13 @@ export default function DashboardPage() {
         </div>
 
         {/* Primary Recommendation Card: "Your next best step" */}
-        <div className="p-6 rounded-2xl bg-gradient-to-br from-indigo-900 via-indigo-800 to-indigo-950 text-white shadow-lg relative overflow-hidden">
+        <div className="p-6 rounded-2xl bg-gradient-to-br from-indigo-900 via-indigo-800 to-indigo-950 text-white shadow-lg relative overflow-hidden card-hover-lift animate-fade-in-up delay-75">
           <div className="absolute right-0 top-0 translate-x-8 -translate-y-8 w-48 h-48 bg-indigo-500/10 rounded-full blur-2xl pointer-events-none" />
 
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 relative z-10">
             <div className="space-y-2 max-w-xl">
               <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-indigo-500/30 text-indigo-200 text-[11px] font-semibold border border-indigo-400/20">
-                <Sparkles className="w-3 h-3 text-indigo-300" />
+                <Sparkles className="w-3 h-3 text-indigo-300 animate-pulse" />
                 <span>Your Next Best Step</span>
               </div>
               <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-white">
@@ -245,7 +261,7 @@ export default function DashboardPage() {
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
               <Link
                 href={`/tutor?topic=${encodeURIComponent(primaryWeakTopic.topicName)}`}
-                className="flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-white text-indigo-900 text-xs font-bold hover:bg-indigo-50 shadow-md transition-all text-center"
+                className="flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-white text-indigo-900 text-xs font-bold hover:bg-indigo-50 shadow-md interactive-btn text-center"
               >
                 <MessageSquare className="w-4 h-4" />
                 <span>Continue Learning</span>
@@ -253,7 +269,7 @@ export default function DashboardPage() {
 
               <Link
                 href="/practice"
-                className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-indigo-700/80 hover:bg-indigo-700 border border-indigo-500/50 text-white text-xs font-semibold transition-all text-center"
+                className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-indigo-700/80 hover:bg-indigo-700 border border-indigo-500/50 text-white text-xs font-semibold interactive-btn text-center"
               >
                 <HelpCircle className="w-4 h-4" />
                 <span>5-min Quiz</span>
@@ -263,10 +279,10 @@ export default function DashboardPage() {
         </div>
 
         {/* Progress Overview Grid */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5">
-          <div className="bg-white p-4 rounded-2xl border border-slate-200/90 shadow-sm flex items-center gap-3.5">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5 animate-fade-in-up delay-150">
+          <div className="bg-white p-4 rounded-2xl border border-slate-200/90 shadow-sm flex items-center gap-3.5 card-hover-lift">
             <div className="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center flex-shrink-0">
-              <Flame className="w-5 h-5 fill-current" />
+              <Flame className="w-5 h-5 fill-current animate-bounce-gentle" />
             </div>
             <div>
               <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider block">
@@ -276,7 +292,7 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          <div className="bg-white p-4 rounded-2xl border border-slate-200/90 shadow-sm flex items-center gap-3.5">
+          <div className="bg-white p-4 rounded-2xl border border-slate-200/90 shadow-sm flex items-center gap-3.5 card-hover-lift">
             <div className="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center flex-shrink-0">
               <Clock className="w-5 h-5" />
             </div>
@@ -288,9 +304,9 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          <div className="bg-white p-4 rounded-2xl border border-slate-200/90 shadow-sm flex items-center gap-3.5">
+          <div className="bg-white p-4 rounded-2xl border border-slate-200/90 shadow-sm flex items-center gap-3.5 card-hover-lift">
             <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center flex-shrink-0">
-              <CheckCircle2 className="w-5 h-5" />
+              <CheckCircle2 className="w-5 h-5 text-emerald-600" />
             </div>
             <div>
               <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider block">
@@ -302,9 +318,9 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          <div className="bg-white p-4 rounded-2xl border border-slate-200/90 shadow-sm flex items-center gap-3.5">
+          <div className="bg-white p-4 rounded-2xl border border-slate-200/90 shadow-sm flex items-center gap-3.5 card-hover-lift">
             <div className="w-10 h-10 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center flex-shrink-0">
-              <TrendingUp className="w-5 h-5" />
+              <TrendingUp className="w-5 h-5 text-purple-600" />
             </div>
             <div>
               <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider block">
@@ -316,7 +332,7 @@ export default function DashboardPage() {
         </div>
 
         {/* Weak Topics Section */}
-        <div className="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-6">
+        <div className="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-6 animate-fade-in-up delay-200">
           <div className="flex items-center justify-between mb-4">
             <div>
               <h3 className="text-base font-bold text-slate-900">Topic Mastery Status</h3>
@@ -324,9 +340,9 @@ export default function DashboardPage() {
                 Continuously recalculated as you complete assessments and quizzes.
               </p>
             </div>
-            <Link href="/profile" className="text-xs font-semibold text-indigo-600 hover:text-indigo-700 flex items-center gap-1">
+            <Link href="/profile" className="text-xs font-semibold text-indigo-600 hover:text-indigo-700 flex items-center gap-1 transition-colors">
               View Profile
-              <ChevronRight className="w-3.5 h-3.5" />
+              <ChevronRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5" />
             </Link>
           </div>
 
@@ -339,12 +355,12 @@ export default function DashboardPage() {
               return (
                 <div
                   key={t.topicName}
-                  className={`p-4 rounded-xl border transition-all ${
+                  className={`p-4 rounded-xl border transition-all duration-300 card-hover-lift ${
                     isWeak
-                      ? "border-rose-200 bg-rose-50/40"
+                      ? "border-rose-200 bg-rose-50/40 hover:border-rose-300"
                       : isMedium
-                      ? "border-amber-200 bg-amber-50/30"
-                      : "border-slate-200 bg-white"
+                      ? "border-amber-200 bg-amber-50/30 hover:border-amber-300"
+                      : "border-slate-200 bg-white hover:border-indigo-200"
                   }`}
                 >
                   <div className="flex items-start justify-between">
@@ -369,7 +385,7 @@ export default function DashboardPage() {
 
                   <div className="w-full bg-slate-200/80 h-1.5 rounded-full mt-3 overflow-hidden">
                     <div
-                      className={`h-full rounded-full ${
+                      className={`h-full rounded-full transition-all duration-700 ease-out ${
                         isWeak ? "bg-rose-500" : isMedium ? "bg-amber-500" : "bg-emerald-500"
                       }`}
                       style={{ width: `${t.score}%` }}
@@ -379,14 +395,14 @@ export default function DashboardPage() {
                   <div className="mt-3 pt-2.5 border-t border-slate-100/80 flex items-center justify-between text-xs">
                     <Link
                       href={`/tutor?topic=${encodeURIComponent(t.topicName)}`}
-                      className="text-indigo-600 hover:text-indigo-800 font-medium text-[11px] flex items-center gap-1"
+                      className="text-indigo-600 hover:text-indigo-800 font-medium text-[11px] flex items-center gap-1 transition-colors"
                     >
                       Ask Tutor
                       <ArrowRight className="w-3 h-3" />
                     </Link>
                     <Link
                       href="/practice"
-                      className="text-slate-500 hover:text-slate-700 text-[11px]"
+                      className="text-slate-500 hover:text-slate-700 text-[11px] transition-colors"
                     >
                       Practice
                     </Link>
@@ -398,7 +414,7 @@ export default function DashboardPage() {
         </div>
 
         {/* Recommended Learning & Recent Activity Dual Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 animate-fade-in-up delay-300">
           {/* Actionable Recommendations (2 cols) */}
           <div className="lg:col-span-2 bg-white rounded-2xl border border-slate-200/90 shadow-sm p-6">
             <div className="flex items-center justify-between mb-4">
