@@ -50,14 +50,14 @@ export default function LoginPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           name: "Alex Rivera",
-          email: "alex@learnloop.ai",
+          email: "alex@skillsync.ai",
           password: "password123",
         }),
       });
 
       // Sign in as Alex
       const res = await signIn("credentials", {
-        email: "alex@learnloop.ai",
+        email: "alex@skillsync.ai",
         password: "password123",
         redirect: false,
       });
@@ -82,7 +82,7 @@ export default function LoginPage() {
           <div className="w-10 h-10 rounded-xl bg-indigo-600 flex items-center justify-center text-white shadow-md shadow-indigo-200">
             <Zap className="w-5 h-5 fill-current" />
           </div>
-          <span className="text-2xl font-bold text-slate-900 tracking-tight">LearnLoop AI</span>
+          <span className="text-2xl font-bold text-slate-900 tracking-tight">SkillSync AI</span>
         </Link>
         <h2 className="mt-6 text-2xl font-bold tracking-tight text-slate-900">
           Welcome back to your learning loop

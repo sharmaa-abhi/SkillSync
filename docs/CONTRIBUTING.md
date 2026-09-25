@@ -1,4 +1,4 @@
-# LearnLoop AI — Contributing Guide
+# SkillSync AI — Contributing Guide
 
 **Version:** 1.0
 
@@ -7,9 +7,9 @@
 ## Getting Started
 
 1. Clone the repository
-2. Follow the setup instructions in [ENVIRONMENT.md](file:///c:/Users/ABHI%20SHARMA/OneDrive/Desktop/loopAi/ENVIRONMENT.md)
-3. Read [AI_CODING_RULES.md](file:///c:/Users/ABHI%20SHARMA/OneDrive/Desktop/loopAi/AI_CODING_RULES.md) before writing code
-4. Check [PROJECT_STATUS.md](file:///c:/Users/ABHI%20SHARMA/OneDrive/Desktop/loopAi/PROJECT_STATUS.md) for current priorities
+2. Follow the setup instructions in [ENVIRONMENT.md](ENVIRONMENT.md)
+3. Read [AI_CODING_RULES.md](AI_CODING_RULES.md) before writing code
+4. Check [PROJECT_STATUS.md](PROJECT_STATUS.md) for current priorities
 
 ---
 
@@ -190,7 +190,7 @@ If you are an AI coding agent:
 7. **Update** documentation when behavior changes.
 8. **Test** your changes.
 
-See [AI_CODING_RULES.md](file:///c:/Users/ABHI%20SHARMA/OneDrive/Desktop/loopAi/AI_CODING_RULES.md) for the complete rule set.
+See [AI_CODING_RULES.md](AI_CODING_RULES.md) for the complete rule set.
 
 ---
 

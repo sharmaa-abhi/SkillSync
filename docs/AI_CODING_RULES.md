@@ -1,8 +1,8 @@
-# LearnLoop AI — AI Coding Rules
+# SkillSync AI — AI Coding Rules
 
 **Version:** 1.0
 
-> This file is the permanent instruction manual for AI coding agents working on LearnLoop AI. Read and follow these rules before writing any code.
+> This file is the permanent instruction manual for AI coding agents working on SkillSync AI. Read and follow these rules before writing any code.
 
 ---
 

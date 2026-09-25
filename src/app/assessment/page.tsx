@@ -328,7 +328,7 @@ function AssessmentContent() {
 
       {/* Footer */}
       <footer className="text-center py-4 text-[11px] text-slate-400">
-        LearnLoop AI • Adaptive Diagnostic Assessment
+        SkillSync AI • Adaptive Diagnostic Assessment
       </footer>
     </div>
   );

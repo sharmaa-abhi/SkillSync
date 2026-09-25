@@ -6,7 +6,7 @@ import Providers from "@/components/Providers";
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 
 export const metadata: Metadata = {
-  title: "LearnLoop AI — Adaptive Learning Platform",
+  title: "SkillSync AI — Adaptive Learning Platform",
   description: "AI-powered adaptive education that continuously personalizes your learning path based on what you actually understand.",
 };
 

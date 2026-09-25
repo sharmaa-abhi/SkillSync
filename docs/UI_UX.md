@@ -1,4 +1,4 @@
-# LearnLoop AI — UI/UX Documentation
+# SkillSync AI — UI/UX Documentation
 
 **Version:** 1.0
 **Status:** Pre-Implementation (Design Phase)
@@ -234,7 +234,7 @@ Every data-driven component has an empty state:
 |---|---|
 | Route | `/` |
 | Auth | Not required |
-| Purpose | Introduce LearnLoop AI and convert visitors to sign-ups |
+| Purpose | Introduce SkillSync AI and convert visitors to sign-ups |
 
 **Main Components:**
 - Hero section with headline, subheadline, CTA button

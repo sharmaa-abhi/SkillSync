@@ -1,4 +1,4 @@
-# LearnLoop AI — Testing Strategy
+# SkillSync AI — Testing Strategy
 
 **Version:** 1.0
 **Status:** Pre-Implementation (No tests exist yet)

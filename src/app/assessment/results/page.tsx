@@ -169,7 +169,7 @@ function ResultsContent() {
             Your Diagnostic Assessment Results
           </h1>
           <p className="text-sm text-slate-600 mt-2 max-w-xl mx-auto">
-            LearnLoop has identified your conceptual strengths and pinpointed weak topics to generate your adaptive learning path.
+            SkillSync has identified your conceptual strengths and pinpointed weak topics to generate your adaptive learning path.
           </p>
         </div>
 
@@ -231,7 +231,7 @@ function ResultsContent() {
           </div>
         </div>
 
-        {/* AI Analysis & Why LearnLoop Recommends This */}
+        {/* AI Analysis & Why SkillSync Recommends This */}
         <div className="bg-white rounded-2xl border border-indigo-200/80 shadow-sm p-6 sm:p-8 relative overflow-hidden">
           <div className="flex items-center gap-2.5 text-indigo-700 font-bold text-sm mb-3">
             <Sparkles className="w-5 h-5 text-indigo-600" />
@@ -244,7 +244,7 @@ function ResultsContent() {
 
           <div className="mt-6 p-4 rounded-xl bg-slate-50 border border-slate-200/80 space-y-3">
             <h4 className="text-xs font-bold text-slate-700 uppercase tracking-wider">
-              Why LearnLoop Recommends This:
+              Why SkillSync Recommends This:
             </h4>
             <div className="space-y-2">
               {aiAnalysis?.reasoning?.map((reason, idx) => (
@@ -254,7 +254,7 @@ function ResultsContent() {
                 </div>
               )) || (
                 <div className="text-xs text-slate-600">
-                  You missed 3 of 5 normalization questions (specifically functional dependencies & 3NF), so LearnLoop prioritized normalization for your study plan.
+                  You missed 3 of 5 normalization questions (specifically functional dependencies & 3NF), so SkillSync prioritized normalization for your study plan.
                 </div>
               )}
             </div>

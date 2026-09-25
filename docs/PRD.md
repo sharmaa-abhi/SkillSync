@@ -1,4 +1,4 @@
-# LearnLoop AI — Product Requirements Document (PRD)
+# SkillSync AI — Product Requirements Document (PRD)
 
 **Version:** 1.0
 **Date:** September 2026
@@ -8,7 +8,7 @@
 
 ## Product Vision
 
-LearnLoop AI is an AI-powered adaptive education platform that creates a continuously evolving, personalized learning experience for every student. Instead of delivering the same content at the same pace, LearnLoop analyzes what each student actually understands and tailors every recommendation, lesson, and quiz to their specific needs.
+SkillSync AI is an AI-powered adaptive education platform that creates a continuously evolving, personalized learning experience for every student. Instead of delivering the same content at the same pace, SkillSync analyzes what each student actually understands and tailors every recommendation, lesson, and quiz to their specific needs.
 
 ---
 
@@ -75,7 +75,7 @@ Students in traditional educational settings receive uniform learning paths rega
 
 ## User Pain Points
 
-| Pain Point | Impact | How LearnLoop Addresses It |
+| Pain Point | Impact | How SkillSync Addresses It |
 |---|---|---|
 | Don't know what I'm weak at | Studies wrong topics | Topic-level diagnostic assessment |
 | No personalized study plan | Wastes time on known material | AI-generated personalized learning plan |

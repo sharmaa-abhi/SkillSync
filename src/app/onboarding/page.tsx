@@ -108,7 +108,7 @@ export default function OnboardingPage() {
           <div className="w-9 h-9 rounded-xl bg-indigo-600 flex items-center justify-center text-white shadow-sm">
             <Zap className="w-5 h-5 fill-current" />
           </div>
-          <span className="font-bold text-slate-900 text-lg">LearnLoop AI</span>
+          <span className="font-bold text-slate-900 text-lg">SkillSync AI</span>
         </div>
         <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
           Student Onboarding
@@ -163,7 +163,7 @@ export default function OnboardingPage() {
               <div>
                 <h3 className="text-xl font-bold text-slate-900">Tell us about yourself</h3>
                 <p className="text-sm text-slate-500 mt-1">
-                  LearnLoop tailors explanations and pacing according to your academic context.
+                  SkillSync tailors explanations and pacing according to your academic context.
                 </p>
               </div>
 
@@ -255,7 +255,7 @@ export default function OnboardingPage() {
               <div>
                 <h3 className="text-xl font-bold text-slate-900">Choose your focus subject</h3>
                 <p className="text-sm text-slate-500 mt-1">
-                  Select the domain where you want LearnLoop to diagnose your knowledge.
+                  Select the domain where you want SkillSync to diagnose your knowledge.
                 </p>
               </div>
 
@@ -380,7 +380,7 @@ export default function OnboardingPage() {
                 </h3>
                 <p className="text-sm text-slate-600 max-w-md mx-auto mt-2">
                   This baseline assessment covers <strong>SQL, Normalization, Transactions, Indexing, and ER Models</strong>.
-                  It takes ~5–10 minutes and gives LearnLoop the data needed to build your personalized path.
+                  It takes ~5–10 minutes and gives SkillSync the data needed to build your personalized path.
                 </p>
               </div>
 
@@ -455,7 +455,7 @@ export default function OnboardingPage() {
       </div>
 
       <div className="text-center text-[11px] text-slate-400">
-        LearnLoop AI • Adaptive Learning Engine
+        SkillSync AI • Adaptive Learning Engine
       </div>
     </div>
   );

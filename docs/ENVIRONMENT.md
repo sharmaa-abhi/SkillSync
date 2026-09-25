@@ -1,4 +1,4 @@
-# LearnLoop AI — Environment Configuration
+# SkillSync AI — Environment Configuration
 
 **Version:** 1.0
 **Status:** Pre-Implementation
@@ -29,7 +29,7 @@ Create a `.env.local` file in the project root:
 # ============================================
 # DATABASE
 # ============================================
-DATABASE_URL=postgresql://username:password@localhost:5432/learnloop
+DATABASE_URL=postgresql://username:password@localhost:5432/skillsync
 
 # ============================================
 # AUTHENTICATION (NextAuth.js)
@@ -47,7 +47,7 @@ GEMINI_API_KEY=your_gemini_api_key_here
 
 | Variable | Required | Description | Example |
 |---|---|---|---|
-| `DATABASE_URL` | Yes | PostgreSQL connection string | `postgresql://user:pass@localhost:5432/learnloop` |
+| `DATABASE_URL` | Yes | PostgreSQL connection string | `postgresql://user:pass@localhost:5432/skillsync` |
 | `NEXTAUTH_SECRET` | Yes | Secret for JWT signing (generate with `openssl rand -base64 32`) | Random 32+ character string |
 | `NEXTAUTH_URL` | Yes | Application URL for NextAuth callbacks | `http://localhost:3000` |
 | `GEMINI_API_KEY` | Yes | Google Gemini API key from AI Studio | `AIza...` |
@@ -77,7 +77,7 @@ NODE_ENV=development
 
 ```bash
 git clone <repository-url>
-cd loopAi
+cd SkillSync
 npm install
 ```
 
@@ -109,10 +109,10 @@ openssl rand -base64 32
 
 ```bash
 # Create the database
-createdb learnloop
+createdb skillsync
 
 # Or via psql
-psql -U postgres -c "CREATE DATABASE learnloop;"
+psql -U postgres -c "CREATE DATABASE skillsync;"
 ```
 
 **Option B: Managed PostgreSQL**
@@ -212,10 +212,10 @@ NODE_ENV=production
 # Ubuntu: sudo systemctl start postgresql
 
 # Create database
-createdb learnloop
+createdb skillsync
 
 # Verify connection
-psql -d learnloop -c "SELECT 1;"
+psql -d skillsync -c "SELECT 1;"
 ```
 
 ### Connection String Format
@@ -224,8 +224,8 @@ psql -d learnloop -c "SELECT 1;"
 postgresql://USERNAME:PASSWORD@HOST:PORT/DATABASE
 
 Examples:
-- Local:  postgresql://postgres:password@localhost:5432/learnloop
-- Neon:   postgresql://user:pass@ep-xxx.us-east-2.aws.neon.tech/learnloop?sslmode=require
+- Local:  postgresql://postgres:password@localhost:5432/skillsync
+- Neon:   postgresql://user:pass@ep-xxx.us-east-2.aws.neon.tech/skillsync?sslmode=require
 - Supabase: postgresql://postgres:pass@db.xxx.supabase.co:5432/postgres
 ```
 
@@ -286,12 +286,12 @@ Set in Vercel Dashboard → Project → Settings → Environment Variables:
 This file should be committed to the repository:
 
 ```env
-# LearnLoop AI — Environment Variables
+# SkillSync AI — Environment Variables
 # Copy this file to .env.local and fill in your values
 # NEVER commit .env.local to version control
 
 # Database (PostgreSQL)
-DATABASE_URL=postgresql://username:password@localhost:5432/learnloop
+DATABASE_URL=postgresql://username:password@localhost:5432/skillsync
 
 # Authentication (NextAuth.js)
 # Generate with: openssl rand -base64 32

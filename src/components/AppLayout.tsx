@@ -47,7 +47,7 @@ export default function AppLayout({ children }: AppLayoutProps) {
           </div>
           <div>
             <span className="font-bold text-lg text-slate-900 tracking-tight flex items-center gap-1.5">
-              LearnLoop <span className="text-xs bg-indigo-50 text-indigo-600 font-semibold px-1.5 py-0.5 rounded-full border border-indigo-100">AI</span>
+              SkillSync <span className="text-xs bg-indigo-50 text-indigo-600 font-semibold px-1.5 py-0.5 rounded-full border border-indigo-100">AI</span>
             </span>
           </div>
         </div>
@@ -96,7 +96,7 @@ export default function AppLayout({ children }: AppLayoutProps) {
                   {session?.user?.name || "Student"}
                 </p>
                 <p className="text-[10px] text-slate-400 truncate">
-                  {session?.user?.email || "student@learnloop.ai"}
+                  {session?.user?.email || "student@skillsync.ai"}
                 </p>
               </div>
             </div>
@@ -117,7 +117,7 @@ export default function AppLayout({ children }: AppLayoutProps) {
           <div className="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center text-white">
             <Zap className="w-4 h-4 fill-current" />
           </div>
-          <span className="font-bold text-slate-900">LearnLoop AI</span>
+          <span className="font-bold text-slate-900">SkillSync AI</span>
         </div>
         <button
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}

@@ -73,7 +73,7 @@ export default function RegisterPage() {
           <div className="w-10 h-10 rounded-xl bg-indigo-600 flex items-center justify-center text-white shadow-md shadow-indigo-200">
             <Zap className="w-5 h-5 fill-current" />
           </div>
-          <span className="text-2xl font-bold text-slate-900 tracking-tight">LearnLoop AI</span>
+          <span className="text-2xl font-bold text-slate-900 tracking-tight">SkillSync AI</span>
         </Link>
         <h2 className="mt-6 text-2xl font-bold tracking-tight text-slate-900">
           Create your personalized student profile
@@ -127,7 +127,7 @@ export default function RegisterPage() {
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="alex@learnloop.ai"
+                  placeholder="alex@skillsync.ai"
                   className="block w-full pl-10 pr-3.5 py-2.5 border border-slate-200 rounded-xl text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:border-transparent text-sm transition-colors"
                 />
               </div>

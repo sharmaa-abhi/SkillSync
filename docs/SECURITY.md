@@ -1,4 +1,4 @@
-# LearnLoop AI — Security Documentation
+# SkillSync AI — Security Documentation
 
 **Version:** 1.0
 **Status:** Pre-Implementation

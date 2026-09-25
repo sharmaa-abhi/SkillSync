@@ -1,4 +1,4 @@
-# LearnLoop AI — Project Status
+# SkillSync AI — Project Status
 
 **Last Updated:** September 24, 2026
 **Overall Status:** 🔴 Pre-Implementation

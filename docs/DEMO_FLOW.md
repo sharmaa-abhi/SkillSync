@@ -1,4 +1,4 @@
-# LearnLoop AI — Hackathon Demo Flow
+# SkillSync AI — Hackathon Demo Flow
 
 **Duration:** 2–3 minutes
 **Focus:** The AI adaptive learning loop — not a feature tour.
@@ -7,7 +7,7 @@
 
 ## Demo Story
 
-> **Meet Aarav.** He's a 3rd-year B.Tech CSE student preparing for his DBMS exam. He knows he's struggling, but he doesn't know *which specific topics* are weak. LearnLoop AI will figure that out and create a personalized path to help him improve.
+> **Meet Aarav.** He's a 3rd-year B.Tech CSE student preparing for his DBMS exam. He knows he's struggling, but he doesn't know *which specific topics* are weak. SkillSync AI will figure that out and create a personalized path to help him improve.
 
 ---
 
@@ -20,7 +20,7 @@
 **Action:** Show the landing page briefly.
 
 **Say:**
-> "This is LearnLoop AI — an AI-powered adaptive learning platform. Unlike generic study tools, LearnLoop continuously adapts to what each student actually understands. Let me show you how."
+> "This is SkillSync AI — an AI-powered adaptive learning platform. Unlike generic study tools, SkillSync continuously adapts to what each student actually understands. Let me show you how."
 
 **Click:** "Get Started" button
 
@@ -49,7 +49,7 @@
 **Action:** Show the assessment interface. Answer a few questions quickly (intentionally get some Normalization and Transaction questions wrong).
 
 **Say:**
-> "LearnLoop gives Aarav a diagnostic assessment covering all DBMS topics — ER Model, Normalization, SQL, Transactions, Indexing, and more. Each question is mapped to a specific topic."
+> "SkillSync gives Aarav a diagnostic assessment covering all DBMS topics — ER Model, Normalization, SQL, Transactions, Indexing, and more. Each question is mapped to a specific topic."
 
 **Action:** Submit the assessment.
 
@@ -65,7 +65,7 @@
 **Action:** Show the topic-by-topic results. Highlight the AI analysis.
 
 **Say:**
-> "Here's where the AI kicks in. LearnLoop doesn't just show a score — it analyzes *every topic individually*. Look: Aarav scored 80% on ER Model — that's strong. But Normalization is at 20% and Transactions at 40% — those are weak."
+> "Here's where the AI kicks in. SkillSync doesn't just show a score — it analyzes *every topic individually*. Look: Aarav scored 80% on ER Model — that's strong. But Normalization is at 20% and Transactions at 40% — those are weak."
 
 **Action:** Point to the weakness reasoning.
 
@@ -130,9 +130,9 @@
 **Screen:** Dashboard with updated profile
 
 **Say:**
-> "This is the LearnLoop AI adaptive loop: Assess → Analyze → Personalize → Learn → Practice → Update → Personalize again. Every activity feeds back into the student's profile. The learning path is never static — it evolves with the student."
+> "This is the SkillSync AI adaptive loop: Assess → Analyze → Personalize → Learn → Practice → Update → Personalize again. Every activity feeds back into the student's profile. The learning path is never static — it evolves with the student."
 
-> "LearnLoop AI doesn't give every student the same path. It continuously adapts based on what each student actually understands."
+> "SkillSync AI doesn't give every student the same path. It continuously adapts based on what each student actually understands."
 
 ---
 

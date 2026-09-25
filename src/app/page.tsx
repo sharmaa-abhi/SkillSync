@@ -26,7 +26,7 @@ export default function LandingPage() {
               <Zap className="w-4 h-4 fill-current" />
             </div>
             <span className="font-bold text-lg text-slate-900 tracking-tight flex items-center gap-1.5">
-              LearnLoop <span className="text-xs bg-indigo-50 text-indigo-700 font-semibold px-2 py-0.5 rounded-full border border-indigo-100">AI</span>
+              SkillSync <span className="text-xs bg-indigo-50 text-indigo-700 font-semibold px-2 py-0.5 rounded-full border border-indigo-100">AI</span>
             </span>
           </div>
 
@@ -64,7 +64,7 @@ export default function LandingPage() {
           </h1>
 
           <p className="text-base sm:text-lg text-slate-600 max-w-2xl mx-auto mb-8 leading-relaxed">
-            LearnLoop AI adapts your learning path to what you actually understand. Take a fast diagnostic,
+            SkillSync AI adapts your learning path to what you actually understand. Take a fast diagnostic,
             get an AI learning analysis, study with a context-aware tutor, and watch your mastery update in real time.
           </p>
 
@@ -100,7 +100,7 @@ export default function LandingPage() {
                 <span className="w-3 h-3 rounded-full bg-rose-400" />
                 <span className="w-3 h-3 rounded-full bg-amber-400" />
                 <span className="w-3 h-3 rounded-full bg-emerald-400" />
-                <span className="text-xs font-mono text-slate-400 ml-2">learnloop.ai/dashboard</span>
+                <span className="text-xs font-mono text-slate-400 ml-2">skillsync.ai/dashboard</span>
               </div>
               <div className="flex items-center gap-2 text-xs font-semibold text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-100">
                 <CheckCircle2 className="w-3.5 h-3.5" />
@@ -245,7 +245,7 @@ export default function LandingPage() {
 
       {/* Footer */}
       <footer className="border-t border-slate-200 py-8 px-6 text-center text-xs text-slate-400">
-        LearnLoop AI • Built for AI × Education Hackathon • Adaptive Learning MVP
+        SkillSync AI • Built for AI × Education Hackathon • Adaptive Learning MVP
       </footer>
     </div>
   );

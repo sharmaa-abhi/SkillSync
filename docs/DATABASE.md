@@ -1,4 +1,4 @@
-# LearnLoop AI — Database Documentation
+# SkillSync AI — Database Documentation
 
 **Version:** 1.0
 **Status:** Pre-Implementation (Schema Design Phase)
@@ -9,7 +9,7 @@
 
 ## Overview
 
-LearnLoop AI uses **PostgreSQL** as its primary database, accessed through **Prisma ORM**. The schema is designed to support the adaptive learning loop — tracking assessments, learning profiles, study plans, tutor sessions, and progress over time.
+SkillSync AI uses **PostgreSQL** as its primary database, accessed through **Prisma ORM**. The schema is designed to support the adaptive learning loop — tracking assessments, learning profiles, study plans, tutor sessions, and progress over time.
 
 ---
 

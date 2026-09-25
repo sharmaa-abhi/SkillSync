@@ -1,4 +1,4 @@
-# LearnLoop AI — API Documentation
+# SkillSync AI — API Documentation
 
 **Version:** 1.0
 **Status:** Pre-Implementation (All endpoints are PLANNED)

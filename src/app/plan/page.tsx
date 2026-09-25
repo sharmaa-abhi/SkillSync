@@ -213,7 +213,7 @@ export default function PlanPage() {
 
                       <div className="p-3 rounded-xl bg-slate-50 border border-slate-100 text-xs text-slate-600 space-y-1">
                         <span className="font-semibold text-slate-800 text-[11px] uppercase tracking-wider block">
-                          Why LearnLoop Recommends This:
+                          Why SkillSync Recommends This:
                         </span>
                         <p>{item.reason}</p>
                       </div>

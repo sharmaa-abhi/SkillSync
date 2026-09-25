@@ -1,4 +1,4 @@
-# LearnLoop AI — Development Roadmap
+# SkillSync AI — Development Roadmap
 
 **Version:** 1.0
 **Last Updated:** September 2026

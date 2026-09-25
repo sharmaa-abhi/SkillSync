@@ -1,4 +1,4 @@
-# LearnLoop AI — AI Workflow Documentation
+# SkillSync AI — AI Workflow Documentation
 
 **Version:** 1.0
 **Status:** Pre-Implementation (Design Phase)
@@ -9,7 +9,7 @@
 
 ## Overview
 
-LearnLoop AI uses Google Gemini as the core AI engine. The AI is **not** a generic chatbot — it is a specialized educational analysis and tutoring system that operates within a structured, validated pipeline.
+SkillSync AI uses Google Gemini as the core AI engine. The AI is **not** a generic chatbot — it is a specialized educational analysis and tutoring system that operates within a structured, validated pipeline.
 
 **Core Principle:** Every AI interaction receives student context and produces validated, structured output. Raw LLM output is never trusted or displayed directly.
 
@@ -447,7 +447,7 @@ SCHEMA:
 
 ### What Context is Sent to AI
 
-The AI receives student context with every request. This is what makes LearnLoop AI different from a generic chatbot.
+The AI receives student context with every request. This is what makes SkillSync AI different from a generic chatbot.
 
 ```mermaid
 graph TD

@@ -69,7 +69,7 @@ export default function ProfilePage() {
       setData({
         user: {
           name: "Alex Rivera",
-          email: "alex@learnloop.ai",
+          email: "alex@skillsync.ai",
           educationLevel: "B.Tech CSE - 3rd Year",
           learningGoals: "Master Database Systems & Normalization for High-Yield University & Interview Prep",
           preferredStyle: "Intermediate — Visual & Real-world Examples",
@@ -132,7 +132,7 @@ export default function ProfilePage() {
                   </span>
                 </div>
                 <p className="text-xs text-slate-500 mt-0.5">{user?.educationLevel || "B.Tech CSE - 3rd Year"}</p>
-                <p className="text-[11px] text-slate-400 mt-1">{user?.email || "alex@learnloop.ai"}</p>
+                <p className="text-[11px] text-slate-400 mt-1">{user?.email || "alex@skillsync.ai"}</p>
               </div>
             </div>
 

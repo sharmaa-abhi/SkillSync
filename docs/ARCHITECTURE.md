@@ -1,4 +1,4 @@
-# LearnLoop AI — Technical Architecture
+# SkillSync AI — Technical Architecture
 
 **Version:** 1.0
 **Status:** Pre-Implementation (Design Phase)
@@ -9,7 +9,7 @@
 
 ## System Overview
 
-LearnLoop AI is a full-stack web application built with Next.js 14 (App Router), PostgreSQL, and Google Gemini AI. The system follows a monolithic architecture suitable for a hackathon timeline, with clear separation between UI, API, database, and AI layers.
+SkillSync AI is a full-stack web application built with Next.js 14 (App Router), PostgreSQL, and Google Gemini AI. The system follows a monolithic architecture suitable for a hackathon timeline, with clear separation between UI, API, database, and AI layers.
 
 ```mermaid
 graph TB
@@ -227,7 +227,7 @@ erDiagram
     Quiz ||--o{ QuizAnswer : records
 ```
 
-See [DATABASE.md](file:///c:/Users/ABHI%20SHARMA/OneDrive/Desktop/loopAi/DATABASE.md) for complete schema documentation.
+See [DATABASE.md](DATABASE.md) for complete schema documentation.
 
 ---
 
@@ -283,7 +283,7 @@ FORMAT: Required JSON schema for output
 - API keys are server-side only (`process.env`)
 - Prompts are not exposed to the client
 
-See [AI_WORKFLOW.md](file:///c:/Users/ABHI%20SHARMA/OneDrive/Desktop/loopAi/AI_WORKFLOW.md) for detailed AI workflow documentation.
+See [AI_WORKFLOW.md](AI_WORKFLOW.md) for detailed AI workflow documentation.
 
 ---
 
@@ -336,7 +336,7 @@ All routes under `/(dashboard)/*` require authentication. Unauthenticated reques
 /api/progress/              → Progress tracking and history
 ```
 
-See [API.md](file:///c:/Users/ABHI%20SHARMA/OneDrive/Desktop/loopAi/API.md) for complete API documentation.
+See [API.md](API.md) for complete API documentation.
 
 ---
 
