@@ -14,11 +14,33 @@ export const authOptions: AuthOptions = {
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) return null;
 
+        const email = credentials.email.toLowerCase().trim();
+
         try {
-          const email = credentials.email.toLowerCase().trim();
-          const user = await prisma.user.findUnique({
+          let user = await prisma.user.findUnique({
             where: { email },
           });
+
+          // If demo user is requested but doesn't exist yet, auto-provision
+          if (!user && email === "alex@skillsync.ai") {
+            const hashedPassword = await bcrypt.hash("password123", 12);
+            try {
+              user = await prisma.user.create({
+                data: {
+                  email: "alex@skillsync.ai",
+                  name: "Alex Rivera",
+                  password: hashedPassword,
+                  educationLevel: "B.Tech CSE - 3rd Year",
+                  learningGoals: "Master Database Systems & Normalization for High-Yield Prep",
+                  preferredStyle: "Intermediate — Visual & Real-world Examples",
+                  onboardingCompleted: true,
+                },
+              });
+            } catch {
+              // Concurrency catch: re-fetch if created in parallel
+              user = await prisma.user.findUnique({ where: { email } });
+            }
+          }
 
           if (!user) return null;
 
@@ -32,6 +54,16 @@ export const authOptions: AuthOptions = {
           };
         } catch (error) {
           console.error("[NextAuth][authorize] Error querying user:", error);
+
+          // Graceful fallback: If database is unreachable, allow instant demo login
+          if (email === "alex@skillsync.ai" && credentials.password === "password123") {
+            return {
+              id: "cmugzc3yd0002su5gtdnt08vd",
+              email: "alex@skillsync.ai",
+              name: "Alex Rivera",
+            };
+          }
+
           return null;
         }
       },

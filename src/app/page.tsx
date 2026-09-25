@@ -1,6 +1,9 @@
 "use client";
 
+import React, { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { signIn } from "next-auth/react";
 import {
   ArrowRight,
   Brain,
@@ -13,9 +16,38 @@ import {
   CheckCircle2,
   Flame,
   MessageSquare,
+  Loader2,
 } from "lucide-react";
 
 export default function LandingPage() {
+  const router = useRouter();
+  const [demoLoading, setDemoLoading] = useState(false);
+
+  const handleInstantDemoLogin = async (e?: React.MouseEvent) => {
+    if (e) e.preventDefault();
+    if (demoLoading) return;
+    setDemoLoading(true);
+
+    try {
+      const res = await signIn("credentials", {
+        email: "alex@skillsync.ai",
+        password: "password123",
+        redirect: false,
+      });
+
+      if (res?.ok && !res?.error) {
+        router.push("/dashboard");
+        router.refresh();
+      } else {
+        router.push("/login?demo=true");
+      }
+    } catch {
+      router.push("/login?demo=true");
+    } finally {
+      setDemoLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 selection:bg-indigo-500 selection:text-white">
       {/* Navigation */}
@@ -31,6 +63,19 @@ export default function LandingPage() {
           </div>
 
           <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={handleInstantDemoLogin}
+              disabled={demoLoading}
+              className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-indigo-700 bg-indigo-50 hover:bg-indigo-100/70 border border-indigo-200 rounded-xl transition-all cursor-pointer disabled:opacity-75"
+            >
+              {demoLoading ? (
+                <Loader2 className="w-3.5 h-3.5 text-indigo-600 animate-spin" />
+              ) : (
+                <Sparkles className="w-3.5 h-3.5 text-indigo-600" />
+              )}
+              <span>Demo Mode</span>
+            </button>
             <Link
               href="/login"
               className="px-4 py-2 text-xs font-semibold text-slate-600 hover:text-slate-900 transition-colors"
@@ -77,13 +122,24 @@ export default function LandingPage() {
               <ArrowRight className="w-4 h-4" />
             </Link>
 
-            <Link
-              href="/login"
-              className="interactive-btn w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 text-xs font-bold text-indigo-700 bg-indigo-50 hover:bg-indigo-100/70 border border-indigo-200 rounded-xl transition-colors shadow-2xs"
+            <button
+              type="button"
+              onClick={handleInstantDemoLogin}
+              disabled={demoLoading}
+              className="interactive-btn w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 text-xs font-bold text-indigo-700 bg-indigo-50 hover:bg-indigo-100/70 border border-indigo-200 rounded-xl transition-all shadow-2xs cursor-pointer active:scale-98 disabled:opacity-75"
             >
-              <Sparkles className="w-4 h-4 text-indigo-600" />
-              <span>Instant Demo Mode (Alex Rivera)</span>
-            </Link>
+              {demoLoading ? (
+                <>
+                  <Loader2 className="w-4 h-4 text-indigo-600 animate-spin" />
+                  <span>Logging into Demo...</span>
+                </>
+              ) : (
+                <>
+                  <Sparkles className="w-4 h-4 text-indigo-600" />
+                  <span>Instant Demo Mode (Alex Rivera)</span>
+                </>
+              )}
+            </button>
 
             <a
               href="#how-it-works"
@@ -108,110 +164,123 @@ export default function LandingPage() {
               </div>
             </div>
 
-            {/* Loop Visual Flow */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="card-hover-lift p-4 rounded-2xl bg-slate-50 border border-slate-100 space-y-2">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">
-                  1. Diagnostic Assessment
-                </span>
-                <div className="flex justify-between items-center text-xs">
-                  <span className="font-semibold text-slate-800">Normalization</span>
-                  <span className="font-mono font-bold text-rose-600">42% (Weak)</span>
+              <div className="p-4 rounded-2xl bg-slate-50 border border-slate-100 space-y-2 card-hover-lift">
+                <div className="flex items-center gap-2 text-indigo-600 font-semibold text-xs">
+                  <Brain className="w-4 h-4" />
+                  <span>1. Diagnostic Baseline</span>
                 </div>
-                <div className="w-full bg-slate-200 h-1.5 rounded-full overflow-hidden">
-                  <div className="bg-rose-500 h-full w-[42%] transition-all duration-1000 ease-out" />
-                </div>
-                <p className="text-[11px] text-slate-500">Missed 2NF vs 3NF transitive dependencies.</p>
-              </div>
-
-              <div className="card-hover-lift p-4 rounded-2xl bg-indigo-50/50 border border-indigo-100 space-y-2">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-indigo-700 block">
-                  2. AI Tutor & Plan
-                </span>
-                <div className="text-xs font-semibold text-slate-900 flex items-center gap-1.5">
-                  <MessageSquare className="w-3.5 h-3.5 text-indigo-600" />
-                  Targeted Decomposition
-                </div>
-                <p className="text-[11px] text-slate-600 leading-snug">
-                  "Let's break down why functional dependency X → Y violates 3NF with a schema diagram."
+                <p className="text-xs text-slate-600 leading-relaxed">
+                  Evaluates conceptual depth, identifying specific misunderstandings in Normalization and Transactions.
                 </p>
+                <div className="pt-2 flex items-center gap-2 text-xs font-bold text-slate-800">
+                  <span>Score: 68%</span>
+                  <span className="text-[10px] text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-full border border-indigo-100">Calibrated</span>
+                </div>
               </div>
 
-              <div className="card-hover-lift p-4 rounded-2xl bg-emerald-50/50 border border-emerald-100 space-y-2">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-700 block">
-                  3. Practice & Updated Mastery
-                </span>
-                <div className="flex justify-between items-center text-xs">
-                  <span className="font-semibold text-slate-800">Normalization</span>
-                  <span className="font-mono font-bold text-emerald-600">68% (+26%)</span>
+              <div className="p-4 rounded-2xl bg-indigo-50/50 border border-indigo-100 space-y-2 card-hover-lift">
+                <div className="flex items-center gap-2 text-indigo-700 font-semibold text-xs">
+                  <Target className="w-4 h-4" />
+                  <span>2. Dynamic Study Plan</span>
                 </div>
-                <div className="w-full bg-slate-200 h-1.5 rounded-full overflow-hidden">
-                  <div className="bg-emerald-500 h-full w-[68%] transition-all duration-1000 ease-out" />
+                <p className="text-xs text-slate-600 leading-relaxed">
+                  Generates sequential micro-goals prioritized by knowledge gaps, starting with 2NF/3NF dependencies.
+                </p>
+                <div className="pt-2 flex items-center gap-2 text-xs font-bold text-indigo-900">
+                  <span>5 Steps Ready</span>
+                  <span className="text-[10px] text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-100">Optimized</span>
                 </div>
-                <p className="text-[11px] text-emerald-800 font-medium">Next priority unlocked: Transactions.</p>
+              </div>
+
+              <div className="p-4 rounded-2xl bg-slate-50 border border-slate-100 space-y-2 card-hover-lift">
+                <div className="flex items-center gap-2 text-indigo-600 font-semibold text-xs">
+                  <MessageSquare className="w-4 h-4" />
+                  <span>3. Context-Aware Tutor</span>
+                </div>
+                <p className="text-xs text-slate-600 leading-relaxed">
+                  Tutor knows your exact weak spots and teaches with Socratic counter-examples without giving answers away.
+                </p>
+                <div className="pt-2 flex items-center gap-2 text-xs font-bold text-slate-800">
+                  <span>14 Messages</span>
+                  <span className="text-[10px] text-amber-700 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-100">Live Feedback</span>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* How It Works Section */}
-      <section id="how-it-works" className="py-20 bg-white border-y border-slate-200 px-6">
-        <div className="max-w-5xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight mb-2">
-              The 5-Step Continuous Adaptive Loop
-            </h2>
-            <p className="text-xs sm:text-sm text-slate-500">
-              Not a static course. An intelligent cycle that calibrates every time you answer.
+      {/* Feature Grid */}
+      <section id="how-it-works" className="py-20 px-6 max-w-6xl mx-auto">
+        <div className="text-center mb-16">
+          <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900 mb-3">
+            How the Adaptive Learning Loop Works
+          </h2>
+          <p className="text-xs sm:text-sm text-slate-500 max-w-md mx-auto">
+            A self-correcting 5-stage loop designed to move students from surface recall to deep relational mastery.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-xs card-hover-lift">
+            <div className="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center mb-4">
+              <Brain className="w-5 h-5" />
+            </div>
+            <h3 className="font-bold text-sm text-slate-900 mb-1.5">Diagnostic Assessment</h3>
+            <p className="text-xs text-slate-600 leading-relaxed">
+              Targeted multi-topic questions analyze conceptual foundation, identifying strong areas and critical knowledge deficits.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-            {[
-              {
-                step: "01",
-                icon: Target,
-                title: "Assess",
-                desc: "10-minute diagnostic reveals what you know and pinpoint hidden gaps.",
-              },
-              {
-                step: "02",
-                icon: Brain,
-                title: "AI Analysis",
-                desc: "AI explains why you missed questions and builds your mastery profile.",
-              },
-              {
-                step: "03",
-                icon: BookOpen,
-                title: "Daily Plan",
-                desc: "High-yield topics prioritized so you study what matters most.",
-              },
-              {
-                step: "04",
-                icon: MessageSquare,
-                title: "AI Tutor",
-                desc: "Context-aware explanations tailored specifically to your mistakes.",
-              },
-              {
-                step: "05",
-                icon: TrendingUp,
-                title: "Adaptive Practice",
-                desc: "Score changes in real time, updating your learning profile and next steps.",
-              },
-            ].map((s) => (
-              <div
-                key={s.step}
-                className="bg-slate-50/70 p-5 rounded-2xl border border-slate-200/80 text-left space-y-3"
-              >
-                <div className="flex items-center justify-between">
-                  <span className="font-mono text-xs font-bold text-indigo-600">{s.step}</span>
-                  <s.icon className="w-4 h-4 text-slate-400" />
-                </div>
-                <h3 className="text-sm font-bold text-slate-900">{s.title}</h3>
-                <p className="text-xs text-slate-500 leading-relaxed">{s.desc}</p>
-              </div>
-            ))}
+          <div className="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-xs card-hover-lift">
+            <div className="w-10 h-10 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center mb-4">
+              <BarChart3 className="w-5 h-5" />
+            </div>
+            <h3 className="font-bold text-sm text-slate-900 mb-1.5">Cognitive Gap Analysis</h3>
+            <p className="text-xs text-slate-600 leading-relaxed">
+              Gemini 1.5 Flash models synthesize test patterns into explicit cognitive strengths and targeted intervention areas.
+            </p>
+          </div>
+
+          <div className="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-xs card-hover-lift">
+            <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center mb-4">
+              <Target className="w-5 h-5" />
+            </div>
+            <h3 className="font-bold text-sm text-slate-900 mb-1.5">Dynamic Study Plans</h3>
+            <p className="text-xs text-slate-600 leading-relaxed">
+              Automated roadmaps order topics by dependency graph, focusing review energy strictly where ROI is highest.
+            </p>
+          </div>
+
+          <div className="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-xs card-hover-lift">
+            <div className="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center mb-4">
+              <MessageSquare className="w-5 h-5" />
+            </div>
+            <h3 className="font-bold text-sm text-slate-900 mb-1.5">Context-Aware AI Tutor</h3>
+            <p className="text-xs text-slate-600 leading-relaxed">
+              The AI tutor understands your past mistakes, student learning style, and targets exact misconceptions.
+            </p>
+          </div>
+
+          <div className="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-xs card-hover-lift">
+            <div className="w-10 h-10 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center mb-4">
+              <Flame className="w-5 h-5" />
+            </div>
+            <h3 className="font-bold text-sm text-slate-900 mb-1.5">Adaptive Quizzing</h3>
+            <p className="text-xs text-slate-600 leading-relaxed">
+              Dynamic practice questions scale in difficulty and re-test weak topics until verified mastery is achieved.
+            </p>
+          </div>
+
+          <div className="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-xs card-hover-lift">
+            <div className="w-10 h-10 rounded-xl bg-sky-50 text-sky-600 flex items-center justify-center mb-4">
+              <TrendingUp className="w-5 h-5" />
+            </div>
+            <h3 className="font-bold text-sm text-slate-900 mb-1.5">Live Profile Updates</h3>
+            <p className="text-xs text-slate-600 leading-relaxed">
+              Every quiz and session immediately updates your overall mastery score, shifting topics from Weak to Mastered.
+            </p>
           </div>
         </div>
       </section>
@@ -233,12 +302,24 @@ export default function LandingPage() {
               <span>Get Started Free</span>
               <ArrowRight className="w-4 h-4" />
             </Link>
-            <Link
-              href="/login"
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-indigo-800 text-indigo-200 hover:text-white border border-indigo-700 text-xs font-semibold transition-all"
+            <button
+              type="button"
+              onClick={handleInstantDemoLogin}
+              disabled={demoLoading}
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-indigo-800 text-indigo-200 hover:text-white border border-indigo-700 text-xs font-semibold transition-all cursor-pointer disabled:opacity-75"
             >
-              <span>Launch Demo Mode</span>
-            </Link>
+              {demoLoading ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin text-white" />
+                  <span>Launching Demo...</span>
+                </>
+              ) : (
+                <>
+                  <Sparkles className="w-4 h-4 text-indigo-300" />
+                  <span>Launch Demo Mode</span>
+                </>
+              )}
+            </button>
           </div>
         </div>
       </section>

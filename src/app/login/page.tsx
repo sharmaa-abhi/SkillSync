@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
@@ -14,6 +14,38 @@ export default function LoginPage() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [demoLoading, setDemoLoading] = useState(false);
+
+  const performDemoLogin = async () => {
+    setError("");
+    setDemoLoading(true);
+    try {
+      const res = await signIn("credentials", {
+        email: "alex@skillsync.ai",
+        password: "password123",
+        redirect: false,
+      });
+
+      if (res?.error) {
+        setError("Demo login failed. Please try again or create a new account.");
+      } else {
+        router.push("/dashboard");
+        router.refresh();
+      }
+    } catch {
+      setError("Unable to launch demo mode. Please try again.");
+    } finally {
+      setDemoLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get("demo") === "true" || params.get("demo") === "1") {
+        performDemoLogin();
+      }
+    }
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -37,41 +69,6 @@ export default function LoginPage() {
       setError("An unexpected error occurred. Please try again.");
     } finally {
       setLoading(false);
-    }
-  };
-
-  const handleDemoLogin = async () => {
-    setError("");
-    setDemoLoading(true);
-    try {
-      // First ensure demo account exists via register endpoint
-      await fetch("/api/auth/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: "Alex Rivera",
-          email: "alex@skillsync.ai",
-          password: "password123",
-        }),
-      });
-
-      // Sign in as Alex
-      const res = await signIn("credentials", {
-        email: "alex@skillsync.ai",
-        password: "password123",
-        redirect: false,
-      });
-
-      if (res?.error) {
-        setError("Demo login failed. Please register a new account.");
-      } else {
-        router.push("/dashboard");
-        router.refresh();
-      }
-    } catch {
-      setError("Unable to launch demo mode.");
-    } finally {
-      setDemoLoading(false);
     }
   };
 
@@ -101,19 +98,24 @@ export default function LoginPage() {
           <div className="mb-6 pb-6 border-b border-slate-100">
             <button
               type="button"
-              onClick={handleDemoLogin}
+              onClick={performDemoLogin}
               disabled={demoLoading || loading}
-              className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border border-indigo-200 bg-indigo-50/70 hover:bg-indigo-100/70 text-indigo-700 font-semibold text-sm transition-all duration-200 shadow-sm interactive-btn active:scale-98"
+              className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border border-indigo-200 bg-indigo-50/70 hover:bg-indigo-100/70 text-indigo-700 font-semibold text-sm transition-all duration-200 shadow-sm interactive-btn active:scale-98 cursor-pointer disabled:opacity-75"
             >
               {demoLoading ? (
-                <Loader2 className="w-4 h-4 animate-spin" />
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin text-indigo-600" />
+                  <span>Logging in as Alex Rivera...</span>
+                </>
               ) : (
-                <Sparkles className="w-4 h-4 text-indigo-600" />
+                <>
+                  <Sparkles className="w-4 h-4 text-indigo-600" />
+                  <span>Instant Demo Mode (Alex Rivera)</span>
+                </>
               )}
-              <span>Instant Demo Mode (Alex Rivera)</span>
             </button>
             <p className="text-[11px] text-center text-slate-500 mt-1.5">
-              1-click test with pre-configured DBMS assessment profile
+              1-click instant login with pre-configured DBMS assessment profile
             </p>
           </div>
 
@@ -162,7 +164,7 @@ export default function LoginPage() {
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600 transition-colors"
+                  className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600 cursor-pointer"
                 >
                   {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
@@ -172,14 +174,17 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={loading || demoLoading}
-              className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-sm transition-all duration-200 shadow-md shadow-indigo-100 interactive-btn disabled:opacity-50"
+              className="w-full flex items-center justify-center gap-2 py-2.5 px-4 border border-transparent rounded-xl text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 font-semibold text-sm shadow-sm transition-all duration-200 hover:shadow-md cursor-pointer disabled:opacity-75"
             >
               {loading ? (
-                <Loader2 className="w-4 h-4 animate-spin" />
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  <span>Signing in...</span>
+                </>
               ) : (
                 <>
                   <span>Sign In</span>
-                  <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+                  <ArrowRight className="w-4 h-4" />
                 </>
               )}
             </button>
