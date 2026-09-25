@@ -26,6 +26,7 @@ import {
   Brain,
   Award,
   Target,
+  Network,
 } from "lucide-react";
 
 interface DashboardData {
