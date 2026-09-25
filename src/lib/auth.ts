@@ -14,20 +14,26 @@ export const authOptions: AuthOptions = {
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) return null;
 
-        const user = await prisma.user.findUnique({
-          where: { email: credentials.email },
-        });
+        try {
+          const email = credentials.email.toLowerCase().trim();
+          const user = await prisma.user.findUnique({
+            where: { email },
+          });
 
-        if (!user) return null;
+          if (!user) return null;
 
-        const isValid = await bcrypt.compare(credentials.password, user.password);
-        if (!isValid) return null;
+          const isValid = await bcrypt.compare(credentials.password, user.password);
+          if (!isValid) return null;
 
-        return {
-          id: user.id,
-          email: user.email,
-          name: user.name,
-        };
+          return {
+            id: user.id,
+            email: user.email,
+            name: user.name,
+          };
+        } catch (error) {
+          console.error("[NextAuth][authorize] Error querying user:", error);
+          return null;
+        }
       },
     }),
   ],
@@ -35,6 +41,7 @@ export const authOptions: AuthOptions = {
   pages: {
     signIn: "/login",
     newUser: "/onboarding",
+    error: "/login",
   },
   callbacks: {
     async jwt({ token, user }) {
@@ -50,5 +57,5 @@ export const authOptions: AuthOptions = {
       return session;
     },
   },
-  secret: process.env.NEXTAUTH_SECRET,
+  secret: process.env.NEXTAUTH_SECRET || "skillsync-adaptive-ai-platform-super-secret-key-2026",
 };
