@@ -10,7 +10,28 @@ export async function GET(request: Request) {
     const userId = (session.user as { id: string }).id;
 
     const { searchParams } = new URL(request.url);
-    const subjectId = searchParams.get("subjectId");
+    let subjectId = searchParams.get("subjectId");
+    const subjectParam = searchParams.get("subject");
+
+    if (!subjectId && subjectParam) {
+      const subject = await prisma.subject.findFirst({
+        where: {
+          OR: [
+            { id: subjectParam },
+            { name: { contains: subjectParam, mode: "insensitive" } },
+            ...(subjectParam.toLowerCase().includes("math")
+              ? [{ name: { contains: "Math", mode: "insensitive" as const } }]
+              : []),
+            ...(subjectParam.toLowerCase().includes("dbms")
+              ? [{ name: { contains: "Database", mode: "insensitive" as const } }]
+              : []),
+          ],
+        },
+      });
+      if (subject) {
+        subjectId = subject.id;
+      }
+    }
 
     const user = await prisma.user.findUnique({ where: { id: userId }, select: { name: true, educationLevel: true, preferredStyle: true, learningGoals: true } });
 

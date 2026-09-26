@@ -13,7 +13,7 @@ async function runAuthDiagnostic() {
   try {
     const userCount = await prisma.user.count();
     results.push({
-      test: "Database Connection (SQLite dev.db)",
+      test: "Database Connection (PostgreSQL Supabase)",
       status: "PASS",
       details: `Connected successfully. Current user count: ${userCount}`,
     });

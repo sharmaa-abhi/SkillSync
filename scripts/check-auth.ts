@@ -70,7 +70,7 @@ async function main() {
   console.log(`📊 Total Users Registered: ${users.length}\n`);
 
   if (users.length === 0) {
-    console.log("No registered users found in SQLite database (dev.db).");
+    console.log("No registered users found in PostgreSQL database.");
   } else {
     for (const u of users) {
       console.log(`------------------------------------------`);

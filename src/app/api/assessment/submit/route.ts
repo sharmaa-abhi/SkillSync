@@ -10,7 +10,9 @@ export async function POST(request: Request) {
     const userId = (session.user as { id: string }).id;
 
     const { assessmentId, answers, timeTakenSeconds } = await request.json();
-    if (!assessmentId || !answers) return NextResponse.json({ error: "Assessment ID and answers are required." }, { status: 400 });
+    if (!assessmentId || !answers || !Array.isArray(answers) || answers.length === 0) {
+      return NextResponse.json({ error: "Assessment ID and non-empty answers array are required." }, { status: 400 });
+    }
 
     // Verify ownership
     const assessment = await prisma.assessment.findFirst({ where: { id: assessmentId, userId } });
