@@ -20,6 +20,16 @@ export default function RegisterPage() {
     e.preventDefault();
     setError("");
 
+    if (!name.trim()) {
+      setError("Please enter your full name.");
+      return;
+    }
+
+    if (!email.trim()) {
+      setError("Please enter your email address.");
+      return;
+    }
+
     if (password.length < 8) {
       setError("Password must be at least 8 characters long.");
       return;
@@ -36,32 +46,45 @@ export default function RegisterPage() {
       const res = await fetch("/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, password }),
+        body: JSON.stringify({ name: name.trim(), email: email.trim(), password }),
       });
 
-      const data = await res.json();
+      let data: any = {};
+      try {
+        data = await res.json();
+      } catch {
+        data = {};
+      }
 
       if (!res.ok) {
-        setError(data.error || "Failed to create account.");
+        if (res.status === 409) {
+          setError(data?.error || "An account with this email already exists.");
+        } else if (res.status === 400) {
+          setError(data?.error || "Please check the information you entered.");
+        } else if (res.status === 503) {
+          setError(data?.error || "Registration service is temporarily unavailable. Please try again in a few moments.");
+        } else {
+          setError(data?.error || "An unexpected error occurred while creating your account. Please try again.");
+        }
         setLoading(false);
         return;
       }
 
       // Automatically sign in upon registration
       const signInRes = await signIn("credentials", {
-        email,
+        email: email.trim(),
         password,
         redirect: false,
       });
 
       if (signInRes?.error) {
-        router.push("/login");
+        router.push("/login?registered=true");
       } else {
         router.push("/onboarding");
         router.refresh();
       }
     } catch {
-      setError("An unexpected network error occurred.");
+      setError("Unable to reach the registration service. Please check your internet connection.");
       setLoading(false);
     }
   };

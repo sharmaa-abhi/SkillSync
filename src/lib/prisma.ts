@@ -38,6 +38,20 @@ export function sanitizeDatabaseUrl(rawUrl?: string): string {
     }
   );
 
+  // Optimize pooler connections for PgBouncer / serverless environments
+  if (url.includes(":6543") || url.includes("pgbouncer=true")) {
+    const hasQuery = url.includes("?");
+    const paramsToAdd: string[] = [];
+    if (!url.includes("pgbouncer=")) paramsToAdd.push("pgbouncer=true");
+    if (!url.includes("connection_limit=")) paramsToAdd.push("connection_limit=1");
+    if (!url.includes("connect_timeout=")) paramsToAdd.push("connect_timeout=30");
+    if (!url.includes("pool_timeout=")) paramsToAdd.push("pool_timeout=30");
+
+    if (paramsToAdd.length > 0) {
+      url += (hasQuery ? "&" : "?") + paramsToAdd.join("&");
+    }
+  }
+
   return url;
 }
 

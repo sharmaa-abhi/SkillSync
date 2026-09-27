@@ -12,11 +12,13 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
+  const [successMsg, setSuccessMsg] = useState("");
   const [loading, setLoading] = useState(false);
   const [demoLoading, setDemoLoading] = useState(false);
 
   const performDemoLogin = async () => {
     setError("");
+    setSuccessMsg("");
     setDemoLoading(true);
     try {
       const res = await signIn("credentials", {
@@ -41,6 +43,9 @@ export default function LoginPage() {
   useEffect(() => {
     if (typeof window !== "undefined") {
       const params = new URLSearchParams(window.location.search);
+      if (params.get("registered") === "true") {
+        setSuccessMsg("Account registered successfully! Please sign in with your credentials.");
+      }
       if (params.get("demo") === "true" || params.get("demo") === "1") {
         performDemoLogin();
       }
@@ -120,6 +125,12 @@ export default function LoginPage() {
           </div>
 
           <form className="space-y-5" onSubmit={handleSubmit}>
+            {successMsg && (
+              <div className="p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-700 text-sm">
+                {successMsg}
+              </div>
+            )}
+
             {error && (
               <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-sm animate-shake">
                 {error}
