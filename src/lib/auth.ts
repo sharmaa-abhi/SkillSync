@@ -2,6 +2,7 @@ import { AuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
+import { supabasePublic } from "@/lib/supabase";
 
 export const authOptions: AuthOptions = {
   providers: [
@@ -17,6 +18,36 @@ export const authOptions: AuthOptions = {
         const email = credentials.email.toLowerCase().trim();
 
         try {
+          // 1. Authenticate with Supabase Auth
+          const { data: supaAuth, error: supaErr } = await supabasePublic.auth.signInWithPassword({
+            email,
+            password: credentials.password,
+          });
+
+          if (!supaErr && supaAuth?.user) {
+            const supaUser = supaAuth.user;
+            const name = (supaUser.user_metadata?.name as string) || supaUser.email?.split("@")[0] || "Student";
+
+            // Attempt profile sync
+            try {
+              const dbUser = await prisma.user.findUnique({ where: { email } });
+              if (dbUser) {
+                return {
+                  id: dbUser.id,
+                  email: dbUser.email,
+                  name: dbUser.name,
+                };
+              }
+            } catch {}
+
+            return {
+              id: supaUser.id,
+              email: supaUser.email!,
+              name,
+            };
+          }
+
+          // 2. Fallback to PostgreSQL database check
           let user = await prisma.user.findUnique({
             where: { email },
           });

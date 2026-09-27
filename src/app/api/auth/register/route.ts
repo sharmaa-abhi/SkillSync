@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
+import { supabaseAdmin } from "@/lib/supabase";
 import { prisma } from "@/lib/prisma";
 
 export async function POST(request: Request) {
@@ -64,107 +65,104 @@ export async function POST(request: Request) {
       );
     }
 
-    // Check if user already exists (with retry for transient cold-start / pooler blips)
-    let existingUser = null;
-    let attempts = 0;
-    const maxAttempts = 3;
+    // 1. Create User in Supabase Authentication (auth.users)
+    const { data: authData, error: authError } = await supabaseAdmin.auth.admin.createUser({
+      email: normalizedEmail,
+      password,
+      email_confirm: true,
+      user_metadata: {
+        name: name.trim(),
+      },
+    });
 
-    while (attempts < maxAttempts) {
-      try {
-        existingUser = await prisma.user.findUnique({
-          where: { email: normalizedEmail },
-        });
-        break;
-      } catch (dbErr: any) {
-        attempts++;
-        if (attempts >= maxAttempts) throw dbErr;
-        // Exponential backoff: 300ms, 600ms
-        await new Promise((resolve) => setTimeout(resolve, attempts * 300));
+    if (authError) {
+      const errorMsg = String(authError.message || "").toLowerCase();
+      const errorCode = String((authError as any).code || "");
+
+      // Handle duplicate email in Supabase Auth
+      if (
+        errorCode === "email_exists" ||
+        errorMsg.includes("already been registered") ||
+        errorMsg.includes("already registered") ||
+        errorMsg.includes("unique constraint")
+      ) {
+        return NextResponse.json(
+          {
+            success: false,
+            error: "An account with this email already exists.",
+            code: "DUPLICATE_EMAIL",
+          },
+          { status: 409 }
+        );
       }
-    }
 
-    if (existingUser) {
+      console.error("[register][Supabase Auth error]", authError.message);
       return NextResponse.json(
-        { success: false, error: "An account with this email already exists.", code: "DUPLICATE_EMAIL" },
-        { status: 409 }
+        {
+          success: false,
+          error: "Unable to create your account in the authentication service. Please try again.",
+          code: "AUTH_SERVICE_ERROR",
+        },
+        { status: 500 }
       );
     }
 
-    const hashedPassword = await bcrypt.hash(password, 12);
+    if (!authData?.user) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: "Failed to provision authentication account.",
+          code: "AUTH_PROVISION_FAILED",
+        },
+        { status: 500 }
+      );
+    }
 
-    let user = null;
-    attempts = 0;
-    while (attempts < maxAttempts) {
-      try {
-        user = await prisma.user.create({
-          data: {
-            email: normalizedEmail,
-            password: hashedPassword,
-            name: name.trim(),
-          },
-          select: {
-            id: true,
-            email: true,
-            name: true,
-            onboardingCompleted: true,
-          },
-        });
-        break;
-      } catch (createErr: any) {
-        // Unique constraint error from database
-        if (createErr?.code === "P2002") {
-          return NextResponse.json(
-            { success: false, error: "An account with this email already exists.", code: "DUPLICATE_EMAIL" },
-            { status: 409 }
-          );
-        }
-        attempts++;
-        if (attempts >= maxAttempts) throw createErr;
-        await new Promise((resolve) => setTimeout(resolve, attempts * 300));
-      }
+    const supabaseUser = authData.user;
+
+    // 2. Synchronize with Prisma PostgreSQL database
+    const hashedPassword = await bcrypt.hash(password, 12);
+    try {
+      await prisma.user.upsert({
+        where: { email: normalizedEmail },
+        update: {
+          name: name.trim(),
+          password: hashedPassword,
+        },
+        create: {
+          id: supabaseUser.id,
+          email: normalizedEmail,
+          password: hashedPassword,
+          name: name.trim(),
+          onboardingCompleted: false,
+        },
+      });
+    } catch (dbErr: any) {
+      // Non-fatal if Prisma connection is momentarily syncing; Supabase Auth user is already safely created
+      console.warn("[register] Prisma sync warning:", dbErr?.message);
     }
 
     return NextResponse.json(
-      { success: true, user },
+      {
+        success: true,
+        user: {
+          id: supabaseUser.id,
+          email: normalizedEmail,
+          name: name.trim(),
+          onboardingCompleted: false,
+        },
+      },
       { status: 201 }
     );
   } catch (error: any) {
     console.error("[register error]", error?.name || error);
 
-    // Clean unique constraint catch
-    if (error?.code === "P2002") {
+    const errorMsg = String(error?.message || "");
+
+    if (error?.code === "P2002" || errorMsg.includes("already exists")) {
       return NextResponse.json(
         { success: false, error: "An account with this email already exists.", code: "DUPLICATE_EMAIL" },
         { status: 409 }
-      );
-    }
-
-    const errorMsg = String(error?.message || "");
-    const errorName = String(error?.name || "");
-
-    // Identify specific database connectivity / socket / timeout failures
-    const isDbConnectivityError =
-      error?.code === "P1001" || // Can't reach database server
-      error?.code === "P1002" || // The database server was reached but timed out
-      error?.code === "P1008" || // Operations timed out
-      error?.code === "P1017" || // Server has closed the connection
-      error?.code === "P2024" || // Timed out fetching a new connection from the connection pool
-      errorName === "PrismaClientInitializationError" ||
-      errorMsg.includes("Can't reach database") ||
-      errorMsg.includes("Timed out") ||
-      errorMsg.includes("connection closed") ||
-      errorMsg.includes("ECONNREFUSED") ||
-      errorMsg.includes("ETIMEDOUT") ||
-      errorMsg.includes("DATABASE_URL");
-
-    if (isDbConnectivityError) {
-      return NextResponse.json(
-        {
-          success: false,
-          error: "Registration service is temporarily unavailable. Please try again shortly.",
-          code: "SERVICE_UNAVAILABLE",
-        },
-        { status: 503 }
       );
     }
 
