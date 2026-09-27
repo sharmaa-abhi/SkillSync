@@ -33,7 +33,18 @@ export async function GET(request: Request) {
       }
     }
 
-    const user = await prisma.user.findUnique({ where: { id: userId }, select: { name: true, educationLevel: true, preferredStyle: true, learningGoals: true } });
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        educationLevel: true,
+        preferredStyle: true,
+        learningGoals: true,
+        createdAt: true,
+      },
+    });
 
     // Get the latest profile
     const profile = subjectId

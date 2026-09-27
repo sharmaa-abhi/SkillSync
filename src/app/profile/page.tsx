@@ -19,6 +19,7 @@ import {
 
 interface ProfileData {
   user: {
+    id?: string;
     name: string;
     educationLevel?: string;
     learningGoals?: string;
@@ -162,8 +163,8 @@ export default function ProfilePage() {
                   <span className="px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-700 text-[10px] font-bold border border-indigo-100">
                     Active Student
                   </span>
-                  <span className="px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 text-[10px] font-mono">
-                    ID: alex-rivera-9421
+                  <span className="px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 text-[10px] font-mono" title={`User ID: ${user?.id || "N/A"}`}>
+                    ID: {user?.id ? (user.id.length > 14 ? `${user.id.slice(0, 10)}...` : user.id) : "alex-rivera-9421"}
                   </span>
                 </div>
                 <p className="text-xs text-slate-500 mt-0.5">{user?.educationLevel || "Grade 11 / CBSE Class 11"}</p>

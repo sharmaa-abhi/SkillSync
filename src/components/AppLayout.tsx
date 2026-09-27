@@ -164,7 +164,10 @@ export default function AppLayout({ children }: AppLayoutProps) {
                 <p className="text-xs font-semibold text-slate-800 truncate">
                   {session?.user?.name || "Alex Rivera"}
                 </p>
-                <p className="text-[10px] text-slate-400 truncate">
+                <p
+                  className="text-[10px] text-slate-400 truncate cursor-help"
+                  title={`Email: ${session?.user?.email || "N/A"} | User ID: ${(session?.user as any)?.id || "N/A"}`}
+                >
                   {session?.user?.email || "alex@skillsync.ai"}
                 </p>
               </div>
