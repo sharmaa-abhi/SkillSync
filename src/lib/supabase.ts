@@ -8,9 +8,14 @@ const supabaseUrl =
 const supabasePublishableKey =
   process.env.SUPABASE_PUBLISHABLE_KEY ||
   process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ||
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
+  process.env.SUPABASE_ANON_KEY ||
   "";
 
-const supabaseSecretKey = process.env.SUPABASE_SECRET_KEY || "";
+const supabaseSecretKey =
+  process.env.SUPABASE_SECRET_KEY ||
+  process.env.SUPABASE_SERVICE_ROLE_KEY ||
+  "";
 
 /**
  * Public Supabase client for client-side and unauthenticated requests.

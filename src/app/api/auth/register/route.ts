@@ -96,7 +96,15 @@ export async function POST(request: Request) {
         );
       }
 
-      console.error("[register][Supabase Auth error]", authError.message);
+      console.error("[register][Supabase Auth error]", {
+        message: authError.message,
+        status: authError.status,
+        name: authError.name,
+        code: (authError as any).code,
+        hasSupabaseUrl: Boolean(process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL),
+        hasSecretKey: Boolean(process.env.SUPABASE_SECRET_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY),
+      });
+
       return NextResponse.json(
         {
           success: false,
