@@ -1,121 +1,117 @@
-# SkillSync AI — Development Roadmap
+# SkillSync AI — Development Roadmap, Status & Changelog
 
-**Version:** 1.0
-**Last Updated:** September 2026
+**Version:** 1.1  
+**Last Updated:** September 2026  
+**Overall Status:** 🟡 Active Development (MVP Core Implemented)  
 
----
-
-## Phase 1 — MVP (Core Adaptive Loop)
-
-**Goal:** Build the minimum viable adaptive learning loop end-to-end.
-**Timeline:** 3–5 days
-**Priority:** Ship the complete loop, not polished individual features.
-
-| # | Task | Status |
-|---|---|---|
-| 1 | Project setup (Next.js, Prisma, TypeScript, Tailwind) | [ ] Not started |
-| 2 | Database schema (Prisma) | [ ] Not started |
-| 3 | Seed data (DBMS subject, topics, questions) | [ ] Not started |
-| 4 | Authentication (NextAuth.js, credentials provider) | [ ] Not started |
-| 5 | Registration page + API | [ ] Not started |
-| 6 | Login page + API | [ ] Not started |
-| 7 | Onboarding page + API | [ ] Not started |
-| 8 | Subject selection | [ ] Not started |
-| 9 | Assessment page (question display, timer, submission) | [ ] Not started |
-| 10 | Assessment scoring (per-topic calculation) | [ ] Not started |
-| 11 | AI analysis service (Gemini integration) | [ ] Not started |
-| 12 | Learning profile creation and storage | [ ] Not started |
-| 13 | Dashboard page (profile display, mastery grid) | [ ] Not started |
-| 14 | Personalized learning plan generation | [ ] Not started |
-| 15 | AI tutor (chat interface + contextual responses) | [ ] Not started |
-| 16 | Adaptive quiz (AI-generated questions + scoring) | [ ] Not started |
-| 17 | Profile update after quiz | [ ] Not started |
-| 18 | Progress tracking (basic) | [ ] Not started |
-
-**Exit Criteria:** A student can register → assess → see profile → get plan → use tutor → take quiz → see updated profile.
+> This file is the single source of truth for project milestones, implementation status, and release history.
 
 ---
 
-## Phase 2 — Hackathon Polish
+## 1. Project Implementation Status
 
-**Goal:** Make the demo impressive and the app visually compelling.
-**Timeline:** 1–2 days
-**Priority:** Aesthetics, demo reliability, edge case handling.
+### Status Legend
+- `[x]` Completed
+- `[~]` In Progress / Partial
+- `[ ]` Planned
+- `[!]` Blocked
 
-| # | Task | Status |
-|---|---|---|
-| 1 | Landing page with hero, features, and CTA | [ ] Not started |
-| 2 | Visual polish (animations, transitions, micro-interactions) | [ ] Not started |
-| 3 | Progress charts (Recharts integration) | [ ] Not started |
-| 4 | Mastery visualization (color-coded topic grid) | [ ] Not started |
-| 5 | Loading states (skeletons for all pages) | [ ] Not started |
-| 6 | Error states (user-friendly error handling) | [ ] Not started |
-| 7 | Empty states (CTAs when no data) | [ ] Not started |
-| 8 | Mobile responsive fixes | [ ] Not started |
-| 9 | Demo rehearsal and timing | [ ] Not started |
-| 10 | Seed data quality (curated DBMS questions) | [ ] Not started |
-| 11 | AI prompt tuning (better analysis quality) | [ ] Not started |
-| 12 | Performance optimization (AI response times) | [ ] Not started |
+### Core Capabilities Progress
 
-**Exit Criteria:** Demo can be delivered in 2–3 minutes, looks professional, handles failures gracefully.
+| Component | Status | Notes |
+|---|:---:|---|
+| **Project Setup & Environment** | `[x]` | Next.js 15 (App Router), TypeScript, Tailwind CSS, Lucide icons |
+| **Database & Schema** | `[x]` | PostgreSQL via Supabase, Prisma ORM singleton, connection pooler optimization |
+| **Authentication System** | `[x]` | Dual-layer: Supabase Auth (`admin.createUser` / `signInWithPassword`) + NextAuth JWT sessions |
+| **Registration & Login Pages** | `[x]` | Full validation, exponential retry, user-friendly error codes (400, 409, 503) |
+| **User Profile & Navigation** | `[x]` | Profile view, AppLayout sidebar with dynamic user ID & quick navigation |
+| **Diagnostic Assessment Engine** | `[~]` | Subject selection, question presentation, assessment scoring logic |
+| **AI Learning Analysis** | `[~]` | Gemini AI client integration, prompt templates, Zod validation schemas |
+| **Learning Profile & Plan** | `[ ]` | Dynamic profile calculation, prioritized revision plan generator |
+| **AI Tutor Chat** | `[ ]` | Context-aware educational chat with student mastery injection |
+| **Adaptive Quiz Engine** | `[ ]` | Real-time question generation targeting student weak areas |
+| **Progress Dashboard & Visuals** | `[~]` | Dashboard layout, mastery matrices, Recharts visualization |
 
 ---
 
-## Phase 3 — Advanced AI (Post-Hackathon)
+## 2. Four-Phase Development Roadmap
 
-**Goal:** Deepen the AI capabilities and personalization.
-**Timeline:** 2–4 weeks
+### Phase 1 — MVP (Core Adaptive Loop)
+**Goal:** Complete the full adaptive learning cycle from assessment to personalized tutoring.  
+**Exit Criteria:** A student can register → assess → see mastery profile → receive plan → practice with AI tutor & adaptive quizzes.
+
+| # | Task | Status | Details |
+|---|---|:---:|---|
+| 1 | Project setup & Next.js config | `[x]` | Next.js 15, React 19, Tailwind CSS |
+| 2 | Database schema & Prisma setup | `[x]` | PostgreSQL schema with User, Subject, Topic, Question models |
+| 3 | Seed data curation | `[x]` | DBMS core topics and diagnostic question set |
+| 4 | Authentication architecture | `[x]` | Supabase Auth + NextAuth credentials provider |
+| 5 | Registration & Login flow | `[x]` | Client forms with robust error codes & redirect states |
+| 6 | Onboarding & Subject selection | `[x]` | Target grade, exam goals, DBMS subject selection |
+| 7 | Assessment interface & scoring | `[~]` | Topic-level scoring, timing, answer evaluation |
+| 8 | AI analysis service (Gemini) | `[~]` | Learning profile generation and weakness detection |
+| 9 | Learning profile & dashboard | `[~]` | Color-coded topic mastery display (Weak/Medium/Strong) |
+| 10 | Personalized plan generation | `[ ]` | AI study sequence tailored to weak areas |
+| 11 | AI tutor chat interface | `[ ]` | Context-aware conversational tutor |
+| 12 | Adaptive quiz system | `[ ]` | On-demand quizzes generated from weak topics |
+| 13 | Profile updates after practice | `[ ]` | Closed-loop mastery recalculation |
+
+---
+
+### Phase 2 — Hackathon Polish & Demo Readiness
+**Goal:** Deliver an impressive, reliable, and aesthetically stunning demo.  
+**Exit Criteria:** Demo runs in 2–3 minutes without hiccups, handles latency gracefully, and looks state-of-the-art.
+
+| # | Task | Status | Details |
+|---|---|:---:|---|
+| 1 | High-converting landing page | `[x]` | Hero section, interactive demo preview, feature highlights |
+| 2 | Premium UI & micro-interactions | `[~]` | Smooth transitions, card hover effects, glassy dashboard elements |
+| 3 | Progress charts & visualizations | `[~]` | Mastery progress over time with Recharts |
+| 4 | Resilient state handling | `[x]` | Skeletons for loading, explicit error states, empty CTAs |
+| 5 | Mobile responsive design | `[x]` | Verified responsive down to 375px screens |
+| 6 | Production deployment hardening | `[x]` | Vercel production deployment + Supabase connection pool tuning |
+
+---
+
+### Phase 3 — Advanced AI (Post-Hackathon)
+**Goal:** Deepen AI capabilities, pedagogical personalization, and intelligence.
 
 | # | Feature | Description |
 |---|---|---|
-| 1 | **RAG-based curriculum knowledge** | Ground AI tutoring in actual curriculum content using retrieval-augmented generation |
-| 2 | **Learning difficulty prediction** | Predict which topics a student will struggle with based on patterns |
-| 3 | **Personalized revision engine** | Generate revision plans based on spaced repetition and forgetting curves |
-| 4 | **Advanced analytics** | Detailed learning analytics — time-on-task, error patterns, improvement rate |
-| 5 | **Multi-subject support** | Add Operating Systems, Data Structures, Computer Networks |
-| 6 | **Question bank expansion** | 50+ curated questions per topic |
-| 7 | **AI confidence calibration** | Improve AI reliability with few-shot examples and evaluation |
-| 8 | **Session summarization** | AI summarizes tutor sessions for review |
+| 1 | **RAG Curriculum Grounding** | Ground Gemini tutoring in official university textbook & lecture materials |
+| 2 | **Difficulty Prediction** | Forecast struggle points based on cohort learning patterns |
+| 3 | **Spaced Repetition Engine** | Schedule targeted reviews based on the Ebbinghaus forgetting curve |
+| 4 | **Multi-Subject Expansion** | Expand question bank and subjects to OS, Computer Networks, and DSA |
+| 5 | **Session Summarization** | Auto-generate study notes from AI tutor conversations |
 
 ---
 
-## Phase 4 — Production (Long-term)
-
-**Goal:** Production-ready platform with multiple user types and advanced features.
-**Timeline:** 2–6 months
+### Phase 4 — Production Scaling (Long-Term)
+**Goal:** Enterprise-grade multi-tenant educational ecosystem.
 
 | # | Feature | Description |
 |---|---|---|
-| 1 | **Voice AI tutor** | Voice-based tutoring using text-to-speech and speech-to-text |
-| 2 | **Multilingual support** | Support for Hindi, Tamil, and other Indian languages |
-| 3 | **Teacher dashboard** | Teachers view student progress and identify class-wide weaknesses |
-| 4 | **Parent dashboard** | Parents monitor their child's learning progress |
-| 5 | **Mobile application** | React Native or Flutter mobile app |
-| 6 | **Offline learning** | Download content for offline study |
-| 7 | **Gamification** | Streaks, badges, XP, leaderboards |
-| 8 | **Certificates** | Completion certificates for subjects |
-| 9 | **LMS integration** | Connect with university learning management systems |
-| 10 | **Rate limiting & usage tiers** | Manage AI API costs with user tiers |
-| 11 | **SSO / OAuth** | Google, GitHub login |
-| 12 | **Admin panel** | Content management, user management |
+| 1 | **Voice AI Tutor** | Speech-to-speech tutoring in regional languages (Hindi, Tamil, etc.) |
+| 2 | **Teacher / Educator Portal** | Cohort analytics, class-wide bottleneck detection, assignment distribution |
+| 3 | **Mobile Native Apps** | React Native / Flutter apps with offline study capabilities |
+| 4 | **Gamification Engine** | Daily study streaks, XP, topic mastery badges, cohort leaderboards |
+| 5 | **LMS Integrations** | Canvas, Moodle, and Blackboard interoperability |
 
 ---
 
-## Feature Status Legend
+## 3. Project Changelog
 
-| Symbol | Meaning |
-|---|---|
-| [ ] Not started | No work has begun |
-| [~] In progress | Currently being developed |
-| [x] Completed | Feature is implemented and working |
-| [!] Blocked | Development blocked by a dependency |
+### [0.2.0] — September 2026
+#### Added & Fixed
+- **Supabase Authentication Integration**: Dual-layer authentication provisioning users into Supabase Auth (`admin.createUser`) and syncing with PostgreSQL.
+- **Production 503 & PgBouncer Fix**: URL-encoded database passwords (`%40`) and injected serverless pooler parameters (`connection_limit=1&connect_timeout=30&pool_timeout=30`).
+- **Resilient Registration Endpoint**: Added 3-attempt exponential retry logic and structured error codes (`400`, `409`, `500`, `503`).
+- **Registration Verification Script**: Added `scripts/verify-registration-fix.ts` for automated auth validation.
+- **Documentation Consolidation**: Unified 18 fragmented markdown files into a clean, organized documentation directory with dedicated guides.
 
----
-
-## Current Focus
-
-> **Phase 1 — MVP**
->
-> The immediate priority is to build the complete adaptive learning loop. Every task in Phase 1 is essential for the hackathon demo.
->
-> Phase 2 (Polish) should only begin after Phase 1 is fully functional.
+### [0.1.0] — Initial Release
+#### Added
+- Next.js App Router project initialization with TypeScript and Tailwind CSS.
+- Prisma ORM schema definition and PostgreSQL database integration.
+- NextAuth session handling and route protection.
+- Baseline documentation suite covering PRD, Architecture, Database, API, and UI/UX.

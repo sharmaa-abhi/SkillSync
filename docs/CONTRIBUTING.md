@@ -1,203 +1,193 @@
-# SkillSync AI — Contributing Guide
+# SkillSync AI — Contributing & Testing Guide
 
-**Version:** 1.0
+**Version:** 1.1  
+**Last Updated:** September 2026  
 
----
-
-## Getting Started
-
-1. Clone the repository
-2. Follow the setup instructions in [ENVIRONMENT.md](ENVIRONMENT.md)
-3. Read [AI_CODING_RULES.md](AI_CODING_RULES.md) before writing code
-4. Check [PROJECT_STATUS.md](PROJECT_STATUS.md) for current priorities
+This guide defines contribution workflows, branch etiquette, coding standards, and our comprehensive testing strategy for SkillSync AI.
 
 ---
 
-## Branch Strategy
+## 1. Getting Started
+
+1. Clone the repository and install dependencies:
+   ```bash
+   npm install
+   ```
+2. Configure your local environment by creating `.env` following [ENVIRONMENT.md](ENVIRONMENT.md).
+3. Review the development and architecture guidelines in [AI_WORKFLOW.md](AI_WORKFLOW.md#ai-coding-rules--agent-guidelines).
+4. Review current milestones and tasks in [ROADMAP.md](ROADMAP.md).
+5. Start the local development server:
+   ```bash
+   npm run dev
+   ```
+
+---
+
+## 2. Branch & Git Strategy
 
 | Branch | Purpose |
 |---|---|
-| `main` | Stable, demo-ready code |
-| `dev` | Active development (merge to main when stable) |
-| `feature/<name>` | Individual feature branches |
-| `fix/<name>` | Bug fix branches |
+| `main` | Production-ready, verified code. Deployed to production on Vercel. |
+| `dev` | Integration branch for active feature development. |
+| `feature/<name>` | New features (e.g., `feature/ai-tutor-chat`). |
+| `fix/<name>` | Bug and incident fixes (e.g., `fix/pgbouncer-timeout`). |
 
 ### Workflow
 
 ```
-1. Create feature branch from `dev`
-2. Implement changes
-3. Test locally
-4. Create pull request to `dev`
-5. After review, merge to `dev`
-6. When stable, merge `dev` to `main`
-```
-
-For hackathon speed, working directly on `dev` is acceptable if the team is small and communication is clear.
-
----
-
-## Commit Conventions
-
-Use clear, descriptive commit messages:
-
-```
-<type>: <short description>
-
-Types:
-  feat:     New feature
-  fix:      Bug fix
-  docs:     Documentation changes
-  style:    Formatting, no code change
-  refactor: Code restructuring, no behavior change
-  test:     Adding or updating tests
-  chore:    Build, config, dependency changes
-```
-
-### Examples
-
-```
-feat: add diagnostic assessment page with timer
-fix: correct topic score calculation for unanswered questions
-docs: update API.md with quiz endpoints
-refactor: extract AI prompt builder into separate module
-test: add unit tests for mastery classification
-chore: update prisma schema and regenerate client
+1. Create a branch from `dev`: git checkout -b feature/your-feature
+2. Implement changes following AI & TypeScript conventions
+3. Run tests and type checks: npm run build
+4. Open a Pull Request targeting `dev`
+5. After review & verification, merge to `dev`
+6. Release-ready checkpoints are merged from `dev` into `main`
 ```
 
 ---
 
-## Pull Requests
+## 3. Commit Message Conventions
 
-### PR Checklist
+We follow Conventional Commits format (`<type>: <short description>`):
 
-- [ ] Code follows the conventions in AI_CODING_RULES.md
-- [ ] No hardcoded secrets or API keys
-- [ ] Loading, error, and empty states handled (for UI changes)
-- [ ] API input validated with Zod (for API changes)
-- [ ] AI output validated with Zod (for AI changes)
-- [ ] Tested locally
-- [ ] Documentation updated if behavior changed
-
-### PR Description Template
-
-```markdown
-## What
-Brief description of what this PR does.
-
-## Why
-Motivation or issue being addressed.
-
-## How
-Technical approach taken.
-
-## Testing
-How this was tested.
-
-## Documentation
-Which docs were updated (if any).
-```
+| Type | Purpose | Example |
+|---|---|---|
+| `feat` | New feature | `feat: add diagnostic assessment scoring logic` |
+| `fix` | Bug fix | `fix: url-encode db password and add pooler params` |
+| `docs` | Documentation update | `docs: consolidate troubleshooting and test docs` |
+| `refactor` | Code refactoring without behavior changes | `refactor: extract Gemini client singleton` |
+| `test` | Adding or updating tests | `test: add unit tests for mastery classification` |
+| `chore` | Build, dependencies, or tooling | `chore: update prisma client` |
 
 ---
 
-## Code Style
+## 4. Pull Request Checklist
 
-### General
-
-- TypeScript for all files
-- Use Prettier for formatting (if configured)
-- Use ESLint for linting
-- Follow naming conventions in AI_CODING_RULES.md
-
-### File Organization
-
-```
-src/
-├── app/          → Pages and API routes (Next.js App Router)
-├── components/   → React components
-│   ├── ui/       → Reusable base components
-│   └── <feature>/→ Feature-specific components
-├── lib/          → Utilities, services, AI logic
-├── contexts/     → React contexts
-├── hooks/        → Custom hooks
-├── types/        → TypeScript type definitions
-└── styles/       → Global styles
-```
-
-### Import Order
-
-```typescript
-// 1. React/Next.js imports
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-
-// 2. Third-party libraries
-import { z } from "zod";
-
-// 3. Internal imports (absolute paths)
-import { Button } from "@/components/ui/Button";
-import { useLearningProfile } from "@/hooks/useLearningProfile";
-
-// 4. Types
-import type { LearningProfile } from "@/types";
-
-// 5. Styles (if any)
-import styles from "./page.module.css";
-```
+Before submitting a PR, verify:
+- [ ] Code follows conventions in [AI_WORKFLOW.md](AI_WORKFLOW.md#ai-coding-rules--agent-guidelines).
+- [ ] Zero secrets or raw API keys exposed in frontend code.
+- [ ] UI components handle all 4 states: **Loading**, **Error**, **Empty**, **Data**.
+- [ ] API routes validate input with Zod schemas.
+- [ ] AI responses are parsed and validated against Zod schemas.
+- [ ] TypeScript check passes with zero errors (`npx tsc --noEmit`).
+- [ ] Next.js build compiles cleanly (`npm run build`).
+- [ ] Documentation updated if models, endpoints, or environment variables changed.
 
 ---
 
-## Testing Requirements
+## 5. Testing Strategy & Quality Assurance
 
-- **Required:** Unit tests for scoring calculations and AI output validation
-- **Recommended:** Integration tests for critical API routes
-- **Optional (hackathon):** E2E tests, UI component tests
+SkillSync AI employs a layered testing strategy to ensure reliability across authentication, AI evaluation, and database queries.
 
-Run tests before pushing:
-
-```bash
-npm run test
-```
+### Test Stack
+- **TypeScript**: Static type safety and compile-time contract enforcement.
+- **Zod**: Runtime schema validation for API payloads and Gemini AI JSON outputs.
+- **Verification Scripts**: End-to-end integration verification (e.g., `scripts/verify-registration-fix.ts`).
+- **Jest & React Testing Library**: Unit and component tests.
 
 ---
 
-## Documentation Requirements
+### A. Unit Testing
 
-When your change modifies behavior, update the relevant documentation:
+Focus on pure utility logic and scoring calculations:
 
-| Change Type | Update |
+| Module | Test Coverage |
 |---|---|
-| New API endpoint | API.md |
-| Schema change | DATABASE.md |
-| AI workflow change | AI_WORKFLOW.md |
-| New page/component | UI_UX.md |
-| New environment variable | ENVIRONMENT.md |
-| Feature completed | PROJECT_STATUS.md |
-| Any significant change | CHANGELOG.md |
+| `calculateMastery()` | Percentage math, rounding boundaries, division by zero guards |
+| `classifyMastery()` | Boundary thresholds: `< 40%` (weak), `40-70%` (medium), `> 70%` (strong) |
+| `validateAIOutput()` | Strict schema match, unexpected keys, malformed JSON |
+| `buildPrompt()` | System instructions, student context injection, output schema inclusion |
+
+#### Example: Mastery Classification
+```typescript
+describe("classifyMastery", () => {
+  it("classifies 0% - 40% as weak", () => {
+    expect(classifyMastery(0)).toBe("weak");
+    expect(classifyMastery(40)).toBe("weak");
+  });
+  it("classifies 41% - 70% as medium", () => {
+    expect(classifyMastery(55)).toBe("medium");
+    expect(classifyMastery(70)).toBe("medium");
+  });
+  it("classifies 71% - 100% as strong", () => {
+    expect(classifyMastery(71)).toBe("strong");
+    expect(classifyMastery(100)).toBe("strong");
+  });
+});
+```
 
 ---
 
-## AI Coding Workflow
+### B. Integration & API Testing
 
-If you are an AI coding agent:
+Verify route handlers with database transactions and mocked AI services:
 
-1. **Read** AI_CODING_RULES.md first.
-2. **Check** PROJECT_STATUS.md for priorities.
-3. **Inspect** existing code before writing new code.
-4. **Follow** established patterns in the codebase.
-5. **Validate** AI output with Zod schemas.
-6. **Handle** all error states.
-7. **Update** documentation when behavior changes.
-8. **Test** your changes.
+| Endpoint | Test Objectives |
+|---|---|
+| `POST /api/auth/register` | Validation error (400), duplicate email (409), Supabase user creation, 201 response |
+| `POST /api/assessment/submit` | Topic score calculation, mastery calculation, profile creation |
+| `POST /api/analysis/generate` | AI prompt construction, schema validation, profile storage |
+| `POST /api/tutor/message` | Contextual prompt generation, chat history bounds, response validation |
+| `POST /api/quiz/generate` | Difficulty-appropriate questions targeting weak topics |
 
-See [AI_CODING_RULES.md](AI_CODING_RULES.md) for the complete rule set.
+#### AI Mocking Strategy
+```typescript
+// Always mock external AI calls in automated tests
+const mockAnalysis = {
+  overallAssessment: "Student demonstrates strong conceptual grasp of ER modeling.",
+  topicMastery: [
+    { topicName: "ER Model", masteryLevel: "strong", score: 85, reasoning: "High accuracy" },
+    { topicName: "Normalization", masteryLevel: "weak", score: 30, reasoning: "Frequent 2NF errors" },
+  ],
+  weaknesses: [{ topicName: "Normalization", priority: 1, reason: "Prerequisite for indexing" }],
+  recommendations: ["Review Functional Dependencies", "Practice 2NF/3NF decomposition"],
+  confidence: 0.92,
+};
+
+jest.mock("@/lib/ai/analysis", () => ({
+  analyzeLearning: jest.fn().mockResolvedValue(mockAnalysis),
+}));
+```
 
 ---
 
-## Questions?
+### C. Security & Error Testing
 
-If something is unclear:
+| Test Scenario | Expected Result |
+|---|---|
+| Unauthenticated access to protected route | `401 Unauthorized` |
+| Accessing another student's data | `403 Forbidden` / User ownership check |
+| Malformed JSON body in API requests | `400 Bad Request` (`INVALID_JSON`) |
+| Invalid / weak password (< 8 chars) | `400 Bad Request` (`WEAK_PASSWORD`) |
+| Supabase connection latency / cold start | Automatic exponential backoff retry succeeds |
+| Gemini API failure or timeout | User-friendly inline error (no raw stack trace exposed) |
+| SQL Injection attempts | Safely parameterized via Prisma ORM |
 
-1. Check the relevant documentation file
-2. Look at existing code for patterns
-3. Ask the team before making assumptions
+---
+
+### D. Critical Edge Cases Checklist
+
+- [ ] Empty assessment (0 questions answered).
+- [ ] Perfect score (100%) and zero score (0%).
+- [ ] Timeout during assessment submission.
+- [ ] Duplicate submissions.
+- [ ] AI returns malformed JSON or extra markdown backticks (auto-cleaned).
+- [ ] AI returns hallucinated topic names not present in database.
+- [ ] Student with no weak topics (all > 70%).
+- [ ] Mobile responsive layout verified down to 375px viewport.
+
+---
+
+## 6. Documentation Maintenance
+
+When changes occur, maintain the single sources of truth:
+
+| Change Type | Primary Doc to Update |
+|---|---|
+| New endpoint or response format | [API.md](API.md) |
+| Database schema or Prisma models | [DATABASE.md](DATABASE.md) |
+| System architecture or flow diagrams | [ARCHITECTURE.md](ARCHITECTURE.md) |
+| AI prompts, models, or coding rules | [AI_WORKFLOW.md](AI_WORKFLOW.md) |
+| UI components, styles, or screens | [UI_UX.md](UI_UX.md) |
+| Environment variables or deployments | [ENVIRONMENT.md](ENVIRONMENT.md) |
+| Milestones, feature status, changelog | [ROADMAP.md](ROADMAP.md) |
+| Production bugs & incident postmortems | [TROUBLESHOOTING.md](TROUBLESHOOTING.md) |

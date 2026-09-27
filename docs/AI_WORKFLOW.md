@@ -807,3 +807,165 @@ interface AIService {
 - Cache learning profiles to avoid re-fetching
 - Limit tutor conversation history to 10 messages
 - Set max output tokens per request type
+
+---
+
+## AI Coding Rules & Agent Guidelines
+
+> **Instruction Manual for Developers & AI Coding Agents**  
+> Follow these mandatory rules whenever modifying or implementing features in SkillSync AI.
+
+### 1. Before You Write Any Code
+
+1. **Read Relevant Documentation:** Review this guide, followed by [ARCHITECTURE.md](ARCHITECTURE.md), [DATABASE.md](DATABASE.md), and [API.md](API.md).
+2. **Inspect Existing Implementation:** Look at existing code and established conventions before drafting new code.
+3. **Identify Dependencies:** Check what other components, hooks, or services will be impacted.
+4. **Make Small, Safe Changes:** Do not refactor working systems unnecessarily.
+5. **Test Your Changes:** Verify functionality and guard against regression.
+6. **Keep Documentation in Sync:** Update [API.md](API.md) or [DATABASE.md](DATABASE.md) whenever endpoints or models change.
+
+---
+
+### 2. Architecture Rules
+
+#### DO:
+- Reuse existing components in `components/ui/` before building new ones.
+- Follow Next.js App Router conventions.
+- Keep business logic in the API and service layers, never inside React components.
+- House all AI orchestration in `lib/ai/`, not inline in route handlers.
+- Use the shared Prisma singleton from `lib/prisma.ts`.
+
+#### DON'T:
+- Don't rewrite working architecture without explicit user directive.
+- Don't add unnecessary dependencies when existing libraries suffice.
+- Don't put raw database queries directly in React client components.
+- Don't create competing utility functions for established helpers.
+
+---
+
+### 3. AI Safety & Integration Rules
+
+1. **Never Trust Unvalidated LLM Output:** Parse every AI response, validate against Zod schemas, and perform sanity checks before display or storage.
+2. **Never Expose API Keys to Client Bundles:** All Gemini AI calls must execute server-side in API route handlers via `process.env.GEMINI_API_KEY`.
+3. **Never Fake Backend Confirmation:** Don't present success UI until the server responds with a 2xx status.
+4. **Always Provide Student Context:** Include student learning profile, mastery metrics, and recent history for true personalization.
+5. **Preserve Learning History:** Append new progress records; never overwrite or delete student historical progress.
+6. **Handle AI Failures Gracefully:**
+   - 15-second timeout on AI requests.
+   - Max 2 retries with exponential backoff.
+   - Display helpful user-facing errors (never raw API stack traces).
+
+```typescript
+// Correct pattern: Parse and validate AI output
+const parsed = JSON.parse(aiResponse);
+const validated = AnalysisSchema.safeParse(parsed);
+if (!validated.success) {
+  throw new AIValidationError("AI output validation failed", validated.error);
+}
+// Safely use validated.data
+```
+
+---
+
+### 4. Code Quality & Standards
+
+#### TypeScript Conventions
+- Strict TypeScript everywhere; avoid `.js` files.
+- Avoid `any` types. Define interfaces in `types/`.
+- Use Zod schemas for runtime validation of API inputs and AI outputs.
+
+#### Naming Conventions
+| Type | Convention | Example |
+|---|---|---|
+| React Components | PascalCase | `QuestionCard.tsx` |
+| Hooks | camelCase with `use` | `useLearningProfile.ts` |
+| Utilities | camelCase | `calculateMastery.ts` |
+| API Routes | kebab-case directories | `api/learning-plan/route.ts` |
+| Types / Interfaces | PascalCase | `LearningProfile` |
+| Constants | UPPER_SNAKE_CASE | `MAX_QUIZ_QUESTIONS` |
+
+#### Component Design & UI Standards
+- Mobile-first responsive layout (usable down to 375px screens).
+- Semantic HTML and full accessibility (`aria-live`, keyboard focus, `<label>` elements).
+- Color-coded mastery consistency: **Weak = Red**, **Medium = Yellow**, **Strong = Green**.
+- Always handle 4 visual states: **Loading**, **Error**, **Empty**, and **Data**.
+
+```typescript
+if (isLoading) return <Skeleton />;
+if (error) return <ErrorMessage error={error} onRetry={refetch} />;
+if (!data || data.length === 0) return <EmptyState message="No data available" />;
+return <DataComponent data={data} />;
+```
+
+---
+
+### 5. API Route Pattern
+
+All API routes follow a uniform execution flow:
+
+```typescript
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
+import { z } from "zod";
+
+const RequestSchema = z.object({
+  topicId: z.string().uuid(),
+});
+
+export async function POST(request: Request) {
+  // 1. Authenticate
+  const session = await getServerSession(authOptions);
+  if (!session?.user?.id) {
+    return Response.json(
+      { error: { code: "UNAUTHORIZED", message: "Authentication required.", status: 401 } },
+      { status: 401 }
+    );
+  }
+
+  // 2. Validate JSON body
+  let body;
+  try {
+    body = await request.json();
+  } catch {
+    return Response.json(
+      { error: { code: "INVALID_JSON", message: "Invalid JSON body.", status: 400 } },
+      { status: 400 }
+    );
+  }
+
+  const parsed = RequestSchema.safeParse(body);
+  if (!parsed.success) {
+    return Response.json(
+      { error: { code: "VALIDATION_ERROR", message: parsed.error.message, status: 400 } },
+      { status: 400 }
+    );
+  }
+
+  // 3. Process business logic
+  try {
+    const result = await processAction(session.user.id, parsed.data);
+    return Response.json(result);
+  } catch (error) {
+    console.error("[API_ERROR]", error);
+    return Response.json(
+      { error: { code: "INTERNAL_ERROR", message: "An unexpected error occurred.", status: 500 } },
+      { status: 500 }
+    );
+  }
+}
+```
+
+---
+
+### 6. Common Mistakes to Avoid
+
+| Mistake | Correct Approach |
+|---|---|
+| Exposing Gemini API key on client | Keep in `process.env.GEMINI_API_KEY`, access only on server |
+| Trusting raw LLM JSON directly | Parse → Validate with Zod → Sanity check → Use |
+| Infinite loading spinners | Enforce timeout and render explicit error state |
+| Ignoring mobile viewports | Build mobile-first, verify on 375px screens |
+| Overwriting learning history | Append new assessments and update aggregates |
+| Using `any` | Create explicit TypeScript types in `src/types/` |
+| Raw unhandled errors in UI | Map API errors to human-friendly feedback |
+

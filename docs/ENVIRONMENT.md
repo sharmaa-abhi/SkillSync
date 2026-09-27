@@ -21,53 +21,61 @@
 
 ## Environment Variables
 
-### Required Variables
+### Complete Environment Template
 
-Create a `.env.local` file in the project root:
+Create a `.env` file in the project root (see `.env.example`):
 
 ```env
 # ============================================
-# DATABASE
-# ============================================
-DATABASE_URL=postgresql://username:password@localhost:5432/skillsync
-
-# ============================================
 # AUTHENTICATION (NextAuth.js)
 # ============================================
-NEXTAUTH_SECRET=your_nextauth_secret_here
+NEXTAUTH_SECRET=your-32-character-random-secret
 NEXTAUTH_URL=http://localhost:3000
 
 # ============================================
 # AI SERVICE (Google Gemini)
 # ============================================
-GEMINI_API_KEY=your_gemini_api_key_here
+GEMINI_API_KEY=AIzaSy...
+GEMINI_MODEL=gemini-1.5-flash
+
+# ============================================
+# SUPABASE AUTH & API
+# ============================================
+NEXT_PUBLIC_SUPABASE_URL=https://[project-ref].supabase.co
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=sb_publishable_key
+SUPABASE_URL=https://[project-ref].supabase.co
+SUPABASE_PUBLISHABLE_KEY=sb_publishable_key
+SUPABASE_SECRET_KEY=sb_secret_key
+
+# ============================================
+# SUPABASE POSTGRESQL (PRISMA)
+# ============================================
+# Transaction pooler (:6543) with URL-encoded password (%40 for @) and serverless parameters
+DATABASE_URL=postgresql://postgres.[project-ref]:[encoded_password]@[pooler-host]:6543/postgres?pgbouncer=true&connection_limit=1&connect_timeout=30&pool_timeout=30
+
+# Session pooler (:5432) for direct migrations
+DIRECT_URL=postgresql://postgres.[project-ref]:[encoded_password]@[pooler-host]:5432/postgres?connect_timeout=30
+
+# Runtime Environment
+NODE_ENV=development
 ```
 
 ### Variable Details
 
-| Variable | Required | Description | Example |
+| Variable | Required | Description | Notes |
 |---|---|---|---|
-| `DATABASE_URL` | Yes | PostgreSQL connection string | `postgresql://user:pass@localhost:5432/skillsync` |
-| `NEXTAUTH_SECRET` | Yes | Secret for JWT signing (generate with `openssl rand -base64 32`) | Random 32+ character string |
-| `NEXTAUTH_URL` | Yes | Application URL for NextAuth callbacks | `http://localhost:3000` |
-| `GEMINI_API_KEY` | Yes | Google Gemini API key from AI Studio | `AIza...` |
+| `DATABASE_URL` | Yes | PgBouncer pooler (`:6543`) connection string | Must encode `@` as `%40` in password |
+| `DIRECT_URL` | Yes | Session pooler (`:5432`) connection string | Used for migrations and schema push |
+| `NEXTAUTH_SECRET` | Yes | 32+ character random string for JWT signing | Generate with `openssl rand -base64 32` |
+| `NEXTAUTH_URL` | Yes | Canonical site URL | `http://localhost:3000` (local) or `https://[domain].vercel.app` (prod) |
+| `SUPABASE_URL` | Yes | Supabase project REST URL | Backend client |
+| `SUPABASE_SECRET_KEY` | Yes | Supabase service-role admin key | Used to provision users in Supabase Auth |
+| `NEXT_PUBLIC_SUPABASE_URL` | Yes | Public Supabase URL | Exposed to browser |
+| `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | Yes | Public publishable API key | Exposed to browser |
+| `GEMINI_API_KEY` | Yes | Google Gemini AI API key | From [Google AI Studio](https://aistudio.google.com/) |
+| `GEMINI_MODEL` | No | AI model identifier | Defaults to `gemini-1.5-flash` |
+| `NODE_ENV` | No | Execution environment | `development` or `production` |
 
-### Optional Variables
-
-```env
-# ============================================
-# OPTIONAL CONFIGURATION
-# ============================================
-
-# AI Model Selection (defaults to gemini-1.5-flash)
-GEMINI_MODEL=gemini-1.5-flash
-
-# Application Port (defaults to 3000)
-PORT=3000
-
-# Node Environment
-NODE_ENV=development
-```
 
 ---
 
