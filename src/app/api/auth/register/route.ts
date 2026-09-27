@@ -1,10 +1,29 @@
 import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
-import { supabaseAdmin } from "@/lib/supabase";
+import { supabaseAdmin, getSupabaseConfigDiagnostics } from "@/lib/supabase";
 import { prisma } from "@/lib/prisma";
 
 export async function POST(request: Request) {
   try {
+    // Pre-flight: verify Supabase configuration is available
+    const diag = getSupabaseConfigDiagnostics();
+    if (!diag.hasUrl || !diag.hasSecretKey) {
+      console.error("[register] Supabase configuration missing in runtime environment!", {
+        diagnostics: diag,
+        nodeEnv: process.env.NODE_ENV,
+        vercelEnv: process.env.VERCEL_ENV,
+      });
+      return NextResponse.json(
+        {
+          success: false,
+          error: "Registration service is temporarily unavailable. Please try again in a few moments.",
+          code: "SERVICE_UNAVAILABLE",
+          _debug: process.env.NODE_ENV !== "production" ? diag : undefined,
+        },
+        { status: 503 }
+      );
+    }
+
     let body: any;
     try {
       body = await request.json();
@@ -101,8 +120,7 @@ export async function POST(request: Request) {
         status: authError.status,
         name: authError.name,
         code: (authError as any).code,
-        hasSupabaseUrl: Boolean(process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL),
-        hasSecretKey: Boolean(process.env.SUPABASE_SECRET_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY),
+        diagnostics: diag,
       });
 
       return NextResponse.json(
