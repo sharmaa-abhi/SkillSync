@@ -129,7 +129,99 @@ const MATH_PRACTICE_QUESTIONS: Record<string, QuizQuestion[]> = {
       explanation: "When Δ = 0, ±√0 = 0, so the quadratic formula produces exactly one repeated real root.",
     },
   ],
+  Deadlocks: [
+    {
+      id: "os_dl1",
+      question: "Which of the following is NOT one of the four necessary Coffman conditions for a deadlock?",
+      options: ["Mutual Exclusion", "Hold and Wait", "Preemption Allowed", "Circular Wait"],
+      correctAnswer: 2,
+      difficulty: "medium",
+      topic: "Deadlocks",
+      explanation: "No preemption is the condition required for deadlock. If preemption is allowed, deadlocks cannot persist.",
+    },
+    {
+      id: "os_dl2",
+      question: "In Dijkstra's Banker's Algorithm, how is the Need matrix calculated for process Pi?",
+      options: ["Need[i] = Max[i] - Allocation[i]", "Need[i] = Allocation[i] - Max[i]", "Need[i] = Available + Allocation[i]", "Need[i] = Max[i] - Available"],
+      correctAnswer: 0,
+      difficulty: "easy",
+      topic: "Deadlocks",
+      explanation: "The Need matrix indicates remaining resource requirements: Need[i] = Max[i] - Allocation[i].",
+    },
+  ],
+  "Process Scheduling": [
+    {
+      id: "os_ps1",
+      question: "In Round Robin CPU scheduling, if the time quantum is made extremely large, it becomes equivalent to:",
+      options: ["First-Come, First-Served (FCFS)", "Shortest Job First (SJF)", "Priority Preemptive", "Multilevel Queue"],
+      correctAnswer: 0,
+      difficulty: "easy",
+      topic: "Process Scheduling",
+      explanation: "With an infinite time quantum, no process is preempted and jobs run to completion in arrival order (FCFS).",
+    },
+  ],
+  "IP Addressing & Subnetting": [
+    {
+      id: "cn_sub1",
+      question: "How many usable host IP addresses are available in a /28 IPv4 subnet?",
+      options: ["14", "16", "30", "32"],
+      correctAnswer: 0,
+      difficulty: "medium",
+      topic: "IP Addressing & Subnetting",
+      explanation: "32 - 28 = 4 host bits. 2^4 - 2 = 16 - 2 = 14 usable hosts.",
+    },
+    {
+      id: "cn_sub2",
+      question: "What is the subnet mask representation of a /26 network prefix?",
+      options: ["255.255.255.192", "255.255.255.128", "255.255.255.224", "255.255.255.240"],
+      correctAnswer: 0,
+      difficulty: "easy",
+      topic: "IP Addressing & Subnetting",
+      explanation: "/26 has 2 bits in the 4th octet: 128 + 64 = 192 -> 255.255.255.192.",
+    },
+  ],
+  "Dynamic Programming": [
+    {
+      id: "dsa_dp1",
+      question: "Which two core attributes must an optimization problem exhibit to be solvable via Dynamic Programming?",
+      options: ["Optimal Substructure & Overlapping Subproblems", "Greedy Choice & Independence", "Divide & Conquer & Linearity", "Monotonicity & Convexity"],
+      correctAnswer: 0,
+      difficulty: "medium",
+      topic: "Dynamic Programming",
+      explanation: "Optimal substructure ensures the global optimum consists of local sub-optima, while overlapping subproblems enable memoization reuse.",
+    },
+    {
+      id: "dsa_dp2",
+      question: "What is the time complexity of the 0/1 Knapsack problem with n items and capacity W using DP?",
+      options: ["O(n * W)", "O(2^n)", "O(n log W)", "O(n + W)"],
+      correctAnswer: 0,
+      difficulty: "medium",
+      topic: "Dynamic Programming",
+      explanation: "The pseudo-polynomial DP table has dimensions (n+1) x (W+1), requiring O(n*W) operations.",
+    },
+  ],
+  Normalization: [
+    {
+      id: "db_norm1",
+      question: "A relational table is in Second Normal Form (2NF) if and only if it is in 1NF and:",
+      options: ["No non-prime attribute is partially dependent on any candidate key", "No transitive dependencies exist", "Every determinant is a candidate key", "Multi-valued dependencies are resolved"],
+      correctAnswer: 0,
+      difficulty: "medium",
+      topic: "Normalization",
+      explanation: "2NF eliminates partial dependencies: every non-prime attribute must depend on the whole candidate key.",
+    },
+  ],
 };
+
+const PRACTICE_SUBJECT_TOPICS = [
+  { topic: "Factorisation", label: "Factorisation", icon: "📐", subject: "Maths" },
+  { topic: "Quadratic Equations", label: "Quadratics", icon: "📐", subject: "Maths" },
+  { topic: "Deadlocks", label: "Deadlocks", icon: "💻", subject: "OS" },
+  { topic: "Process Scheduling", label: "Scheduling", icon: "💻", subject: "OS" },
+  { topic: "IP Addressing & Subnetting", label: "Subnetting", icon: "🌐", subject: "CN" },
+  { topic: "Dynamic Programming", label: "Dynamic Prog", icon: "⚡", subject: "DSA" },
+  { topic: "Normalization", label: "Normalization", icon: "🗄️", subject: "DBMS" },
+];
 
 function PracticeContent() {
   const searchParams = useSearchParams();
@@ -360,6 +452,32 @@ function PracticeContent() {
               </div>
             </div>
           )}
+        </div>
+
+        {/* Multi-subject topic selector pills */}
+        <div className="flex items-center gap-1.5 overflow-x-auto pt-3 mt-3 border-t border-slate-100 pb-1 scrollbar-none">
+          <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider mr-1 flex-shrink-0">
+            Subject Tracks:
+          </span>
+          {PRACTICE_SUBJECT_TOPICS.map((item) => {
+            const isSelected = targetTopic === item.topic;
+            return (
+              <button
+                key={item.topic}
+                type="button"
+                onClick={() => loadQuestions(item.topic, difficultyPreference)}
+                className={`px-2.5 py-1 rounded-lg text-xs font-semibold whitespace-nowrap transition-all cursor-pointer flex items-center gap-1.5 ${
+                  isSelected
+                    ? "bg-indigo-600 text-white shadow-xs font-bold"
+                    : "bg-slate-100 hover:bg-slate-200 text-slate-700"
+                }`}
+              >
+                <span>{item.icon}</span>
+                <span>{item.label}</span>
+                <span className="text-[10px] opacity-75 font-normal">({item.subject})</span>
+              </button>
+            );
+          })}
         </div>
       </div>
 

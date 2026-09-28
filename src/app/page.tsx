@@ -213,6 +213,83 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* Multi-Subject Tracks Showcase */}
+      <section className="py-12 px-6 max-w-6xl mx-auto">
+        <div data-scroll="fade-up" className="text-center mb-10">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-50 text-indigo-700 text-xs font-bold border border-indigo-100 mb-3">
+            <span>MULTI-SUBJECT EXPANSION</span>
+          </span>
+          <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+            Expanded Curriculum Tracks Ready to Explore
+          </h2>
+          <p className="text-xs sm:text-sm text-slate-500 mt-2 max-w-xl mx-auto">
+            SkillSync AI now grounds personalized Socratic learning across 5 core university & high school disciplines.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+          {[
+            {
+              name: "Mathematics",
+              icon: "📐",
+              badge: "Class 10/11",
+              topics: "Algebra, Factorisation, Quadratics",
+              color: "border-indigo-200 bg-indigo-50/40 text-indigo-700",
+            },
+            {
+              name: "Operating Systems",
+              icon: "💻",
+              badge: "CS-301",
+              topics: "Scheduling, Deadlocks, Paging",
+              color: "border-purple-200 bg-purple-50/40 text-purple-700",
+            },
+            {
+              name: "Computer Networks",
+              icon: "🌐",
+              badge: "CS-302",
+              topics: "OSI/TCP, Subnetting, Congestion",
+              color: "border-emerald-200 bg-emerald-50/40 text-emerald-700",
+            },
+            {
+              name: "Data Structures & Algo",
+              icon: "⚡",
+              badge: "CS-201",
+              topics: "Trees, Dynamic Prog, Graphs",
+              color: "border-amber-200 bg-amber-50/40 text-amber-700",
+            },
+            {
+              name: "Database Systems",
+              icon: "🗄️",
+              badge: "CS-202",
+              topics: "Normalization, SQL, Transactions",
+              color: "border-sky-200 bg-sky-50/40 text-sky-700",
+            },
+          ].map((sub, i) => (
+            <div
+              key={sub.name}
+              data-scroll="fade-up"
+              data-scroll-delay={i * 75}
+              className={`p-4 rounded-2xl border ${sub.color} shadow-xs card-hover-lift flex flex-col justify-between`}
+            >
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-2xl">{sub.icon}</span>
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-white/80 border border-current">
+                    {sub.badge}
+                  </span>
+                </div>
+                <h3 className="font-bold text-sm text-slate-900 mb-1">{sub.name}</h3>
+                <p className="text-[11px] text-slate-500 leading-snug">{sub.topics}</p>
+              </div>
+              <div className="mt-3 pt-3 border-t border-slate-200/50 flex items-center justify-between text-[11px] font-bold">
+                <span className="text-indigo-600">Socratic Guided</span>
+                <span>→</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
       {/* Feature Grid */}
       <section id="how-it-works" className="py-20 px-6 max-w-6xl mx-auto">
         <div data-scroll="fade-up" className="text-center mb-16">

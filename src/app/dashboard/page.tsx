@@ -92,10 +92,6 @@ interface ReviewItem {
   urgency: "critical" | "high" | "medium" | "low";
 }
 
-export default function DashboardPage() {
-  const { data: session } = useSession();
-  const [data, setData] = useState<DashboardData | null>(null);
-  const [loading, setLoading] = useState(true);
 export type SubjectKey = "Maths" | "DBMS" | "OS" | "CN" | "DSA";
 
 export const SUBJECT_TRACKS: Array<{ key: SubjectKey; label: string; icon: string }> = [
