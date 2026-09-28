@@ -28,6 +28,7 @@ interface PlanItem {
 }
 
 interface PlanData {
+  id?: string;
   title: string;
   estimatedDuration: string;
   items: PlanItem[];
@@ -39,126 +40,165 @@ export default function PlanPage() {
   const [loading, setLoading] = useState(true);
   const [regenerating, setRegenerating] = useState(false);
 
-  useEffect(() => {
-    // Load local completion states if saved
-    if (typeof window !== "undefined") {
-      const saved = localStorage.getItem("skillsync_plan_completed");
-      if (saved) {
-        try {
-          setCompletedOrders(JSON.parse(saved));
-        } catch {}
-      }
-    }
-
-    async function loadPlan() {
-      try {
-        const res = await fetch("/api/dashboard");
-        if (res.ok) {
-          const data = await res.json();
-          if (data.plan && data.plan.items?.length > 0) {
-            setPlan(data.plan);
-            setLoading(false);
-            return;
-          }
+  async function loadPlan() {
+    try {
+      // First try dedicated /api/plan route
+      const res = await fetch("/api/plan");
+      if (res.ok) {
+        const data = await res.json();
+        if (data.plan && data.plan.items?.length > 0) {
+          setPlan(data.plan);
+          const initialCompleted: Record<number, boolean> = {};
+          data.plan.items.forEach((item: PlanItem) => {
+            if (item.isCompleted) initialCompleted[item.order] = true;
+          });
+          setCompletedOrders(initialCompleted);
+          setLoading(false);
+          return;
         }
-        loadFallbackPlan();
-      } catch {
-        loadFallbackPlan();
-      } finally {
-        setLoading(false);
       }
-    }
 
-    function loadFallbackPlan() {
-      setPlan({
-        title: "7-Day Mathematics Mastery Roadmap",
-        estimatedDuration: "1.5 hours total (10-15 mins/day)",
-        items: [
-          {
-            order: 1,
-            topic: "Factorisation",
-            activity: "Common Factors & Difference of Two Squares",
-            durationMinutes: 10,
-            priority: "critical",
-            reason: "Identified prerequisite gap: Core mechanical foundation before solving quadratic equations.",
-            isCompleted: false,
-          },
-          {
-            order: 2,
-            topic: "Factorisation",
-            activity: "Monic Trinomial Decomposition Practice",
-            durationMinutes: 12,
-            priority: "high",
-            reason: "Required before factoring standard form quadratics (ax² + bx + c = 0).",
-            isCompleted: false,
-          },
-          {
-            order: 3,
-            topic: "Quadratic Equations",
-            activity: "Solving Quadratics by Factoring",
-            durationMinutes: 15,
-            priority: "high",
-            reason: "Current focus: Connects prerequisite factoring into equation roots via zero-product property.",
-            isCompleted: false,
-          },
-          {
-            order: 4,
-            topic: "Quadratic Equations",
-            activity: "Completing the Square Intuition",
-            durationMinutes: 10,
-            priority: "medium",
-            reason: "Provides the geometric bridge to the quadratic formula.",
-            isCompleted: false,
-          },
-          {
-            order: 5,
-            topic: "Quadratic Equations",
-            activity: "Discriminant & Nature of Roots Test",
-            durationMinutes: 12,
-            priority: "medium",
-            reason: "Formula fluency: Δ = b² - 4ac and root multiplicity.",
-            isCompleted: false,
-          },
-          {
-            order: 6,
-            topic: "Polynomials",
-            activity: "Factor Theorem Applications",
-            durationMinutes: 15,
-            priority: "low",
-            reason: "Expands quadratic methods to cubic polynomials and synthetic division.",
-            isCompleted: false,
-          },
-          {
-            order: 7,
-            topic: "Mathematics",
-            activity: "Adaptive Milestone Practice & Skill Graph Update",
-            durationMinutes: 15,
-            priority: "high",
-            reason: "Verifies whether the Factorisation prerequisite gap has shifted from Weak to Mastered.",
-            isCompleted: false,
-          },
-        ],
-      });
+      // Fallback to dashboard plan if needed
+      const dashRes = await fetch("/api/dashboard");
+      if (dashRes.ok) {
+        const data = await dashRes.json();
+        if (data.plan && data.plan.items?.length > 0) {
+          setPlan(data.plan);
+          setLoading(false);
+          return;
+        }
+      }
+      loadFallbackPlan();
+    } catch {
+      loadFallbackPlan();
+    } finally {
+      setLoading(false);
     }
+  }
 
+  function loadFallbackPlan() {
+    setPlan({
+      title: "7-Day Mathematics Mastery Roadmap",
+      estimatedDuration: "1.5 hours total (10-15 mins/day)",
+      items: [
+        {
+          order: 1,
+          topic: "Factorisation",
+          activity: "Common Factors & Difference of Two Squares",
+          durationMinutes: 10,
+          priority: "critical",
+          reason: "Identified prerequisite gap: Core mechanical foundation before solving quadratic equations.",
+          isCompleted: false,
+        },
+        {
+          order: 2,
+          topic: "Factorisation",
+          activity: "Monic Trinomial Decomposition Practice",
+          durationMinutes: 12,
+          priority: "high",
+          reason: "Required before factoring standard form quadratics (ax² + bx + c = 0).",
+          isCompleted: false,
+        },
+        {
+          order: 3,
+          topic: "Quadratic Equations",
+          activity: "Solving Quadratics by Factoring",
+          durationMinutes: 15,
+          priority: "high",
+          reason: "Current focus: Connects prerequisite factoring into equation roots via zero-product property.",
+          isCompleted: false,
+        },
+        {
+          order: 4,
+          topic: "Quadratic Equations",
+          activity: "Completing the Square Intuition",
+          durationMinutes: 10,
+          priority: "medium",
+          reason: "Provides the geometric bridge to the quadratic formula.",
+          isCompleted: false,
+        },
+        {
+          order: 5,
+          topic: "Quadratic Equations",
+          activity: "Discriminant & Nature of Roots Test",
+          durationMinutes: 12,
+          priority: "medium",
+          reason: "Formula fluency: Δ = b² - 4ac and root multiplicity.",
+          isCompleted: false,
+        },
+        {
+          order: 6,
+          topic: "Polynomials",
+          activity: "Factor Theorem Applications",
+          durationMinutes: 15,
+          priority: "low",
+          reason: "Expands quadratic methods to cubic polynomials and synthetic division.",
+          isCompleted: false,
+        },
+        {
+          order: 7,
+          topic: "Mathematics",
+          activity: "Adaptive Milestone Practice & Skill Graph Update",
+          durationMinutes: 15,
+          priority: "high",
+          reason: "Verifies whether the Factorisation prerequisite gap has shifted from Weak to Mastered.",
+          isCompleted: false,
+        },
+      ],
+    });
+  }
+
+  useEffect(() => {
     loadPlan();
   }, []);
 
-  const toggleTaskCompletion = (order: number) => {
-    setCompletedOrders((prev) => {
-      const updated = { ...prev, [order]: !prev[order] };
-      if (typeof window !== "undefined") {
-        localStorage.setItem("skillsync_plan_completed", JSON.stringify(updated));
+  const toggleTaskCompletion = async (order: number) => {
+    const newStatus = !completedOrders[order];
+    setCompletedOrders((prev) => ({
+      ...prev,
+      [order]: newStatus,
+    }));
+
+    if (plan?.id) {
+      try {
+        await fetch("/api/plan", {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            planId: plan.id,
+            order,
+            isCompleted: newStatus,
+          }),
+        });
+      } catch (err) {
+        console.error("Failed to persist task status", err);
       }
-      return updated;
-    });
+    }
   };
 
   const handleRegenerate = async () => {
     setRegenerating(true);
-    setTimeout(() => {
+    try {
+      const res = await fetch("/api/plan", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({}),
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        if (data.plan) {
+          setPlan(data.plan);
+          setCompletedOrders({});
+        }
+      } else {
+        await loadPlan();
+      }
+    } catch (e) {
+      console.error("Plan regeneration failed", e);
+    } finally {
       setRegenerating(false);
-    }, 1000);
+    }
   };
 
   if (loading) {

@@ -23,10 +23,10 @@ SkillSync AI transforms passive exam preparation into an active, adaptive learni
 | Diagnostic Assessment | ✅ Done | Subject selection, timed question presentation, scoring |
 | AI Learning Analysis | ✅ Done | Gemini integration with Zod-validated structured output |
 | Assessment Results | ✅ Done | Topic-level scores with AI-generated insights |
-| Learning Profile & Plan | 🔧 Partial | Profile calculation done, plan generation in progress |
-| AI Tutor Chat | 🔧 Partial | Chat interface built, context injection in progress |
-| Adaptive Quiz Engine | 🔧 Partial | Quiz UI built, AI question generation in progress |
-| Progress Tracking | 🔧 Partial | Dashboard visuals done, historical tracking in progress |
+| Learning Profile & Plan | ✅ Done | Personalized AI generation via Gemini, database persistence, task sync |
+| AI Tutor Chat | ✅ Done | Full context injection (profile + history), Socratic modes, voice STT, audio TTS |
+| Adaptive Quiz Engine | ✅ Done | Adaptive difficulty scaling (easy/medium/hard), AI generation, closed-loop recalculation |
+| Progress Tracking | ✅ Done | Real-time recalculation, weighted topic mastery, ProgressRecord history |
 | Knowledge Graph | 🆕 New | Interactive topic dependency visualization |
 
 ---
@@ -75,13 +75,13 @@ Open [http://localhost:3000](http://localhost:3000) to view the application.
 
 ---
 
-## Future Implementation Roadmap
+## Implementation Roadmap
 
-### Phase 1 — Complete MVP (In Progress)
-- [ ] Personalized learning plan generation with AI
-- [ ] Closed-loop mastery recalculation after quizzes
-- [ ] Full AI tutor context injection (student profile + history)
-- [ ] Adaptive quiz difficulty scaling
+### Phase 1 — Complete MVP (✅ Complete)
+- [x] Personalized learning plan generation with AI
+- [x] Closed-loop mastery recalculation after quizzes
+- [x] Full AI tutor context injection (student profile + history)
+- [x] Adaptive quiz difficulty scaling
 
 ### Phase 2 — Advanced AI Features
 - [ ] RAG-based curriculum grounding (university textbooks & lectures)

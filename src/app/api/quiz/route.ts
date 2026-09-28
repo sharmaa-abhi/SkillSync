@@ -10,26 +10,49 @@ export async function POST(request: Request) {
     if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     const userId = (session.user as { id: string }).id;
 
-    const { action, quizId, answers, subjectId } = await request.json();
+    const { action, quizId, answers, subjectId, topicName, difficultyPreference } = await request.json();
 
     if (action === "generate") {
-      // Get learning profile to target weak topics
-      const profile = await prisma.learningProfile.findFirst({ where: { userId, ...(subjectId ? { subjectId } : {}) } });
+      // Get learning profile to target topics
+      const profile = await prisma.learningProfile.findFirst({
+        where: { userId, ...(subjectId ? { subjectId } : {}) },
+        orderBy: { updatedAt: "desc" },
+      });
       const rawMastery = profile?.topicMastery;
-      const topicMastery = (typeof rawMastery === "string" ? JSON.parse(rawMastery) : rawMastery) || [];
+      const topicMastery = ((typeof rawMastery === "string" ? JSON.parse(rawMastery) : rawMastery) || []) as Array<{
+        topicName: string;
+        score: number;
+        masteryLevel: string;
+      }>;
 
-      // Prioritize weak and medium topics
-      const targetTopics = (topicMastery as Array<{ topicName: string; score: number; masteryLevel: string }>)
-        .filter(t => t.masteryLevel !== "strong")
-        .sort((a, b) => a.score - b.score)
-        .slice(0, 3)
-        .map(t => ({ topicName: t.topicName, mastery: t.score }));
+      let targetTopics: Array<{ topicName: string; mastery: number }> = [];
 
-      if (targetTopics.length === 0 && topicMastery.length > 0) {
-        targetTopics.push(...(topicMastery as Array<{ topicName: string; score: number }>).slice(0, 3).map(t => ({ topicName: t.topicName, mastery: t.score })));
+      if (topicName) {
+        // Specific topic requested
+        const matched = topicMastery.find(t => t.topicName.toLowerCase() === topicName.toLowerCase());
+        targetTopics = [{ topicName, mastery: matched ? matched.score : 45 }];
+      } else {
+        // Prioritize weak and medium topics
+        targetTopics = topicMastery
+          .filter(t => t.masteryLevel !== "strong")
+          .sort((a, b) => a.score - b.score)
+          .slice(0, 3)
+          .map(t => ({ topicName: t.topicName, mastery: t.score }));
+
+        if (targetTopics.length === 0 && topicMastery.length > 0) {
+          targetTopics = topicMastery.slice(0, 3).map(t => ({ topicName: t.topicName, mastery: t.score }));
+        }
+
+        if (targetTopics.length === 0) {
+          targetTopics = [{ topicName: "Factorisation", mastery: 38 }];
+        }
       }
 
-      const questions = await generateQuiz(targetTopics, 5);
+      const diffPref = (difficultyPreference === "easy" || difficultyPreference === "medium" || difficultyPreference === "hard" || difficultyPreference === "adaptive")
+        ? difficultyPreference
+        : "adaptive";
+
+      const questions = await generateQuiz(targetTopics, 5, diffPref);
 
       const quiz = await prisma.quiz.create({
         data: {
@@ -38,6 +61,7 @@ export async function POST(request: Request) {
           targetTopics: JSON.stringify(targetTopics.map(t => t.topicName)),
           totalQuestions: questions.length,
           questions: JSON.stringify(questions),
+          difficulty: diffPref,
           status: "in_progress",
         },
       });
@@ -45,6 +69,7 @@ export async function POST(request: Request) {
       return NextResponse.json({
         quiz: {
           id: quiz.id,
+          difficulty: diffPref,
           questions: questions.map(q => ({
             id: q.id,
             question: q.question,
@@ -139,6 +164,47 @@ export async function POST(request: Request) {
             triggerId: quizId,
           },
         });
+
+        // Sync with active Learning Plan (Closed-loop mastery)
+        try {
+          const activePlan = await prisma.learningPlan.findFirst({
+            where: { userId, status: "active" },
+            orderBy: { createdAt: "desc" },
+          });
+
+          if (activePlan) {
+            const planItems = (typeof activePlan.items === "string" ? JSON.parse(activePlan.items) : activePlan.items) as Array<{
+              order: number;
+              topic: string;
+              activity: string;
+              durationMinutes: number;
+              priority: string;
+              reason: string;
+              isCompleted?: boolean;
+            }>;
+
+            let planModified = false;
+            const updatedPlanItems = planItems.map(item => {
+              const matchedResult = topicQuizScores.get(item.topic);
+              if (matchedResult && (matchedResult.correct / matchedResult.total) >= 0.6) {
+                if (!item.isCompleted) {
+                  planModified = true;
+                  return { ...item, isCompleted: true };
+                }
+              }
+              return item;
+            });
+
+            if (planModified) {
+              await prisma.learningPlan.update({
+                where: { id: activePlan.id },
+                data: { items: JSON.stringify(updatedPlanItems) },
+              });
+            }
+          }
+        } catch (planErr) {
+          console.error("Failed to sync plan after quiz:", planErr);
+        }
 
         return NextResponse.json({
           result: { score, correct, total: questions.length, results },

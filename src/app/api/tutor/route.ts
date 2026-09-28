@@ -111,18 +111,43 @@ export async function POST(request: Request) {
       orderBy: { createdAt: "asc" },
     });
 
-    // Get profile context
+    // Get full student profile context
     const profile = await prisma.learningProfile.findFirst({ where: { userId } });
     const rawMastery = profile?.topicMastery;
     const topicMastery = ((typeof rawMastery === "string" ? JSON.parse(rawMastery) : rawMastery) || []) as Array<{ topicName: string; score: number; masteryLevel: string }>;
     const currentTopic = topicMastery.find(t => t.topicName.toLowerCase() === tutorSession.topicName.toLowerCase());
 
-    // Get AI response
+    const rawWeaknesses = profile?.weaknesses;
+    const weaknesses = ((typeof rawWeaknesses === "string" ? JSON.parse(rawWeaknesses) : rawWeaknesses) || []) as string[];
+
+    const rawStrengths = profile?.strengths;
+    const strengths = ((typeof rawStrengths === "string" ? JSON.parse(rawStrengths) : rawStrengths) || []) as string[];
+
+    // Fetch latest completed quiz for contextual awareness
+    const recentQuiz = await prisma.quiz.findFirst({
+      where: { userId, status: "completed" },
+      orderBy: { completedAt: "desc" },
+    });
+
+    let recentQuizPerformance: string | undefined = undefined;
+    if (recentQuiz) {
+      const targetTopics = typeof recentQuiz.targetTopics === "string" ? JSON.parse(recentQuiz.targetTopics) : recentQuiz.targetTopics;
+      recentQuizPerformance = `Scored ${recentQuiz.score}% (${recentQuiz.correctAnswers}/${recentQuiz.totalQuestions} correct) on ${Array.isArray(targetTopics) ? targetTopics.join(", ") : "recent practice"}`;
+    }
+
+    // Get AI response with full context injection
     const response = await tutorRespond({
+      studentName: user?.name,
+      educationLevel: user?.educationLevel || "Student",
+      learningGoals: user?.learningGoals || undefined,
+      preferredStyle: user?.preferredStyle || undefined,
+      overallMastery: profile?.overallMastery,
       topicName: tutorSession.topicName,
       masteryLevel: currentTopic?.masteryLevel || "intermediate",
       score: currentTopic?.score || 45,
-      educationLevel: user?.educationLevel || "Student",
+      weaknesses,
+      strengths,
+      recentQuizPerformance,
       conversationHistory: history.map(m => ({ role: m.role, content: m.content })),
       studentMessage: message,
       mode: mode || "socratic",

@@ -135,10 +135,11 @@ function PracticeContent() {
   const searchParams = useSearchParams();
   const topicParam = searchParams.get("topic") || "Factorisation";
 
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [quizId, setQuizId] = useState<string>("smart-quiz-1");
   const [targetTopic, setTargetTopic] = useState<string>(topicParam);
+  const [difficultyPreference, setDifficultyPreference] = useState<"adaptive" | "easy" | "medium" | "hard">("adaptive");
   const [questions, setQuestions] = useState<QuizQuestion[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedAnswers, setSelectedAnswers] = useState<Record<string, number>>({});
@@ -148,16 +149,55 @@ function PracticeContent() {
   const [profileUpdate, setProfileUpdate] = useState<ProfileUpdate | null>(null);
   const [secondsElapsed, setSecondsElapsed] = useState(0);
 
-  useEffect(() => {
-    // Load targeted practice questions based on selected topic
-    const topicPool = MATH_PRACTICE_QUESTIONS[topicParam] || MATH_PRACTICE_QUESTIONS["Factorisation"];
+  const loadQuestions = async (topic: string, diffPref: "adaptive" | "easy" | "medium" | "hard" = "adaptive") => {
+    setLoading(true);
+    try {
+      const res = await fetch("/api/quiz", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "generate",
+          topicName: topic,
+          difficultyPreference: diffPref,
+        }),
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        if (data.quiz && data.quiz.questions?.length > 0) {
+          setQuizId(data.quiz.id);
+          setQuestions(data.quiz.questions);
+          setTargetTopic(topic);
+          setCurrentIndex(0);
+          setSelectedAnswers({});
+          setCompleted(false);
+          setProfileUpdate(null);
+          setSecondsElapsed(0);
+          setLoading(false);
+          return;
+        }
+      }
+      loadFallbackQuestions(topic);
+    } catch {
+      loadFallbackQuestions(topic);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const loadFallbackQuestions = (topic: string) => {
+    const topicPool = MATH_PRACTICE_QUESTIONS[topic] || MATH_PRACTICE_QUESTIONS["Factorisation"];
     setQuestions(topicPool);
-    setTargetTopic(topicParam);
+    setTargetTopic(topic);
     setCurrentIndex(0);
     setSelectedAnswers({});
     setCompleted(false);
     setProfileUpdate(null);
     setSecondsElapsed(0);
+  };
+
+  useEffect(() => {
+    loadQuestions(topicParam, difficultyPreference);
   }, [topicParam]);
 
   useEffect(() => {
@@ -179,7 +219,39 @@ function PracticeContent() {
   const handleSubmitQuiz = async () => {
     setSubmitting(true);
 
-    // Evaluate answers
+    try {
+      // Send real answers to server for database-backed closed-loop recalculation
+      const answersPayload = questions.map((q) => ({
+        questionId: q.id,
+        selectedOption: selectedAnswers[q.id] !== undefined ? selectedAnswers[q.id] : -1,
+      }));
+
+      const res = await fetch("/api/quiz", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "submit",
+          quizId,
+          answers: answersPayload,
+        }),
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        setScore(data.result.score);
+        setResults(data.result.results);
+        if (data.profileUpdate) {
+          setProfileUpdate(data.profileUpdate);
+        }
+        setCompleted(true);
+        setSubmitting(false);
+        return;
+      }
+    } catch (err) {
+      console.error("Quiz submission API error, using local fallback", err);
+    }
+
+    // Local fallback calculation if API was offline
     const evaluationResults: QuestionResult[] = questions.map((q) => {
       const selected = selectedAnswers[q.id] !== undefined ? selectedAnswers[q.id] : -1;
       return {
@@ -198,7 +270,6 @@ function PracticeContent() {
     setScore(finalScore);
     setResults(evaluationResults);
 
-    // Calculate adaptive mastery update
     const previousScore = 38;
     const newTopicScore = Math.min(100, Math.round(previousScore + (finalScore >= 80 ? 30 : finalScore >= 60 ? 20 : 10)));
     const previousOverall = 72;
@@ -258,7 +329,28 @@ function PracticeContent() {
           </div>
 
           {!completed && (
-            <div className="flex items-center gap-3">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
+              {/* Difficulty selector */}
+              <div className="flex items-center rounded-xl border border-slate-200 bg-slate-50 p-1 text-[11px] font-semibold text-slate-600">
+                {(["adaptive", "easy", "medium", "hard"] as const).map((diff) => (
+                  <button
+                    key={diff}
+                    type="button"
+                    onClick={() => {
+                      setDifficultyPreference(diff);
+                      loadQuestions(targetTopic, diff);
+                    }}
+                    className={`px-2.5 py-1 rounded-lg capitalize transition-colors cursor-pointer ${
+                      difficultyPreference === diff
+                        ? "bg-white text-indigo-700 shadow-xs font-bold"
+                        : "hover:text-slate-900"
+                    }`}
+                  >
+                    {diff === "adaptive" ? "⚡ Adaptive" : diff}
+                  </button>
+                ))}
+              </div>
+
               <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 text-slate-700 text-xs font-mono font-semibold">
                 <Clock className="w-3.5 h-3.5 text-slate-500" />
                 <span>
@@ -420,18 +512,32 @@ function PracticeContent() {
               </div>
             )}
 
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
+            <div className="flex flex-wrap items-center justify-center gap-2.5 pt-2">
+              <Link
+                href={`/tutor?topic=${encodeURIComponent(targetTopic)}`}
+                className="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs shadow-xs transition-colors flex items-center justify-center gap-1.5"
+              >
+                <Sparkles className="w-3.5 h-3.5" />
+                <span>Review with AI Coach</span>
+              </Link>
+              <Link
+                href="/plan"
+                className="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs shadow-xs transition-colors flex items-center justify-center gap-1.5"
+              >
+                <Target className="w-3.5 h-3.5" />
+                <span>View Learning Plan</span>
+              </Link>
               <Link
                 href="/graph"
-                className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs shadow-xs transition-colors"
+                className="w-full sm:w-auto px-4 py-2.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 font-semibold text-xs transition-colors"
               >
-                Inspect Updated Skill Graph
+                Inspect Skill Graph
               </Link>
               <Link
                 href="/dashboard"
-                className="w-full sm:w-auto px-5 py-2.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 font-semibold text-xs transition-colors"
+                className="w-full sm:w-auto px-4 py-2.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 font-semibold text-xs transition-colors"
               >
-                Back to Dashboard
+                Dashboard
               </Link>
             </div>
           </div>
