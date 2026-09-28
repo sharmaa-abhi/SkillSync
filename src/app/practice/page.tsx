@@ -238,7 +238,7 @@ function PracticeContent() {
       {completed && score >= 70 && <Confetti />}
 
       {/* Header Info */}
-      <div className="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-4 sm:p-6 card-hover-lift">
+      <div data-scroll="fade-down" className="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-4 sm:p-6 card-hover-lift">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <div className="flex items-center gap-2">
@@ -273,7 +273,7 @@ function PracticeContent() {
 
       {/* Active Quiz Question */}
       {!completed && currentQ && (
-        <div className="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-6 sm:p-8 space-y-6 animate-scale-in">
+        <div data-scroll="scale" className="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-6 sm:p-8 space-y-6">
           {/* Progress Bar & Question Counter */}
           <div className="space-y-2">
             <div className="flex items-center justify-between text-xs font-semibold text-slate-500">
@@ -376,9 +376,9 @@ function PracticeContent() {
 
       {/* Completed Results & Real-Time Mastery Update (Section 6 & 9) */}
       {completed && (
-        <div className="space-y-6 animate-fade-in-up">
+        <div className="space-y-6">
           {/* Score & Profile Update Banner */}
-          <div className="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-6 sm:p-8 card-hover-lift text-center space-y-4">
+          <div data-scroll="scale" className="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-6 sm:p-8 card-hover-lift text-center space-y-4">
             <div className="w-16 h-16 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center mx-auto shadow-xs">
               <Award className="w-8 h-8" />
             </div>
@@ -437,7 +437,7 @@ function PracticeContent() {
           </div>
 
           {/* Question-by-Question Pedagogical Review */}
-          <div className="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-6 space-y-4">
+          <div data-scroll="fade-up" className="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-6 space-y-4">
             <h3 className="text-sm font-bold text-slate-900 border-b border-slate-100 pb-3 flex items-center gap-2">
               <ShieldCheck className="w-4 h-4 text-emerald-600" />
               <span>Step-by-Step Pedagogical Explanations</span>
@@ -447,6 +447,8 @@ function PracticeContent() {
               {results.map((res, i) => (
                 <div
                   key={res.questionId}
+                  data-scroll="fade-up"
+                  data-scroll-delay={String((i + 1) * 75)}
                   className={`p-4 rounded-xl border text-xs space-y-2 ${
                     res.isCorrect ? "bg-emerald-50/30 border-emerald-100" : "bg-rose-50/30 border-rose-100"
                   }`}

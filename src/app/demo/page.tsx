@@ -32,7 +32,7 @@ export default function DemoPage() {
   }, [router]);
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center p-6 text-center">
+    <div data-scroll="scale" className="min-h-screen bg-slate-50 flex flex-col items-center justify-center p-6 text-center">
       <div className="w-14 h-14 rounded-2xl bg-indigo-600 flex items-center justify-center text-white shadow-lg shadow-indigo-200 mb-6 animate-pulse">
         <Zap className="w-7 h-7 fill-current" />
       </div>
@@ -50,3 +50,4 @@ export default function DemoPage() {
     </div>
   );
 }
+

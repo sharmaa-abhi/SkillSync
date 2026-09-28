@@ -91,7 +91,7 @@ export default function RegisterPage() {
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
-      <div className="sm:mx-auto sm:w-full sm:max-w-md text-center animate-fade-in-down">
+      <div data-scroll="fade-down" className="sm:mx-auto sm:w-full sm:max-w-md text-center">
         <Link href="/" className="inline-flex items-center gap-2 group">
           <div className="w-10 h-10 rounded-xl bg-indigo-600 flex items-center justify-center text-white shadow-md shadow-indigo-200 transition-transform duration-200 group-hover:scale-105">
             <Zap className="w-5 h-5 fill-current" />
@@ -109,7 +109,7 @@ export default function RegisterPage() {
         </p>
       </div>
 
-      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md px-4 sm:px-0 animate-scale-in delay-100">
+      <div data-scroll="scale" className="mt-8 sm:mx-auto sm:w-full sm:max-w-md px-4 sm:px-0">
         <div className="bg-white py-8 px-6 shadow-sm hover:shadow-md border border-slate-200/80 rounded-2xl sm:px-10 transition-shadow duration-300">
           <form className="space-y-4" onSubmit={handleSubmit}>
             {error && (

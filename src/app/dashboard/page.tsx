@@ -278,7 +278,7 @@ export default function DashboardPage() {
     <AppLayout>
       <div className="space-y-6 max-w-6xl mx-auto">
         {/* Welcome & Track Switcher Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 animate-fade-in-down">
+        <div data-scroll="fade-down" className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
             <div className="flex items-center gap-2">
               <h1 className="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight">
@@ -321,7 +321,7 @@ export default function DashboardPage() {
         {/* ========================================================================= */}
         {/* 1. VISUALLY DOMINANT: NEXT BEST ACTION (Section 8 of Master Prompt)       */}
         {/* ========================================================================= */}
-        <div className="p-6 sm:p-8 rounded-3xl bg-gradient-to-br from-indigo-900 via-indigo-800 to-indigo-950 text-white shadow-xl relative overflow-hidden card-hover-lift animate-fade-in-up">
+        <div data-scroll="scale" className="p-6 sm:p-8 rounded-3xl bg-gradient-to-br from-indigo-900 via-indigo-800 to-indigo-950 text-white shadow-xl relative overflow-hidden card-hover-lift">
           <div className="absolute right-0 top-0 translate-x-12 -translate-y-12 w-64 h-64 bg-indigo-400/10 rounded-full blur-3xl pointer-events-none" />
 
           <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
@@ -397,7 +397,7 @@ export default function DashboardPage() {
         {/* ========================================================================= */}
         {/* INTERACTIVE LEARNING LOOP COCKPIT (Diagnose -> Map -> Teach -> Practice) */}
         {/* ========================================================================= */}
-        <div className="p-4 sm:p-5 rounded-2xl bg-white border border-slate-200/90 shadow-sm animate-fade-in-up">
+        <div data-scroll="fade-up" className="p-4 sm:p-5 rounded-2xl bg-white border border-slate-200/90 shadow-sm">
           <div className="flex items-center justify-between pb-3 border-b border-slate-100">
             <div className="flex items-center gap-2">
               <span className="w-6 h-6 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold text-xs">
@@ -460,9 +460,9 @@ export default function DashboardPage() {
         {/* ========================================================================= */}
         {/* 2. PROGRESS INTELLIGENCE METRICS (Section 9 of Master Prompt)              */}
         {/* ========================================================================= */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5 animate-fade-in-up delay-75">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5">
           {/* Overall Mastery */}
-          <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/90 shadow-sm space-y-2 card-hover-lift">
+          <div data-scroll="fade-up" data-scroll-delay="50" className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/90 shadow-sm space-y-2 card-hover-lift">
             <div className="flex items-center justify-between">
               <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">
                 Overall Mastery
@@ -488,7 +488,7 @@ export default function DashboardPage() {
           </div>
 
           {/* Study Streak */}
-          <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/90 shadow-sm space-y-2 card-hover-lift">
+          <div data-scroll="fade-up" data-scroll-delay="100" className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/90 shadow-sm space-y-2 card-hover-lift">
             <div className="flex items-center justify-between">
               <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">
                 Study Streak
@@ -507,7 +507,7 @@ export default function DashboardPage() {
           </div>
 
           {/* Weekly Goal */}
-          <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/90 shadow-sm space-y-2 card-hover-lift">
+          <div data-scroll="fade-up" data-scroll-delay="150" className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/90 shadow-sm space-y-2 card-hover-lift">
             <div className="flex items-center justify-between">
               <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">
                 Weekly Goal
@@ -531,7 +531,7 @@ export default function DashboardPage() {
           </div>
 
           {/* Reteach Rate */}
-          <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/90 shadow-sm space-y-2 card-hover-lift">
+          <div data-scroll="fade-up" data-scroll-delay="200" className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/90 shadow-sm space-y-2 card-hover-lift">
             <div className="flex items-center justify-between">
               <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">
                 Reteach Rate
@@ -553,7 +553,7 @@ export default function DashboardPage() {
         {/* ========================================================================= */}
         {/* 3. SKILL GRAPH PREVIEW (Section 3 of Master Prompt)                       */}
         {/* ========================================================================= */}
-        <div className="space-y-3">
+        <div data-scroll="fade-up" className="space-y-3">
           <div className="flex items-center justify-between">
             <h3 className="text-base font-bold text-slate-900 tracking-tight flex items-center gap-2">
               <Brain className="w-4 h-4 text-indigo-600" />
@@ -573,7 +573,7 @@ export default function DashboardPage() {
         {/* ========================================================================= */}
         {/* 4. PERSONALIZED 7-DAY ROADMAP PREVIEW (Section 7 of Master Prompt)        */}
         {/* ========================================================================= */}
-        <div className="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-6 sm:p-8 space-y-5">
+        <div data-scroll="fade-up" className="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-6 sm:p-8 space-y-5">
           <div className="flex items-center justify-between pb-4 border-b border-slate-100">
             <div>
               <h3 className="text-base font-bold text-slate-900 tracking-tight flex items-center gap-2">
@@ -597,6 +597,8 @@ export default function DashboardPage() {
             {(plan?.items || []).slice(0, 4).map((item, idx) => (
               <div
                 key={item.order || idx}
+                data-scroll="fade-left"
+                data-scroll-delay={String((idx + 1) * 75)}
                 className="p-4 rounded-xl bg-slate-50 border border-slate-100 hover:border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3 transition-colors"
               >
                 <div className="flex items-start gap-3">
@@ -637,7 +639,7 @@ export default function DashboardPage() {
         {/* ========================================================================= */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* AI Coach Quick Prompt */}
-          <div className="bg-gradient-to-br from-indigo-50/70 to-purple-50/70 rounded-2xl border border-indigo-100 p-6 space-y-3 card-hover-lift">
+          <div data-scroll="fade-right" className="bg-gradient-to-br from-indigo-50/70 to-purple-50/70 rounded-2xl border border-indigo-100 p-6 space-y-3 card-hover-lift">
             <div className="flex items-center gap-2 text-indigo-700 font-bold text-xs uppercase tracking-wider">
               <MessageSquare className="w-4 h-4" />
               <span>Socratic AI Learning Coach</span>
@@ -661,7 +663,7 @@ export default function DashboardPage() {
           </div>
 
           {/* Source Grounding & Trust Badge */}
-          <div className="bg-white rounded-2xl border border-slate-200/90 p-6 space-y-3 card-hover-lift">
+          <div data-scroll="fade-left" className="bg-white rounded-2xl border border-slate-200/90 p-6 space-y-3 card-hover-lift">
             <div className="flex items-center gap-2 text-emerald-700 font-bold text-xs uppercase tracking-wider">
               <CheckCircle2 className="w-4 h-4" />
               <span>Source Grounding & AI Guardrails</span>

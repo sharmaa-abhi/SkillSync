@@ -235,7 +235,7 @@ function AssessmentContent() {
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col justify-between">
       {/* Top Header */}
-      <header className="bg-white border-b border-slate-200 sticky top-0 z-10 px-4 sm:px-8 py-3.5 flex items-center justify-between">
+      <header data-scroll="fade-down" className="bg-white border-b border-slate-200 sticky top-0 z-10 px-4 sm:px-8 py-3.5 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center text-white font-bold text-sm">
             <Zap className="w-4 h-4 fill-current" />
@@ -281,7 +281,7 @@ function AssessmentContent() {
       {/* Main Assessment Container */}
       <main className="max-w-3xl w-full mx-auto p-4 sm:p-6 my-auto">
         {/* Progress bar */}
-        <div className="mb-6">
+        <div data-scroll="fade-up" className="mb-6">
           <div className="flex justify-between items-center text-xs font-medium text-slate-500 mb-2">
             <span>
               Question <strong className="text-slate-900 font-semibold">{currentIndex + 1}</strong> of {questions.length}
@@ -299,7 +299,7 @@ function AssessmentContent() {
         </div>
 
         {/* Question Card */}
-        <div key={currentQ.id} className="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-6 sm:p-8 animate-fade-in-up">
+        <div key={currentQ.id} data-scroll="scale" className="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-6 sm:p-8">
           <h2 className="text-base sm:text-lg font-bold text-slate-900 leading-snug mb-6">
             {currentQ.text}
           </h2>

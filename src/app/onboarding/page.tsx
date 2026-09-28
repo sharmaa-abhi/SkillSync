@@ -103,7 +103,7 @@ export default function OnboardingPage() {
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col justify-between p-4 sm:p-6 lg:p-8">
       {/* Header */}
-      <div className="max-w-3xl w-full mx-auto flex items-center justify-between">
+      <div data-scroll="fade-down" className="max-w-3xl w-full mx-auto flex items-center justify-between">
         <div className="flex items-center gap-2">
           <div className="w-9 h-9 rounded-xl bg-indigo-600 flex items-center justify-center text-white shadow-sm">
             <Zap className="w-5 h-5 fill-current" />
@@ -116,7 +116,7 @@ export default function OnboardingPage() {
       </div>
 
       {/* Main Card */}
-      <div className="max-w-2xl w-full mx-auto my-8">
+      <div data-scroll="scale" className="max-w-2xl w-full mx-auto my-8">
         {/* Progress Bar & Indicators */}
         <div className="mb-8">
           <div className="flex justify-between items-center mb-3">
@@ -156,7 +156,7 @@ export default function OnboardingPage() {
           </div>
         </div>
 
-        <div className="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-6 sm:p-10">
+        <div className="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-6 sm:p-10 card-hover-lift">
           {/* Step 1: About You */}
           {currentStep === 1 && (
             <div className="space-y-6 animate-fadeIn">

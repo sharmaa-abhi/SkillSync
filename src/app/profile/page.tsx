@@ -151,7 +151,7 @@ export default function ProfilePage() {
     <AppLayout>
       <div className="max-w-4xl mx-auto space-y-6">
         {/* Profile Card Header */}
-        <div className="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-6 sm:p-8 card-hover-lift animate-scale-in delay-75">
+        <div data-scroll="fade-down" className="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-6 sm:p-8 card-hover-lift">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
             <div className="flex items-center gap-4">
               <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-indigo-600 to-indigo-500 text-white flex items-center justify-center font-extrabold text-2xl shadow-md shadow-indigo-100 animate-float">
@@ -202,8 +202,8 @@ export default function ProfilePage() {
         </div>
 
         {/* Learning Goals, Multilingual & Accessibility Preferences */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 animate-fade-in-up delay-150">
-          <div className="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-6 space-y-2 card-hover-lift">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div data-scroll="fade-up" data-scroll-delay="50" className="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-6 space-y-2 card-hover-lift">
             <div className="flex items-center gap-2 text-indigo-700 font-bold text-xs uppercase tracking-wider">
               <Target className="w-4 h-4" />
               <span>Current Learning Goal</span>
@@ -216,7 +216,7 @@ export default function ProfilePage() {
             </p>
           </div>
 
-          <div className="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-6 space-y-2 card-hover-lift">
+          <div data-scroll="fade-up" data-scroll-delay="100" className="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-6 space-y-2 card-hover-lift">
             <div className="flex items-center gap-2 text-indigo-700 font-bold text-xs uppercase tracking-wider">
               <BookOpen className="w-4 h-4" />
               <span>Learning Style & Pace</span>
@@ -230,7 +230,7 @@ export default function ProfilePage() {
           </div>
 
           {/* Multilingual & Accessibility Settings Card */}
-          <div className="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-6 space-y-3 card-hover-lift">
+          <div data-scroll="fade-up" data-scroll-delay="150" className="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-6 space-y-3 card-hover-lift">
             <div className="flex items-center gap-2 text-indigo-700 font-bold text-xs uppercase tracking-wider">
               <Sparkles className="w-4 h-4" />
               <span>A11y & Language Settings</span>
@@ -291,9 +291,9 @@ export default function ProfilePage() {
         </div>
 
         {/* Strengths & Weaknesses Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 animate-fade-in-up delay-200">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* Strengths */}
-          <div className="bg-white rounded-2xl border border-emerald-100 shadow-sm p-6 bg-gradient-to-br from-emerald-50/20 to-white">
+          <div data-scroll="fade-right" className="bg-white rounded-2xl border border-emerald-100 shadow-sm p-6 bg-gradient-to-br from-emerald-50/20 to-white card-hover-lift">
             <div className="flex items-center gap-2 text-emerald-700 font-bold text-xs uppercase tracking-wider mb-4">
               <Award className="w-4 h-4" />
               <span>Demonstrated Strengths</span>
@@ -314,7 +314,7 @@ export default function ProfilePage() {
           </div>
 
           {/* Weaknesses */}
-          <div className="bg-white rounded-2xl border border-rose-100 shadow-sm p-6 bg-gradient-to-br from-rose-50/20 to-white">
+          <div data-scroll="fade-left" className="bg-white rounded-2xl border border-rose-100 shadow-sm p-6 bg-gradient-to-br from-rose-50/20 to-white card-hover-lift">
             <div className="flex items-center gap-2 text-rose-700 font-bold text-xs uppercase tracking-wider mb-4">
               <AlertTriangle className="w-4 h-4" />
               <span>Focus Areas (Prerequisite Gaps)</span>
@@ -336,7 +336,7 @@ export default function ProfilePage() {
         </div>
 
         {/* Detailed Topic Mastery Breakdown */}
-        <div className="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-6 sm:p-8">
+        <div data-scroll="fade-up" className="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-6 sm:p-8">
           <div className="flex items-center justify-between mb-6">
             <div>
               <h3 className="text-base font-bold text-slate-900">Comprehensive Mastery Breakdown</h3>

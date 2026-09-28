@@ -26,7 +26,7 @@ export default function SkillGraphPage() {
     <AppLayout>
       <div className="space-y-6 max-w-6xl mx-auto">
         {/* Header with Subject Switcher */}
-        <div className="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-6 sm:p-8 card-hover-lift">
+        <div data-scroll="fade-down" className="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-6 sm:p-8 card-hover-lift">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
               <div className="flex items-center gap-2">
@@ -71,7 +71,7 @@ export default function SkillGraphPage() {
 
           {/* Quick Metrics Bar */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-6 pt-6 border-t border-slate-100">
-            <div className="p-3 rounded-xl bg-slate-50 border border-slate-100">
+            <div data-scroll="fade-up" data-scroll-delay="50" className="p-3 rounded-xl bg-slate-50 border border-slate-100">
               <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">
                 Total Concepts
               </span>
@@ -79,7 +79,7 @@ export default function SkillGraphPage() {
                 {skills.length}
               </span>
             </div>
-            <div className="p-3 rounded-xl bg-emerald-50/50 border border-emerald-100">
+            <div data-scroll="fade-up" data-scroll-delay="100" className="p-3 rounded-xl bg-emerald-50/50 border border-emerald-100">
               <span className="text-[11px] font-bold text-emerald-700 uppercase tracking-wider block">
                 Mastered
               </span>
@@ -87,7 +87,7 @@ export default function SkillGraphPage() {
                 {masteredSkills.length}
               </span>
             </div>
-            <div className="p-3 rounded-xl bg-rose-50/50 border border-rose-100">
+            <div data-scroll="fade-up" data-scroll-delay="150" className="p-3 rounded-xl bg-rose-50/50 border border-rose-100">
               <span className="text-[11px] font-bold text-rose-700 uppercase tracking-wider block">
                 Prerequisite Gaps
               </span>
@@ -95,7 +95,7 @@ export default function SkillGraphPage() {
                 {weakSkills.length}
               </span>
             </div>
-            <div className="p-3 rounded-xl bg-indigo-50/50 border border-indigo-100">
+            <div data-scroll="fade-up" data-scroll-delay="200" className="p-3 rounded-xl bg-indigo-50/50 border border-indigo-100">
               <span className="text-[11px] font-bold text-indigo-700 uppercase tracking-wider block">
                 Current Focus
               </span>
@@ -107,11 +107,13 @@ export default function SkillGraphPage() {
         </div>
 
         {/* Skill Graph Component */}
-        <SkillGraph subject={subject} />
+        <div data-scroll="scale">
+          <SkillGraph subject={subject} />
+        </div>
 
         {/* Action Callout based on Prerequisite Gap */}
         {weakSkills.length > 0 && (
-          <div className="bg-gradient-to-r from-rose-900 to-indigo-950 text-white rounded-2xl p-6 sm:p-8 shadow-md relative overflow-hidden">
+          <div data-scroll="fade-up" className="bg-gradient-to-r from-rose-900 to-indigo-950 text-white rounded-2xl p-6 sm:p-8 shadow-md relative overflow-hidden card-hover-lift">
             <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
               <div className="space-y-2 max-w-xl">
                 <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-rose-500/20 text-rose-200 border border-rose-400/30 text-xs font-semibold">

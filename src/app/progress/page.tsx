@@ -116,7 +116,7 @@ export default function ProgressPage() {
     <AppLayout>
       <div className="max-w-4xl mx-auto space-y-6">
         {/* Header */}
-        <div className="animate-fade-in-down">
+        <div data-scroll="fade-down">
           <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-indigo-50 text-indigo-700 text-xs font-semibold mb-1 border border-indigo-100">
             <TrendingUp className="w-3.5 h-3.5" />
             <span>Progress Intelligence</span>
@@ -125,13 +125,13 @@ export default function ProgressPage() {
             Your Progress & Growth
           </h1>
           <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
-            Real-time tracking answering: "Where am I growing and what needs reteaching?"
+            Real-time tracking answering: &ldquo;Where am I growing and what needs reteaching?&rdquo;
           </p>
         </div>
 
         {/* 4 Milestone Stats Cards */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5 animate-fade-in-up delay-75">
-          <div className="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-4 card-hover-lift">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5">
+          <div data-scroll="fade-up" data-scroll-delay="50" className="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-4 card-hover-lift">
             <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider block">
               Overall Mastery
             </span>
@@ -144,7 +144,7 @@ export default function ProgressPage() {
             <p className="text-[10px] text-slate-400 mt-1">Baseline: 58%</p>
           </div>
 
-          <div className="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-4 card-hover-lift">
+          <div data-scroll="fade-up" data-scroll-delay="100" className="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-4 card-hover-lift">
             <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider block">
               Practice Streak
             </span>
@@ -159,7 +159,7 @@ export default function ProgressPage() {
             <p className="text-[10px] text-slate-400 mt-1">Daily consistency</p>
           </div>
 
-          <div className="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-4 card-hover-lift">
+          <div data-scroll="fade-up" data-scroll-delay="150" className="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-4 card-hover-lift">
             <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider block">
               Weekly Goal
             </span>
@@ -172,7 +172,7 @@ export default function ProgressPage() {
             <p className="text-[10px] text-slate-400 mt-1">Sessions completed</p>
           </div>
 
-          <div className="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-4 card-hover-lift">
+          <div data-scroll="fade-up" data-scroll-delay="200" className="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-4 card-hover-lift">
             <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider block">
               Reteach Rate
             </span>
@@ -187,7 +187,7 @@ export default function ProgressPage() {
         </div>
 
         {/* Before vs After Topic Progress Cards */}
-        <div className="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-6 sm:p-8 animate-fade-in-up delay-150">
+        <div data-scroll="fade-up" className="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-6 sm:p-8">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
             <div>
               <h3 className="text-base font-bold text-slate-900">Diagnostic vs Current Mastery Growth</h3>
@@ -201,10 +201,12 @@ export default function ProgressPage() {
           </div>
 
           <div className="space-y-3">
-            {improvements.map((item) => (
+            {improvements.map((item, idx) => (
               <div
                 key={item.topicName}
-                className="p-4 rounded-xl border border-slate-200/80 hover:border-slate-300 transition-colors flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+                data-scroll="fade-left"
+                data-scroll-delay={String((idx + 1) * 75)}
+                className="p-4 rounded-xl border border-slate-200/80 hover:border-slate-300 transition-colors flex flex-col sm:flex-row sm:items-center justify-between gap-4 card-hover-lift"
               >
                 <div className="space-y-1">
                   <div className="flex items-center gap-2">
@@ -257,7 +259,7 @@ export default function ProgressPage() {
         </div>
 
         {/* Section 8: Your Next Best Action Card */}
-        <div className="p-6 rounded-2xl bg-gradient-to-r from-indigo-950 via-indigo-900 to-indigo-800 text-white shadow-lg border border-indigo-700/50 flex flex-col sm:flex-row sm:items-center justify-between gap-5 animate-fade-in-up delay-200">
+        <div data-scroll="scale" className="p-6 rounded-2xl bg-gradient-to-r from-indigo-950 via-indigo-900 to-indigo-800 text-white shadow-lg border border-indigo-700/50 flex flex-col sm:flex-row sm:items-center justify-between gap-5 card-hover-lift">
           <div className="space-y-1.5">
             <div className="flex items-center gap-2">
               <span className="px-2.5 py-0.5 rounded-full bg-amber-400/20 text-amber-300 text-[10px] font-extrabold uppercase tracking-wider border border-amber-400/30 flex items-center gap-1">
@@ -268,7 +270,7 @@ export default function ProgressPage() {
             </div>
             <h3 className="text-xl font-extrabold tracking-tight">Review Factorisation</h3>
             <p className="text-xs text-indigo-200 max-w-lg leading-relaxed">
-              Why this task? "Your last 3 diagnostic answers show a prerequisite gap in factoring trinomials before quadratic equation solving."
+              Why this task? &ldquo;Your last 3 diagnostic answers show a prerequisite gap in factoring trinomials before quadratic equation solving.&rdquo;
             </p>
           </div>
 

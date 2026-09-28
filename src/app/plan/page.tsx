@@ -176,7 +176,7 @@ export default function PlanPage() {
     <AppLayout>
       <div className="max-w-4xl mx-auto space-y-6">
         {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 animate-fade-in-down">
+        <div data-scroll="fade-down" className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
           <div>
             <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-indigo-50 text-indigo-700 text-xs font-semibold mb-1 border border-indigo-100">
               <Sparkles className="w-3.5 h-3.5" />
@@ -201,7 +201,7 @@ export default function PlanPage() {
         </div>
 
         {/* Plan Header Card */}
-        <div className="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 card-hover-lift animate-fade-in-up delay-75">
+        <div data-scroll="scale" className="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 card-hover-lift">
           <div className="space-y-1.5 flex-1">
             <div className="flex items-center gap-2">
               <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
@@ -242,7 +242,7 @@ export default function PlanPage() {
         </div>
 
         {/* Plan Items List */}
-        <div className="space-y-3.5 animate-fade-in-up delay-150">
+        <div className="space-y-3.5">
           {plan?.items.map((item, idx) => {
             const isCompleted = !!completedOrders[item.order || idx + 1];
             const isCritical = item.priority === "critical";
@@ -252,6 +252,8 @@ export default function PlanPage() {
             return (
               <div
                 key={idx}
+                data-scroll="fade-up"
+                data-scroll-delay={String(((idx % 4) + 1) * 75)}
                 className={`bg-white rounded-2xl border transition-all duration-200 shadow-xs p-5 card-hover-lift ${
                   isCompleted
                     ? "border-emerald-200 bg-emerald-50/20"

@@ -204,7 +204,7 @@ function ResultsContent() {
 
       <div className="max-w-4xl mx-auto space-y-8">
         {/* Header */}
-        <div className="text-center animate-fade-in-down">
+        <div data-scroll="fade-down" className="text-center">
           <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs font-semibold mb-3 border border-emerald-200 animate-pop">
             <CheckCircle2 className="w-3.5 h-3.5" />
             <span>Assessment Cycle Complete</span>
@@ -220,7 +220,7 @@ function ResultsContent() {
         {/* Score Overview Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {/* Overall Score */}
-          <div className="bg-white rounded-2xl border border-slate-200/90 p-6 flex flex-col items-center justify-center text-center shadow-sm card-hover-lift animate-scale-in delay-75">
+          <div data-scroll="fade-up" data-scroll-delay="50" className="bg-white rounded-2xl border border-slate-200/90 p-6 flex flex-col items-center justify-center text-center shadow-sm card-hover-lift">
             <span className="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">
               Overall Baseline Mastery
             </span>
@@ -233,7 +233,7 @@ function ResultsContent() {
           </div>
 
           {/* Primary Strength */}
-          <div className="bg-white rounded-2xl border border-slate-200/90 p-6 flex flex-col justify-between shadow-sm card-hover-lift animate-fade-in-up delay-150">
+          <div data-scroll="fade-up" data-scroll-delay="100" className="bg-white rounded-2xl border border-slate-200/90 p-6 flex flex-col justify-between shadow-sm card-hover-lift">
             <div>
               <div className="flex items-center gap-2 text-emerald-600 text-xs font-bold uppercase tracking-wider mb-2">
                 <Award className="w-4 h-4" />
@@ -255,7 +255,7 @@ function ResultsContent() {
           </div>
 
           {/* Primary Focus Needed / Prerequisite Gap */}
-          <div className="bg-white rounded-2xl border border-indigo-100 p-6 flex flex-col justify-between shadow-sm bg-gradient-to-br from-indigo-50/40 to-purple-50/30 card-hover-lift animate-fade-in-up delay-200">
+          <div data-scroll="fade-up" data-scroll-delay="150" className="bg-white rounded-2xl border border-indigo-100 p-6 flex flex-col justify-between shadow-sm bg-gradient-to-br from-indigo-50/40 to-purple-50/30 card-hover-lift">
             <div>
               <div className="flex items-center gap-2 text-indigo-700 text-xs font-bold uppercase tracking-wider mb-2">
                 <AlertTriangle className="w-4 h-4 text-amber-500" />
@@ -276,14 +276,14 @@ function ResultsContent() {
         </div>
 
         {/* AI Analysis & Why SkillSync Recommends This */}
-        <div className="bg-white rounded-2xl border border-indigo-200/80 shadow-sm p-6 sm:p-8 relative overflow-hidden">
+        <div data-scroll="scale" className="bg-white rounded-2xl border border-indigo-200/80 shadow-sm p-6 sm:p-8 relative overflow-hidden card-hover-lift">
           <div className="flex items-center gap-2.5 text-indigo-700 font-bold text-sm mb-3">
             <Sparkles className="w-5 h-5 text-indigo-600" />
             <span>AI Learning Analysis & Recommendation Rationale</span>
           </div>
 
           <p className="text-base text-slate-800 font-medium leading-relaxed">
-            "{aiAnalysis?.summary || "You are strong in SQL fundamentals but need more practice with normalization and transactions."}"
+            &ldquo;{aiAnalysis?.summary || "You are strong in SQL fundamentals but need more practice with normalization and transactions."}&rdquo;
           </p>
 
           <div className="mt-6 p-4 rounded-xl bg-slate-50 border border-slate-200/80 space-y-3">
@@ -306,7 +306,7 @@ function ResultsContent() {
         </div>
 
         {/* Topic Breakdown Bars */}
-        <div className="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-6 sm:p-8">
+        <div data-scroll="fade-up" className="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-6 sm:p-8">
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-2">
               <BarChart3 className="w-5 h-5 text-slate-600" />
@@ -316,13 +316,18 @@ function ResultsContent() {
           </div>
 
           <div className="space-y-4">
-            {topicScores.map((ts) => {
+            {topicScores.map((ts, idx) => {
               const isStrong = ts.percentage >= 70;
               const isMedium = ts.percentage >= 50 && ts.percentage < 70;
               const isWeak = ts.percentage < 50;
 
               return (
-                <div key={ts.topicName} className="p-3 rounded-xl border border-slate-100 hover:bg-slate-50/50 transition-colors">
+                <div
+                  key={ts.topicName}
+                  data-scroll="fade-up"
+                  data-scroll-delay={String((idx + 1) * 75)}
+                  className="p-3 rounded-xl border border-slate-100 hover:bg-slate-50/50 transition-colors"
+                >
                   <div className="flex justify-between items-center text-xs mb-1.5">
                     <div className="flex items-center gap-2">
                       <span className="font-semibold text-slate-900">{ts.topicName}</span>
@@ -360,7 +365,7 @@ function ResultsContent() {
         </div>
 
         {/* CTAs to continue Adaptive Loop */}
-        <div className="p-6 rounded-2xl bg-gradient-to-r from-indigo-900 to-indigo-800 text-white shadow-md flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div data-scroll="fade-up" className="p-6 rounded-2xl bg-gradient-to-r from-indigo-900 to-indigo-800 text-white shadow-md flex flex-col sm:flex-row items-center justify-between gap-4 card-hover-lift">
           <div>
             <h3 className="text-lg font-bold">Your Adaptive Path Is Ready</h3>
             <p className="text-xs text-indigo-200 mt-1 max-w-md">
