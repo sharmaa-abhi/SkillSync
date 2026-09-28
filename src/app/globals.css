@@ -305,3 +305,86 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background: #9ca3af;
 }
+
+/* ========================================================
+   SCROLL-REVEAL ANIMATION SYSTEM
+   Elements with [data-scroll] start hidden and animate in
+   when they enter the viewport (via IntersectionObserver).
+   ======================================================== */
+
+/* Base hidden state for all scroll-reveal elements */
+[data-scroll] {
+  opacity: 0;
+  transition:
+    opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
+}
+
+/* Default: fade-up */
+[data-scroll=""],
+[data-scroll="fade-up"] {
+  transform: translateY(40px);
+}
+[data-scroll=""].is-visible,
+[data-scroll="fade-up"].is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Fade-down */
+[data-scroll="fade-down"] {
+  transform: translateY(-40px);
+}
+[data-scroll="fade-down"].is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Fade-left (slides from left) */
+[data-scroll="fade-left"] {
+  transform: translateX(-50px);
+}
+[data-scroll="fade-left"].is-visible {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* Fade-right (slides from right) */
+[data-scroll="fade-right"] {
+  transform: translateX(50px);
+}
+[data-scroll="fade-right"].is-visible {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* Scale-in */
+[data-scroll="scale"] {
+  transform: scale(0.88);
+}
+[data-scroll="scale"].is-visible {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* Simple fade */
+[data-scroll="fade"] {
+  transform: none;
+}
+[data-scroll="fade"].is-visible {
+  opacity: 1;
+}
+
+/* Staggered delays via data-scroll-delay attribute */
+[data-scroll-delay="100"] { transition-delay: 100ms; }
+[data-scroll-delay="150"] { transition-delay: 150ms; }
+[data-scroll-delay="200"] { transition-delay: 200ms; }
+[data-scroll-delay="250"] { transition-delay: 250ms; }
+[data-scroll-delay="300"] { transition-delay: 300ms; }
+[data-scroll-delay="400"] { transition-delay: 400ms; }
+[data-scroll-delay="500"] { transition-delay: 500ms; }
+[data-scroll-delay="600"] { transition-delay: 600ms; }
+[data-scroll-delay="700"] { transition-delay: 700ms; }
+[data-scroll-delay="800"] { transition-delay: 800ms; }
+

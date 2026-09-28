@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { useScrollReveal } from "@/hooks/useScrollReveal";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
@@ -22,6 +23,7 @@ import {
 export default function LandingPage() {
   const router = useRouter();
   const [demoLoading, setDemoLoading] = useState(false);
+  const scrollRef = useScrollReveal();
 
   const handleInstantDemoLogin = async (e?: React.MouseEvent) => {
     if (e) e.preventDefault();
@@ -49,7 +51,7 @@ export default function LandingPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 selection:bg-indigo-500 selection:text-white">
+    <div ref={scrollRef} className="min-h-screen bg-slate-50 text-slate-900 selection:bg-indigo-500 selection:text-white">
       {/* Navigation */}
       <nav className="fixed top-0 w-full bg-white/80 backdrop-blur-md border-b border-slate-200 z-50">
         <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
@@ -150,7 +152,7 @@ export default function LandingPage() {
           </div>
 
           {/* Product Preview / Adaptive Loop Visual */}
-          <div className="animate-fade-in-up delay-300 max-w-4xl mx-auto bg-white rounded-3xl border border-slate-200/90 shadow-xl overflow-hidden p-6 sm:p-8 text-left card-hover-lift">
+          <div data-scroll="scale" className="max-w-4xl mx-auto bg-white rounded-3xl border border-slate-200/90 shadow-xl overflow-hidden p-6 sm:p-8 text-left card-hover-lift">
             <div className="flex items-center justify-between border-b border-slate-100 pb-4 mb-6">
               <div className="flex items-center gap-2">
                 <span className="w-3 h-3 rounded-full bg-rose-400" />
@@ -213,7 +215,7 @@ export default function LandingPage() {
 
       {/* Feature Grid */}
       <section id="how-it-works" className="py-20 px-6 max-w-6xl mx-auto">
-        <div className="text-center mb-16">
+        <div data-scroll="fade-up" className="text-center mb-16">
           <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900 mb-3">
             How the Adaptive Learning Loop Works
           </h2>
@@ -223,7 +225,7 @@ export default function LandingPage() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <div className="bg-blue-50 rounded-2xl p-6 border border-blue-200/80 shadow-xs card-hover-lift">
+          <div data-scroll="fade-up" className="bg-blue-50 rounded-2xl p-6 border border-blue-200/80 shadow-xs card-hover-lift">
             <div className="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center mb-4">
               <Brain className="w-5 h-5" />
             </div>
@@ -233,7 +235,7 @@ export default function LandingPage() {
             </p>
           </div>
 
-          <div className="bg-blue-50 rounded-2xl p-6 border border-blue-200/80 shadow-xs card-hover-lift">
+          <div data-scroll="fade-up" data-scroll-delay="100" className="bg-blue-50 rounded-2xl p-6 border border-blue-200/80 shadow-xs card-hover-lift">
             <div className="w-10 h-10 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center mb-4">
               <BarChart3 className="w-5 h-5" />
             </div>
@@ -243,7 +245,7 @@ export default function LandingPage() {
             </p>
           </div>
 
-          <div className="bg-blue-50 rounded-2xl p-6 border border-blue-200/80 shadow-xs card-hover-lift">
+          <div data-scroll="fade-up" data-scroll-delay="200" className="bg-blue-50 rounded-2xl p-6 border border-blue-200/80 shadow-xs card-hover-lift">
             <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center mb-4">
               <Target className="w-5 h-5" />
             </div>
@@ -253,7 +255,7 @@ export default function LandingPage() {
             </p>
           </div>
 
-          <div className="bg-blue-50 rounded-2xl p-6 border border-blue-200/80 shadow-xs card-hover-lift">
+          <div data-scroll="fade-up" data-scroll-delay="300" className="bg-blue-50 rounded-2xl p-6 border border-blue-200/80 shadow-xs card-hover-lift">
             <div className="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center mb-4">
               <MessageSquare className="w-5 h-5" />
             </div>
@@ -263,7 +265,7 @@ export default function LandingPage() {
             </p>
           </div>
 
-          <div className="bg-blue-50 rounded-2xl p-6 border border-blue-200/80 shadow-xs card-hover-lift">
+          <div data-scroll="fade-up" data-scroll-delay="400" className="bg-blue-50 rounded-2xl p-6 border border-blue-200/80 shadow-xs card-hover-lift">
             <div className="w-10 h-10 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center mb-4">
               <Flame className="w-5 h-5" />
             </div>
@@ -273,7 +275,7 @@ export default function LandingPage() {
             </p>
           </div>
 
-          <div className="bg-blue-50 rounded-2xl p-6 border border-blue-200/80 shadow-xs card-hover-lift">
+          <div data-scroll="fade-up" data-scroll-delay="500" className="bg-blue-50 rounded-2xl p-6 border border-blue-200/80 shadow-xs card-hover-lift">
             <div className="w-10 h-10 rounded-xl bg-sky-50 text-sky-600 flex items-center justify-center mb-4">
               <TrendingUp className="w-5 h-5" />
             </div>
@@ -287,7 +289,7 @@ export default function LandingPage() {
 
       {/* CTA Section */}
       <section className="py-20 px-6">
-        <div className="max-w-3xl mx-auto text-center bg-indigo-900 text-white rounded-3xl p-10 sm:p-14 shadow-xl">
+        <div data-scroll="scale" className="max-w-3xl mx-auto text-center bg-indigo-900 text-white rounded-3xl p-10 sm:p-14 shadow-xl">
           <h2 className="text-2xl sm:text-4xl font-extrabold tracking-tight mb-3">
             Ready to experience adaptive learning?
           </h2>
@@ -325,7 +327,7 @@ export default function LandingPage() {
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-slate-200 py-8 px-6 text-center text-xs text-slate-400">
+      <footer data-scroll="fade" className="border-t border-slate-200 py-8 px-6 text-center text-xs text-slate-400">
         SkillSync AI • Built for AI × Education Hackathon • Adaptive Learning MVP
       </footer>
     </div>
