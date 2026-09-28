@@ -1,9 +1,9 @@
 # SkillSync AI — API Documentation
 
-**Version:** 1.0
-**Status:** Pre-Implementation (All endpoints are PLANNED)
+**Version:** 2.0
+**Status:** 🟢 Partially Implemented (Auth, Assessment & Analysis APIs Live)
 
-> ⚠️ **Note:** No API endpoints have been implemented yet. This document defines the planned API surface.
+> Core API endpoints for authentication, registration, assessment, and AI analysis are implemented. Tutor, quiz, and progress APIs are in active development.
 
 ---
 

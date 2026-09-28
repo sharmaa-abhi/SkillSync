@@ -1,8 +1,8 @@
 # SkillSync AI — Product Requirements Document (PRD)
 
-**Version:** 1.0
+**Version:** 2.0
 **Date:** September 2026
-**Status:** Pre-Implementation (Planning Phase)
+**Status:** 🟢 Active Development (MVP Core Implemented)
 
 ---
 
@@ -101,18 +101,18 @@ Students in traditional educational settings receive uniform learning paths rega
 
 ## Non-Goals
 
-These are explicitly **not** in scope for the MVP:
+These are explicitly **not** in scope for the MVP but are planned for future phases:
 
 - Replacing human teachers
-- Supporting every academic subject
-- Building a full LMS (course management, assignments, grading)
-- Social features (student forums, peer interaction)
-- Real-time video/voice tutoring
-- Integration with university systems
-- Mobile native application
-- Offline learning capability
-- Teacher or parent accounts
-- Gamification or achievement systems
+- Supporting every academic subject → **Phase 3: Multi-subject expansion planned**
+- Building a full LMS (course management, assignments, grading) → **Phase 4: LMS integrations planned**
+- Social features (student forums, peer interaction) → **Phase 3: Collaborative study rooms planned**
+- Real-time video/voice tutoring → **Phase 4: Voice AI Tutor planned**
+- Integration with university systems → **Phase 4: LTI 1.3 integration planned**
+- Mobile native application → **Phase 4: React Native app planned**
+- Offline learning capability → **Phase 4: Offline mode in mobile app planned**
+- Teacher or parent accounts → **Phase 4: Educator & Parent portals planned**
+- Gamification or achievement systems → **Phase 4: Gamification engine planned**
 
 ---
 
@@ -122,35 +122,40 @@ These are explicitly **not** in scope for the MVP:
 
 | # | Feature | Priority | Status |
 |---|---|---|---|
-| 1 | Registration & Login | P0 | PLANNED |
-| 2 | Student Onboarding | P0 | PLANNED |
-| 3 | Subject Selection | P0 | PLANNED |
-| 4 | Diagnostic Assessment | P0 | PLANNED |
-| 5 | Topic-Level Scoring | P0 | PLANNED |
-| 6 | AI Learning Analysis | P0 | PLANNED |
-| 7 | Student Learning Profile | P0 | PLANNED |
-| 8 | Personalized Learning Plan | P0 | PLANNED |
-| 9 | Context-Aware AI Tutor | P0 | PLANNED |
-| 10 | Adaptive Quiz | P0 | PLANNED |
-| 11 | Progress Tracking | P0 | PLANNED |
-| 12 | Learning Profile Update | P0 | PLANNED |
+| 1 | Registration & Login | P0 | ✅ IMPLEMENTED |
+| 2 | Student Onboarding | P0 | ✅ IMPLEMENTED |
+| 3 | Subject Selection | P0 | ✅ IMPLEMENTED |
+| 4 | Diagnostic Assessment | P0 | ✅ IMPLEMENTED |
+| 5 | Topic-Level Scoring | P0 | ✅ IMPLEMENTED |
+| 6 | AI Learning Analysis | P0 | ✅ IMPLEMENTED |
+| 7 | Student Learning Profile | P0 | ✅ IMPLEMENTED |
+| 8 | Personalized Learning Plan | P0 | 🔧 IN PROGRESS |
+| 9 | Context-Aware AI Tutor | P0 | 🔧 IN PROGRESS |
+| 10 | Adaptive Quiz | P0 | 🔧 IN PROGRESS |
+| 11 | Progress Tracking | P0 | 🔧 IN PROGRESS |
+| 12 | Learning Profile Update | P0 | 📋 PLANNED |
 
 ### Future Scope
 
-| # | Feature | Priority |
-|---|---|---|
-| 1 | Voice AI Tutor | P2 |
-| 2 | Multilingual Support | P2 |
-| 3 | Teacher Dashboard | P1 |
-| 4 | Parent Dashboard | P2 |
-| 5 | Advanced Analytics | P1 |
-| 6 | RAG-Based Curriculum Knowledge | P1 |
-| 7 | Personalized Revision Engine | P1 |
-| 8 | Learning Difficulty Prediction | P2 |
-| 9 | Offline Learning | P3 |
-| 10 | Mobile Application | P2 |
-| 11 | Gamification & Certificates | P2 |
-| 12 | LMS Integration | P3 |
+| # | Feature | Priority | Target Phase |
+|---|---|---|---|
+| 1 | Voice AI Tutor | P1 | Phase 4 — Q3 2027 |
+| 2 | Multilingual Support | P2 | Phase 4 — Q3 2027 |
+| 3 | Teacher Dashboard | P1 | Phase 4 — Q3 2027 |
+| 4 | Parent Dashboard | P3 | Phase 4 — 2028 |
+| 5 | Advanced Analytics | P1 | Phase 3 — Q2 2027 |
+| 6 | RAG-Based Curriculum Knowledge | P1 | Phase 3 — Q1 2027 |
+| 7 | Spaced Repetition Engine | P1 | Phase 3 — Q1 2027 |
+| 8 | Learning Difficulty Prediction | P2 | Phase 3 — Q2 2027 |
+| 9 | Offline Learning | P3 | Phase 4 — Q4 2027 |
+| 10 | Mobile Application | P2 | Phase 4 — Q4 2027 |
+| 11 | Gamification & Certificates | P2 | Phase 4 — Q4 2027 |
+| 12 | LMS Integration (Canvas/Moodle) | P3 | Phase 4 — 2028 |
+| 13 | Collaborative Study Rooms | P3 | Phase 3 — Q3 2027 |
+| 14 | Session Summarization | P2 | Phase 3 — Q2 2027 |
+| 15 | AI Assessment Item Bank | P2 | Phase 3 — Q2 2027 |
+| 16 | Enterprise SSO (SAML/OAuth) | P3 | Phase 4 — 2028 |
+| 17 | Public API Platform | P3 | Phase 4 — 2028 |
 
 ---
 

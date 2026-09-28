@@ -1,6 +1,6 @@
 # SkillSync AI — Contributing & Testing Guide
 
-**Version:** 1.1  
+**Version:** 2.0  
 **Last Updated:** September 2026  
 
 This guide defines contribution workflows, branch etiquette, coding standards, and our comprehensive testing strategy for SkillSync AI.

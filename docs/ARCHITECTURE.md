@@ -1,15 +1,15 @@
 # SkillSync AI — Technical Architecture
 
-**Version:** 1.0
-**Status:** Pre-Implementation (Design Phase)
+**Version:** 2.0
+**Status:** 🟢 Implemented (Active Development)
 
-> ⚠️ **Note:** This document describes the planned architecture. No code has been implemented yet. All diagrams and descriptions represent the target design.
+> This document describes the current architecture of SkillSync AI. The core system is implemented with ongoing feature development.
 
 ---
 
 ## System Overview
 
-SkillSync AI is a full-stack web application built with Next.js 14 (App Router), PostgreSQL, and Google Gemini AI. The system follows a monolithic architecture suitable for a hackathon timeline, with clear separation between UI, API, database, and AI layers.
+SkillSync AI is a full-stack web application built with Next.js 15 (App Router), PostgreSQL (Supabase), and Google Gemini AI. The system follows a monolithic architecture with clear separation between UI, API, database, and AI layers.
 
 ```mermaid
 graph TB

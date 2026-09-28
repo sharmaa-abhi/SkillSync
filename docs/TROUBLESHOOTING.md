@@ -1,6 +1,6 @@
 # SkillSync AI — Troubleshooting & Incident Resolution Guide
 
-**Version:** 1.0  
+**Version:** 2.0  
 **Last Updated:** September 2026  
 **Status:** Active  
 
