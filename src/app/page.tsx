@@ -223,7 +223,7 @@ export default function LandingPage() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <div className="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-xs card-hover-lift">
+          <div className="bg-blue-50 rounded-2xl p-6 border border-blue-200/80 shadow-xs card-hover-lift">
             <div className="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center mb-4">
               <Brain className="w-5 h-5" />
             </div>
@@ -233,7 +233,7 @@ export default function LandingPage() {
             </p>
           </div>
 
-          <div className="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-xs card-hover-lift">
+          <div className="bg-blue-50 rounded-2xl p-6 border border-blue-200/80 shadow-xs card-hover-lift">
             <div className="w-10 h-10 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center mb-4">
               <BarChart3 className="w-5 h-5" />
             </div>
@@ -243,7 +243,7 @@ export default function LandingPage() {
             </p>
           </div>
 
-          <div className="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-xs card-hover-lift">
+          <div className="bg-blue-50 rounded-2xl p-6 border border-blue-200/80 shadow-xs card-hover-lift">
             <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center mb-4">
               <Target className="w-5 h-5" />
             </div>
@@ -253,7 +253,7 @@ export default function LandingPage() {
             </p>
           </div>
 
-          <div className="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-xs card-hover-lift">
+          <div className="bg-blue-50 rounded-2xl p-6 border border-blue-200/80 shadow-xs card-hover-lift">
             <div className="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center mb-4">
               <MessageSquare className="w-5 h-5" />
             </div>
@@ -263,7 +263,7 @@ export default function LandingPage() {
             </p>
           </div>
 
-          <div className="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-xs card-hover-lift">
+          <div className="bg-blue-50 rounded-2xl p-6 border border-blue-200/80 shadow-xs card-hover-lift">
             <div className="w-10 h-10 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center mb-4">
               <Flame className="w-5 h-5" />
             </div>
@@ -273,7 +273,7 @@ export default function LandingPage() {
             </p>
           </div>
 
-          <div className="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-xs card-hover-lift">
+          <div className="bg-blue-50 rounded-2xl p-6 border border-blue-200/80 shadow-xs card-hover-lift">
             <div className="w-10 h-10 rounded-xl bg-sky-50 text-sky-600 flex items-center justify-center mb-4">
               <TrendingUp className="w-5 h-5" />
             </div>
