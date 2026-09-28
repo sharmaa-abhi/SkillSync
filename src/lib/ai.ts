@@ -201,37 +201,119 @@ export interface TutorInput {
   educationLevel: string;
   conversationHistory: { role: string; content: string }[];
   studentMessage: string;
+  mode?: "socratic" | "step_by_step" | "analogy" | "practice" | "review";
+  language?: "en" | "hi" | "hinglish";
 }
 
 export async function tutorRespond(input: TutorInput): Promise<string> {
+  const mode = input.mode || "socratic";
+  const language = input.language || "en";
+
   const historyText = input.conversationHistory
     .slice(-8)
-    .map(m => `${m.role === "student" ? "Student" : "Tutor"}: ${m.content}`)
+    .map(m => `${m.role === "student" ? "Student" : "Coach"}: ${m.content}`)
     .join("\n");
 
-  const prompt = `You are a patient, knowledgeable ${input.topicName} tutor for a ${input.educationLevel} student.
+  const modeInstructions = {
+    socratic: `Approach: SOCRATIC INQUIRY.
+- Do NOT directly give the solution or final answer.
+- Guide the student by asking thoughtful, leading questions.
+- Nudge them toward noticing the underlying pattern or next logical deduction.
+- If they are stuck or ask for a hint, provide a progressive hint (starting with the smallest nudge).`,
+    step_by_step: `Approach: STEP-BY-STEP BREAKDOWN.
+- Break the problem or concept into clear, structured, numbered steps (e.g., Step 1, Step 2).
+- Present the immediate next step clearly with the reasoning behind it.
+- Ask the student to complete or verify that step before proceeding.`,
+    analogy: `Approach: INTUITIVE REAL-WORLD ANALOGY.
+- Use a vivid, memorable everyday analogy (e.g., cricket, cooking, building blocks, money, gaming) to explain the concept.
+- Map the analogy directly to the mathematical/technical elements of the topic.
+- Conclude by asking if the metaphor helps clarify the concept.`,
+    practice: `Approach: INTERACTIVE PRACTICE PROBLEM.
+- Formulate a clean, targeted practice problem calibrated to the student's mastery level (${input.score}%).
+- Present the problem clearly.
+- Ask the student to attempt the first step and share their thought process.
+- Offer immediate encouragement.`,
+    review: `Approach: RAPID CONCEPT & EXAM REVIEW.
+- Provide a concise cheat-sheet style overview of key formulas, principles, and common pitfalls to avoid in exams.
+- Highlight 2-3 golden rules or mnemonics.
+- End with a quick 1-line check question.`,
+  }[mode];
 
-RULES:
-- Teach concepts step by step, don't just give answers
-- Use simple examples the student can relate to
-- Break complex ideas into digestible parts
-- Ask checking questions to verify understanding
-- Be encouraging but honest about areas needing work
-- Keep responses focused and under 300 words
+  const languageInstructions = {
+    en: "Language: English. Professional, warm, motivating academic tone.",
+    hi: "Language: Hindi (शुद्ध एवं सरल हिन्दी लिपि Devanagari). Use Hindi terms along with English mathematical symbols where appropriate.",
+    hinglish: "Language: Hinglish (Natural Indian colloquial mix of Hindi and English written in Latin script, e.g., 'Chaliye isko step-by-step samajhte hain...'). Keep mathematical terms in English.",
+  }[language];
 
-CONTEXT:
-Topic: ${input.topicName}
-Student's mastery: ${input.masteryLevel} (${input.score}%)
-${historyText ? `\nConversation so far:\n${historyText}` : ""}
+  const prompt = `You are the SkillSync Socratic AI Learning Coach. You are tutoring a ${input.educationLevel} student on the topic "${input.topicName}".
 
-Student's message: ${input.studentMessage}
+ROLE & PEDAGOGY:
+${modeInstructions}
 
-Respond as the tutor:`;
+LANGUAGE & TONE:
+${languageInstructions}
+
+GENERAL CONSTRAINTS:
+- Keep the response concise, punchy, and under 250 words.
+- Format equations cleanly using standard readable math notation or LaTeX-style delimiters (e.g. $ax^2 + bx + c = 0$ or $(x - 2)(x + 3)$).
+- Use bullet points and bold highlights for readability.
+- Be encouraging, respectful, and pedagogically sound.
+
+STUDENT LEARNING CONTEXT:
+- Topic: ${input.topicName}
+- Current Mastery: ${input.masteryLevel} (${input.score}%)
+- Student's Stated Question/Input: ${input.studentMessage}
+${historyText ? `\nRecent conversation:\n${historyText}` : ""}
+
+Respond as the AI Coach:`;
 
   try {
     return await callGemini(prompt);
   } catch {
-    return `I'd be happy to help you with ${input.topicName}! Let me explain the key concepts step by step. Could you tell me specifically what part you're finding difficult?`;
+    return generateFallbackTutorResponse(input, mode, language);
+  }
+}
+
+function generateFallbackTutorResponse(
+  input: TutorInput,
+  mode: "socratic" | "step_by_step" | "analogy" | "practice" | "review",
+  language: "en" | "hi" | "hinglish"
+): string {
+  const topic = input.topicName;
+
+  if (language === "hi") {
+    if (mode === "analogy") {
+      return `**${topic}** को एक उदाहरण से समझें:\n\nजैसे किसी मशीन के पुर्ज़ों को अलग-अलग करके उसकी बनावट को समझा जाता है, वैसे ही गणित में हम व्यंजक को उसके मूल घटकों में तोड़ते हैं।\n\nक्या आप बता सकते हैं कि आपके दिए गए प्रश्न में कौन सा घटक दोनों पदों में उभयनिष्ठ (common) है?`;
+    }
+    if (mode === "practice") {
+      return `यहाँ **${topic}** के लिए एक अभ्यास प्रश्न है:\n\n**प्रश्न:** $x^2 + 7x + 12$ के गुणनखंड ज्ञात कीजिए।\n\n**संकेत:** ऐसी दो संख्याएँ सोचिए जिनका गुणनफल 12 और योग 7 हो। आपका पहला कदम क्या होगा?`;
+    }
+    return `**${topic}** को समझने के लिए एक मुख्य सिद्धांत याद रखें:\n\nजब भी हम किसी समस्या को हल करते हैं, सबसे पहले यह देखें कि क्या कोई पद उभयनिष्ठ है या कोई सर्वसमिका लागू हो रही है।\n\nआप इस प्रश्न में सबसे पहले किस पद पर ध्यान केंद्रित करना चाहेंगे?`;
+  }
+
+  if (language === "hinglish") {
+    if (mode === "analogy") {
+      return `**${topic}** ko ek simple example se samajhte hain:\n\nJaise kisi team me har player ka specific role hota hai, waise hi algebraic terms me numbers aur variables ke specific patterns hote hain. Jab hum unhe group karte hain, toh solution bahut simple ho jata hai!\n\nAapko is expression me sabse pehle kaun sa pattern ya common factor dikh raha hai?`;
+    }
+    if (mode === "practice") {
+      return `Chaliye **${topic}** par ek practice problem solve karte hain!\n\n**Problem:** Factorize $x^2 + 5x + 6 = 0$.\n\n**Nudge:** Hamein aisi 2 numbers chahiye jinka product 6 ho aur sum 5 ho. Aapke hisaab se kaun se numbers fit honge?`;
+    }
+    return `Great effort! **${topic}** me sabse zaroori step yeh identify karna hota hai ki expression ka structure kaisa hai.\n\nKya aap mujhe bata sakte hain ki aapne is problem me pehla step kya try kiya tha? Main wahi se guide karta hoon!`;
+  }
+
+  // English fallbacks
+  switch (mode) {
+    case "analogy":
+      return `Think of **${topic}** like assembling furniture with modular Lego blocks:\n\nInstead of dealing with one large, complicated structure all at once, you find the identical connecting pieces (common factors) and separate them into neat, predictable units.\n\nLooking at your expression, what "matching pieces" do you notice across the terms?`;
+    case "step_by_step":
+      return `Let's break down **${topic}** into 3 manageable steps:\n\n1. **Inspect for Common Factors**: Look at all numerical coefficients and variable powers.\n2. **Identify the Pattern**: Determine if it matches standard forms (like $(a+b)^2$, difference of squares, or quadratic trinomials).\n3. **Group and Simplify**: Factor out terms systematically.\n\nWhich of these 3 steps would you like to execute first on your problem?`;
+    case "practice":
+      return `Here is a calibrated practice problem for **${topic}** (Mastery: ${input.score}%):\n\n> **Solve/Factor:** $x^2 + 8x + 15 = 0$\n\n**Coaching Nudge:** Look for two integers that multiply to $15$ and add up to $8$.\n\nWhat pair of numbers comes to mind first?`;
+    case "review":
+      return `### ⚡ Quick Review: ${topic}\n\n- **Core Definition**: Decomposing an expression into products of simpler factors.\n- **Golden Rule**: Always check for a Greatest Common Factor (GCF) *first* before attempting quadratic splitting or formulas.\n- **Common Trap**: Watch your negative signs when factoring negatives out of parentheses!\n\nReady to test this with a fast diagnostic question?`;
+    case "socratic":
+    default:
+      return `That's a thoughtful question about **${topic}**!\n\nTo build your intuition here: if you were to expand an expression like $(x + 2)(x + 3)$, what would the middle term look like?\n\nWorking backwards from that expansion is the secret to factoring. What do you observe?`;
   }
 }
 
