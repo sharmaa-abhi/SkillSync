@@ -79,11 +79,26 @@ interface DashboardData {
   } | null;
 }
 
+interface ReviewItem {
+  id: string;
+  topicName: string;
+  subject: string;
+  intervalDays: number;
+  repetitions: number;
+  easeFactor: number;
+  retentionEst: number;
+  nextReviewDue: string;
+  daysOverdue: number;
+  urgency: "critical" | "high" | "medium" | "low";
+}
+
 export default function DashboardPage() {
   const { data: session } = useSession();
   const [data, setData] = useState<DashboardData | null>(null);
   const [loading, setLoading] = useState(true);
   const [activeSubject, setActiveSubject] = useState<"Maths" | "DBMS">("Maths");
+  const [reviewQueue, setReviewQueue] = useState<ReviewItem[]>([]);
+  const [reviewStats, setReviewStats] = useState<{ totalDue: number; averageRetention: number } | null>(null);
 
   useEffect(() => {
     async function fetchDashboard() {
@@ -100,6 +115,19 @@ export default function DashboardPage() {
       } finally {
         setLoading(false);
       }
+
+      // Fetch Spaced Repetition Review Queue (Ebbinghaus Forgetting Curve)
+      try {
+        const revRes = await fetch("/api/review");
+        if (revRes.ok) {
+          const revData = await revRes.json();
+          setReviewQueue(revData.queue || []);
+          setReviewStats({
+            totalDue: revData.totalDue || 0,
+            averageRetention: revData.averageRetention || 0,
+          });
+        }
+      } catch {}
     }
 
     function loadFallbackData() {
@@ -631,6 +659,123 @@ export default function DashboardPage() {
                 </div>
               </div>
             ))}
+          </div>
+        </div>
+
+        {/* ========================================================================= */}
+        {/* SPACED REPETITION ENGINE (EBBINGHAUS FORGETTING CURVE)                     */}
+        {/* ========================================================================= */}
+        <div data-scroll="fade-up" className="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-6 sm:p-8 space-y-5">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-slate-100 gap-3">
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="w-8 h-8 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center font-bold">
+                  <RotateCcw className="w-4 h-4" />
+                </span>
+                <div>
+                  <h3 className="text-base font-bold text-slate-900 tracking-tight flex items-center gap-2">
+                    <span>Spaced Repetition Review Queue</span>
+                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-purple-100 text-purple-700">
+                      Ebbinghaus Engine
+                    </span>
+                  </h3>
+                  <p className="text-xs text-slate-500 mt-0.5">
+                    Retention decay model R(t) = e^(-t/S) schedules SM-2 reinforcement reviews before concepts drop below 70% retention.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2 text-xs">
+              <span className="px-2.5 py-1 rounded-lg bg-slate-100 text-slate-700 font-semibold border border-slate-200">
+                {reviewStats?.totalDue ?? reviewQueue.length} Due for Review
+              </span>
+              <span className="px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-700 font-bold border border-emerald-200">
+                Avg Retention: {reviewStats?.averageRetention ?? 65}%
+              </span>
+            </div>
+          </div>
+
+          <div className="space-y-3">
+            {reviewQueue.length === 0 ? (
+              <div className="py-8 text-center text-slate-500 text-xs">
+                <p>All concepts are currently well-retained! Great job keeping your memory curve strong.</p>
+              </div>
+            ) : (
+              reviewQueue.map((item) => {
+                const isUrgent = item.urgency === "critical" || item.retentionEst < 60;
+                return (
+                  <div
+                    key={item.id}
+                    className="p-4 rounded-xl border border-slate-200/80 bg-slate-50/50 hover:bg-slate-50 transition-all flex flex-col md:flex-row md:items-center justify-between gap-4"
+                  >
+                    <div className="space-y-1.5 flex-1">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span className="text-sm font-bold text-slate-900">{item.topicName}</span>
+                        <span className="px-2 py-0.5 rounded-md text-[10px] font-semibold bg-slate-200 text-slate-700">
+                          {item.subject}
+                        </span>
+                        {isUrgent && (
+                          <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-100 text-rose-800 border border-rose-200 flex items-center gap-1">
+                            <AlertTriangle className="w-3 h-3 text-rose-600" />
+                            Overdue Review ({item.daysOverdue}d overdue)
+                          </span>
+                        )}
+                        {!isUrgent && (
+                          <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800 border border-amber-200">
+                            Due Today
+                          </span>
+                        )}
+                      </div>
+
+                      {/* Memory retention bar */}
+                      <div className="flex items-center gap-3 pt-1">
+                        <div className="text-[11px] font-semibold text-slate-600 flex items-center gap-1">
+                          <span>Est. Retention:</span>
+                          <span className={item.retentionEst >= 70 ? "text-emerald-600 font-bold" : "text-rose-600 font-bold"}>
+                            {item.retentionEst}%
+                          </span>
+                        </div>
+                        <div className="w-36 h-2 bg-slate-200 rounded-full overflow-hidden">
+                          <div
+                            className={`h-full rounded-full transition-all ${
+                              item.retentionEst >= 70
+                                ? "bg-emerald-500"
+                                : item.retentionEst >= 50
+                                ? "bg-amber-500"
+                                : "bg-rose-500"
+                            }`}
+                            style={{ width: `${Math.min(100, item.retentionEst)}%` }}
+                          />
+                        </div>
+                        <span className="text-[10px] text-slate-400 font-mono">
+                          Interval: {item.intervalDays}d • Reps: {item.repetitions}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-2 self-end md:self-center flex-shrink-0">
+                      <Link
+                        href={`/tutor?topic=${encodeURIComponent(item.topicName)}`}
+                        className="px-3 py-1.5 rounded-xl border border-indigo-200 bg-white hover:bg-indigo-50 text-indigo-700 text-xs font-semibold flex items-center gap-1 transition-colors cursor-pointer"
+                        title="Open interactive Socratic session for this topic"
+                      >
+                        <Sparkles className="w-3.5 h-3.5 text-indigo-600" />
+                        <span>Reinforce</span>
+                      </Link>
+                      <Link
+                        href={`/quiz?topic=${encodeURIComponent(item.topicName)}`}
+                        className="px-3.5 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold flex items-center gap-1 transition-colors cursor-pointer shadow-xs"
+                        title="Take an adaptive recall test"
+                      >
+                        <span>Recall Quiz</span>
+                        <ArrowRight className="w-3.5 h-3.5" />
+                      </Link>
+                    </div>
+                  </div>
+                );
+              })
+            )}
           </div>
         </div>
 

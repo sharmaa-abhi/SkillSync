@@ -83,12 +83,12 @@ Open [http://localhost:3000](http://localhost:3000) to view the application.
 - [x] Full AI tutor context injection (student profile + history)
 - [x] Adaptive quiz difficulty scaling
 
-### Phase 2 — Advanced AI Features
-- [ ] RAG-based curriculum grounding (university textbooks & lectures)
-- [ ] Spaced repetition engine (Ebbinghaus forgetting curve)
-- [ ] Multi-subject expansion (OS, Computer Networks, DSA)
-- [ ] Session summarization (auto-generate notes from tutor chats)
-- [ ] Difficulty prediction using cohort learning patterns
+### Phase 2 — Advanced AI Features (✅ Complete)
+- [x] RAG-based curriculum grounding (university textbooks & lectures)
+- [x] Spaced repetition engine (Ebbinghaus forgetting curve)
+- [x] Multi-subject expansion (OS, Computer Networks, DSA)
+- [x] Session summarization (auto-generate notes from tutor chats)
+- [x] Difficulty prediction using cohort learning patterns
 
 ### Phase 3 — Platform Expansion
 - [ ] Voice AI Tutor (speech-to-speech in Hindi, Tamil, etc.)

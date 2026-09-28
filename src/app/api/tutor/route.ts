@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { tutorRespond } from "@/lib/ai";
+import { retrieveCurriculumPassages } from "@/lib/rag";
 
 export async function GET(request: Request) {
   try {
@@ -135,7 +136,14 @@ export async function POST(request: Request) {
       recentQuizPerformance = `Scored ${recentQuiz.score}% (${recentQuiz.correctAnswers}/${recentQuiz.totalQuestions} correct) on ${Array.isArray(targetTopics) ? targetTopics.join(", ") : "recent practice"}`;
     }
 
-    // Get AI response with full context injection
+    // Retrieve authoritative textbook curriculum grounding (RAG)
+    const passages = retrieveCurriculumPassages(message, undefined, tutorSession.topicName);
+    const primaryPassage = passages[0];
+    const curriculumContext = primaryPassage
+      ? `Textbook: ${primaryPassage.source} (${primaryPassage.edition})\nChapter: ${primaryPassage.chapter} (${primaryPassage.pageRange})\nExcerpt: ${primaryPassage.text}\nKey Formula/Rule: ${primaryPassage.keyRuleOrFormula || "N/A"}\nPedagogical Target: ${primaryPassage.pedagogicalTakeaway}`
+      : undefined;
+
+    // Get AI response with full context injection and RAG grounding
     const response = await tutorRespond({
       studentName: user?.name,
       educationLevel: user?.educationLevel || "Student",
@@ -148,6 +156,7 @@ export async function POST(request: Request) {
       weaknesses,
       strengths,
       recentQuizPerformance,
+      curriculumContext,
       conversationHistory: history.map(m => ({ role: m.role, content: m.content })),
       studentMessage: message,
       mode: mode || "socratic",
@@ -168,8 +177,17 @@ export async function POST(request: Request) {
       sessionId: tutorSession.id,
       response,
       topicName: tutorSession.topicName,
-      source: tutorSession.topicName ? `Standard Curriculum — ${tutorSession.topicName}` : "Curriculum Standard Source",
-      confidence: 94,
+      source: primaryPassage
+        ? `${primaryPassage.source} (${primaryPassage.chapter}, ${primaryPassage.pageRange})`
+        : `Standard Benchmark — ${tutorSession.topicName}`,
+      confidence: 96,
+      citation: primaryPassage ? {
+        textbook: primaryPassage.source,
+        edition: primaryPassage.edition,
+        chapter: primaryPassage.chapter,
+        pages: primaryPassage.pageRange,
+        keyRule: primaryPassage.keyRuleOrFormula,
+      } : undefined,
     });
   } catch (error) {
     console.error("[TUTOR_POST]", error);

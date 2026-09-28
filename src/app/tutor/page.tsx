@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import AppLayout from "@/components/AppLayout";
 import FormattedMessage from "@/components/FormattedMessage";
+import { type DifficultyPrediction } from "@/lib/cohortAnalytics";
 import {
   Sparkles,
   Send,
@@ -30,6 +31,9 @@ import {
   ArrowRight,
   Flame,
   Award,
+  FileText,
+  Download,
+  AlertTriangle,
 } from "lucide-react";
 
 interface Message {
@@ -104,6 +108,13 @@ function TutorContent() {
   const [loading, setLoading] = useState(false);
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [copiedSession, setCopiedSession] = useState(false);
+
+  // Summarization & Cohort Analytics State
+  const [summaryModalOpen, setSummaryModalOpen] = useState(false);
+  const [isSummarizing, setIsSummarizing] = useState(false);
+  const [summaryNotes, setSummaryNotes] = useState<string>("");
+  const [copiedSummary, setCopiedSummary] = useState(false);
+  const [cohortPrediction, setCohortPrediction] = useState<DifficultyPrediction | null>(null);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -189,12 +200,62 @@ function TutorContent() {
             );
           }
         }
+
+        // Fetch cohort difficulty prediction
+        try {
+          const cohortRes = await fetch(`/api/analytics/cohort?topicName=${encodeURIComponent(currentTopic)}`);
+          if (cohortRes.ok) {
+            const cohortData = await cohortRes.json();
+            if (cohortData.prediction) setCohortPrediction(cohortData.prediction);
+          }
+        } catch {}
       } catch (err) {
         console.error("Failed to load tutor data", err);
       }
     }
     loadData();
   }, [currentTopic]);
+
+  const handleGenerateSummary = async () => {
+    setIsSummarizing(true);
+    try {
+      const res = await fetch("/api/tutor/summarize", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          sessionId,
+          topicName: currentTopic,
+          messages: messages.map(m => ({ role: m.role, content: m.content })),
+        }),
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        setSummaryNotes(data.summary);
+        setSummaryModalOpen(true);
+      }
+    } catch (err) {
+      console.error("Failed to generate summary notes", err);
+    } finally {
+      setIsSummarizing(false);
+    }
+  };
+
+  const handleCopySummary = () => {
+    navigator.clipboard.writeText(summaryNotes);
+    setCopiedSummary(true);
+    setTimeout(() => setCopiedSummary(false), 2000);
+  };
+
+  const handleDownloadSummary = () => {
+    const element = document.createElement("a");
+    const file = new Blob([summaryNotes], { type: "text/markdown" });
+    element.href = URL.createObjectURL(file);
+    element.download = `${currentTopic}_Revision_Notes.md`;
+    document.body.appendChild(element);
+    element.click();
+    document.body.removeChild(element);
+  };
 
   // Voice recording toggle
   const toggleListening = () => {
@@ -405,6 +466,17 @@ function TutorContent() {
                   <Award className="w-3 h-3" />
                   Mastery: {masteryScore}%
                 </span>
+
+                {/* Cohort Difficulty Prediction Badge */}
+                {cohortPrediction && cohortPrediction.cohortStruggleRate >= 45 && (
+                  <span
+                    className="px-2.5 py-0.5 rounded-full text-[11px] font-bold border flex items-center gap-1 bg-amber-50 text-amber-800 border-amber-300 animate-pulse"
+                    title={`Cohort Alert: ${cohortPrediction.cohortStruggleRate}% struggle rate detected across cohort. Recommended prep: ${cohortPrediction.recommendedPrepMinutes} mins.`}
+                  >
+                    <AlertTriangle className="w-3 h-3 text-amber-600" />
+                    Cohort Bottleneck ({cohortPrediction.cohortStruggleRate}% Struggle)
+                  </span>
+                )}
               </div>
               <p className="text-xs text-slate-500 mt-1">
                 Active Socratic intelligence: guides by reasoning, progressive hints, and adaptive questioning.
@@ -445,6 +517,22 @@ function TutorContent() {
               </button>
             </div>
 
+            {/* Auto-Generate Revision Notes */}
+            <button
+              type="button"
+              onClick={handleGenerateSummary}
+              disabled={isSummarizing || messages.length < 2}
+              className="p-2 rounded-xl border border-indigo-200 bg-indigo-50/80 hover:bg-indigo-100 text-indigo-700 text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed shadow-xs"
+              title="Auto-generate structured study notes & takeaways from this session"
+            >
+              {isSummarizing ? (
+                <Loader2 className="w-4 h-4 animate-spin text-indigo-600" />
+              ) : (
+                <Sparkles className="w-4 h-4 text-indigo-600" />
+              )}
+              <span className="hidden sm:inline">Auto-Notes</span>
+            </button>
+
             {/* Copy Notes */}
             <button
               type="button"
@@ -453,7 +541,7 @@ function TutorContent() {
               title="Copy session notes for study"
             >
               {copiedSession ? <Check className="w-4 h-4 text-emerald-600" /> : <Copy className="w-4 h-4 text-slate-500" />}
-              <span className="hidden sm:inline">{copiedSession ? "Copied!" : "Notes"}</span>
+              <span className="hidden sm:inline">{copiedSession ? "Copied!" : "Raw Log"}</span>
             </button>
 
             {/* Reset Session */}
@@ -754,6 +842,63 @@ function TutorContent() {
               >
                 Close
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Session Summary Notes Modal */}
+      {summaryModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-in fade-in duration-200">
+          <div className="bg-white rounded-2xl border border-slate-200 shadow-2xl max-w-2xl w-full max-h-[85vh] flex flex-col overflow-hidden">
+            <div className="p-4 sm:p-5 border-b border-slate-100 flex items-center justify-between bg-gradient-to-r from-indigo-50/50 to-white">
+              <div className="flex items-center gap-2.5">
+                <div className="p-2 rounded-xl bg-indigo-600 text-white shadow-sm shadow-indigo-200">
+                  <FileText className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
+                    Session Revision Notes
+                    <span className="text-xs font-medium px-2 py-0.5 rounded-md bg-indigo-100 text-indigo-700">AI Synthesized</span>
+                  </h3>
+                  <p className="text-xs text-slate-500">Key takeaways, formulas & practice problems from this session</p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setSummaryModalOpen(false)}
+                className="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors cursor-pointer"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="p-5 sm:p-6 overflow-y-auto flex-1 text-slate-800 text-sm leading-relaxed">
+              <FormattedMessage content={summaryNotes} isTutor={true} />
+            </div>
+
+            <div className="p-4 bg-slate-50 border-t border-slate-100 flex items-center justify-between">
+              <span className="text-xs text-slate-500">
+                Formatted as Markdown • Ready for review
+              </span>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={handleCopySummary}
+                  className="px-3 py-1.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
+                >
+                  {copiedSummary ? <Check className="w-4 h-4 text-emerald-600" /> : <Copy className="w-4 h-4 text-slate-500" />}
+                  <span>{copiedSummary ? "Copied!" : "Copy Markdown"}</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={handleDownloadSummary}
+                  className="px-3.5 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer shadow-xs shadow-indigo-200"
+                >
+                  <Download className="w-4 h-4" />
+                  <span>Download .md</span>
+                </button>
+              </div>
             </div>
           </div>
         </div>

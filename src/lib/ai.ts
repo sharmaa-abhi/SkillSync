@@ -206,6 +206,7 @@ export interface TutorInput {
   weaknesses?: string[];
   strengths?: string[];
   recentQuizPerformance?: string;
+  curriculumContext?: string;
   conversationHistory: { role: string; content: string }[];
   studentMessage: string;
   mode?: "socratic" | "step_by_step" | "analogy" | "practice" | "review";
@@ -264,6 +265,8 @@ STUDENT LEARNING CONTEXT:
 - Proven Strengths: ${input.strengths && input.strengths.length > 0 ? input.strengths.join(", ") : "Building foundational competencies"}
 - Identified Deficits / Prerequisite Gaps: ${input.weaknesses && input.weaknesses.length > 0 ? input.weaknesses.join(", ") : "None detected"}
 ${input.recentQuizPerformance ? `- Recent Quiz Performance: ${input.recentQuizPerformance}` : ""}
+
+${input.curriculumContext ? `AUTHORITATIVE CURRICULUM GROUNDING (RAG TEXTBOOK REFERENCE):\n${input.curriculumContext}\n` : ""}
 
 ROLE & PEDAGOGY:
 ${modeInstructions}
