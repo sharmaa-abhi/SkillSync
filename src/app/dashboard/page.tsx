@@ -96,7 +96,21 @@ export default function DashboardPage() {
   const { data: session } = useSession();
   const [data, setData] = useState<DashboardData | null>(null);
   const [loading, setLoading] = useState(true);
-  const [activeSubject, setActiveSubject] = useState<"Maths" | "DBMS">("Maths");
+export type SubjectKey = "Maths" | "DBMS" | "OS" | "CN" | "DSA";
+
+export const SUBJECT_TRACKS: Array<{ key: SubjectKey; label: string; icon: string }> = [
+  { key: "Maths", label: "Mathematics", icon: "📐" },
+  { key: "DBMS", label: "Database Systems", icon: "🗄️" },
+  { key: "OS", label: "Operating Systems", icon: "💻" },
+  { key: "CN", label: "Computer Networks", icon: "🌐" },
+  { key: "DSA", label: "Data Structures & Algo", icon: "⚡" },
+];
+
+export default function DashboardPage() {
+  const { data: session } = useSession();
+  const [data, setData] = useState<DashboardData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [activeSubject, setActiveSubject] = useState<SubjectKey>("Maths");
   const [reviewQueue, setReviewQueue] = useState<ReviewItem[]>([]);
   const [reviewStats, setReviewStats] = useState<{ totalDue: number; averageRetention: number } | null>(null);
 
@@ -131,7 +145,190 @@ export default function DashboardPage() {
     }
 
     function loadFallbackData() {
-      if (activeSubject === "Maths") {
+      if (activeSubject === "OS") {
+        setData({
+          user: {
+            name: session?.user?.name || "Alex Rivera",
+            educationLevel: "B.Tech CSE - 3rd Year",
+            learningGoals: "Master Operating Systems: Process Scheduling & Deadlocks",
+          },
+          profile: {
+            overallMastery: 64,
+            strengths: ["Process Scheduling", "System Calls"],
+            weaknesses: ["Deadlocks"],
+            topicMastery: [
+              { topicName: "Process Scheduling", score: 82, masteryLevel: "strong" },
+              { topicName: "System Calls", score: 78, masteryLevel: "strong" },
+              { topicName: "Virtual Memory & Paging", score: 65, masteryLevel: "medium" },
+              { topicName: "Concurrency & Mutex", score: 45, masteryLevel: "medium" },
+              { topicName: "Deadlocks", score: 36, masteryLevel: "weak" },
+            ],
+            assessmentCount: 2,
+            quizCount: 3,
+            totalStudyMinutes: 50,
+            aiAnalysis: {
+              summary: "Solid process scheduler metrics, but Banker's algorithm matrix subtraction in Deadlocks requires immediate remediation.",
+              nextBestAction: {
+                title: "Review Deadlocks & Banker's Algo",
+                topicName: "Deadlocks",
+                durationMinutes: 15,
+                difficulty: "Level 2 Prerequisite",
+                reason: "Diagnostic revealed confusion in safe state analysis and resource subtraction. Required before concurrency & memory isolation.",
+                actionType: "tutor",
+              },
+              streak: 8,
+              weeklyGoal: { current: 4, target: 5 },
+              reteachRate: "32%",
+            },
+          },
+          plan: {
+            title: "Operating Systems: Deadlock Remediation & Concurrency Roadmap",
+            estimatedDuration: "1.5 hours total",
+            items: [
+              {
+                order: 1,
+                topic: "Deadlocks",
+                activity: "Banker's Algorithm: Need Matrix & Safe State Testing",
+                durationMinutes: 15,
+                priority: "critical",
+                reason: "Critical prerequisite gap identified in diagnostic assessment (36% score).",
+                isCompleted: false,
+              },
+              {
+                order: 2,
+                topic: "Virtual Memory & Paging",
+                activity: "Page Faults & Effective Access Time (EAT)",
+                durationMinutes: 15,
+                priority: "high",
+                reason: "Key concept: Address translation bitmasking.",
+                isCompleted: false,
+              },
+            ],
+          },
+        });
+      } else if (activeSubject === "CN") {
+        setData({
+          user: {
+            name: session?.user?.name || "Alex Rivera",
+            educationLevel: "B.Tech CSE - 3rd Year",
+            learningGoals: "Master Computer Networks: Subnetting & Congestion Control",
+          },
+          profile: {
+            overallMastery: 66,
+            strengths: ["OSI & TCP/IP Models", "DNS & HTTP"],
+            weaknesses: ["IP Addressing & Subnetting"],
+            topicMastery: [
+              { topicName: "OSI & TCP/IP Models", score: 86, masteryLevel: "strong" },
+              { topicName: "DNS & HTTP", score: 79, masteryLevel: "strong" },
+              { topicName: "TCP Flow & Congestion Control", score: 68, masteryLevel: "medium" },
+              { topicName: "Routing Protocols", score: 48, masteryLevel: "medium" },
+              { topicName: "IP Addressing & Subnetting", score: 34, masteryLevel: "weak" },
+            ],
+            assessmentCount: 2,
+            quizCount: 3,
+            totalStudyMinutes: 55,
+            aiAnalysis: {
+              summary: "Strong in layered architecture, but CIDR host bit formulas (2^h - 2) in Subnetting bottleneck routing comprehension.",
+              nextBestAction: {
+                title: "Reinforce IP Addressing & Subnetting",
+                topicName: "IP Addressing & Subnetting",
+                durationMinutes: 15,
+                difficulty: "Level 2 Prerequisite",
+                reason: "Prerequisite bottleneck: Slash notation (/26, /28) and usable host calculations must be mastered before routing protocols.",
+                actionType: "tutor",
+              },
+              streak: 8,
+              weeklyGoal: { current: 4, target: 5 },
+              reteachRate: "35%",
+            },
+          },
+          plan: {
+            title: "Computer Networks: Subnetting & Reliable Transport Roadmap",
+            estimatedDuration: "1.5 hours total",
+            items: [
+              {
+                order: 1,
+                topic: "IP Addressing & Subnetting",
+                activity: "CIDR Prefix & Usable Host Calculation Drill",
+                durationMinutes: 15,
+                priority: "critical",
+                reason: "Diagnostic assessment score is 34% in address manipulation.",
+                isCompleted: false,
+              },
+              {
+                order: 2,
+                topic: "TCP Flow & Congestion Control",
+                activity: "Sliding Window & AIMD State Transitions",
+                durationMinutes: 20,
+                priority: "high",
+                reason: "Core transport benchmark for backend systems.",
+                isCompleted: false,
+              },
+            ],
+          },
+        });
+      } else if (activeSubject === "DSA") {
+        setData({
+          user: {
+            name: session?.user?.name || "Alex Rivera",
+            educationLevel: "B.Tech CSE - 3rd Year",
+            learningGoals: "Master Data Structures & Algorithms: Graphs & DP",
+          },
+          profile: {
+            overallMastery: 68,
+            strengths: ["Asymptotic Complexity", "Binary Search Trees"],
+            weaknesses: ["Dynamic Programming"],
+            topicMastery: [
+              { topicName: "Asymptotic Complexity", score: 88, masteryLevel: "strong" },
+              { topicName: "Binary Search Trees", score: 74, masteryLevel: "strong" },
+              { topicName: "Graph Algorithms", score: 58, masteryLevel: "medium" },
+              { topicName: "Sorting & Searching", score: 70, masteryLevel: "medium" },
+              { topicName: "Dynamic Programming", score: 32, masteryLevel: "weak" },
+            ],
+            assessmentCount: 3,
+            quizCount: 5,
+            totalStudyMinutes: 70,
+            aiAnalysis: {
+              summary: "Excellent asymptotic reasoning, but formulating recurrence relations for Dynamic Programming is stalling algorithmic progress.",
+              nextBestAction: {
+                title: "Master Dynamic Programming Substructure",
+                topicName: "Dynamic Programming",
+                durationMinutes: 20,
+                difficulty: "Level 3 Prerequisite",
+                reason: "State transition formulas and 2D table memoization are currently blocking graph shortest paths and network flows.",
+                actionType: "tutor",
+              },
+              streak: 8,
+              weeklyGoal: { current: 4, target: 5 },
+              reteachRate: "38%",
+            },
+          },
+          plan: {
+            title: "Data Structures & Algorithms: DP & Graphs Roadmap",
+            estimatedDuration: "2 hours total",
+            items: [
+              {
+                order: 1,
+                topic: "Dynamic Programming",
+                activity: "Optimal Substructure & 1D/2D State Formulations",
+                durationMinutes: 20,
+                priority: "critical",
+                reason: "Critical prerequisite gap: 32% diagnostic accuracy on DP states.",
+                isCompleted: false,
+              },
+              {
+                order: 2,
+                topic: "Graph Algorithms",
+                activity: "BFS Shortest Paths vs Dijkstra Priority Queue",
+                durationMinutes: 20,
+                priority: "high",
+                reason: "Core competitive programming and system routing milestone.",
+                isCompleted: false,
+              },
+            ],
+          },
+        });
+      } else if (activeSubject === "Maths") {
         setData({
           user: {
             name: session?.user?.name || "Alex Rivera",
@@ -166,7 +363,7 @@ export default function DashboardPage() {
                 title: "Review Factorisation",
                 topicName: "Factorisation",
                 durationMinutes: 10,
-                difficulty: "Level 2",
+                difficulty: "Level 2 Prerequisite",
                 reason: "Your last diagnostic answers show a prerequisite gap. Factorisation is required before solving quadratic equations.",
                 actionType: "tutor",
               },
@@ -206,24 +403,6 @@ export default function DashboardPage() {
                 reason: "Current focus: Connects prerequisite factoring into equation solutions.",
                 isCompleted: false,
               },
-              {
-                order: 4,
-                topic: "Quadratic Equations",
-                activity: "Completing the Square Intuition",
-                durationMinutes: 10,
-                priority: "medium",
-                reason: "Provides the geometric bridge to the quadratic formula.",
-                isCompleted: false,
-              },
-              {
-                order: 5,
-                topic: "Quadratic Equations",
-                activity: "Discriminant & Nature of Roots Test",
-                durationMinutes: 12,
-                priority: "medium",
-                reason: "Ensures speed and accuracy for exam conditions.",
-                isCompleted: false,
-              },
             ],
           },
         });
@@ -254,7 +433,7 @@ export default function DashboardPage() {
                 title: "Review Normalization (2NF/3NF)",
                 topicName: "Normalization",
                 durationMinutes: 10,
-                difficulty: "Level 2",
+                difficulty: "Level 2 Prerequisite",
                 reason: "Your last diagnostic showed confusion between partial and transitive dependencies.",
                 actionType: "tutor",
               },
@@ -288,16 +467,81 @@ export default function DashboardPage() {
   const profile = data?.profile;
   const user = data?.user;
   const plan = data?.plan;
-  const nextAction = profile?.aiAnalysis?.nextBestAction || {
-    title: activeSubject === "Maths" ? "Review Factorisation" : "Review Normalization",
-    topicName: activeSubject === "Maths" ? "Factorisation" : "Normalization",
-    durationMinutes: 10,
-    difficulty: "Level 2 Prerequisite",
-    reason: activeSubject === "Maths"
-      ? "Your diagnostic identified a critical prerequisite gap in Factorisation (38% mastery). Factoring trinomials is required before quadratic equation derivations."
-      : "Your diagnostic identified confusion between partial and transitive functional dependencies.",
-    actionType: "tutor",
+
+  const defaultActionBySubject: Record<SubjectKey, { title: string; topicName: string; durationMinutes: number; difficulty: string; reason: string; actionType: string }> = {
+    Maths: {
+      title: "Review Factorisation",
+      topicName: "Factorisation",
+      durationMinutes: 10,
+      difficulty: "Level 2 Prerequisite",
+      reason: "Your diagnostic identified a critical prerequisite gap in Factorisation (38% mastery). Factoring trinomials is required before quadratic equation derivations.",
+      actionType: "tutor",
+    },
+    DBMS: {
+      title: "Review Normalization (2NF/3NF)",
+      topicName: "Normalization",
+      durationMinutes: 10,
+      difficulty: "Level 2 Prerequisite",
+      reason: "Your diagnostic identified confusion between partial and transitive functional dependencies.",
+      actionType: "tutor",
+    },
+    OS: {
+      title: "Review Deadlocks & Banker's Algo",
+      topicName: "Deadlocks",
+      durationMinutes: 15,
+      difficulty: "Level 2 Prerequisite",
+      reason: "Diagnostic revealed confusion in safe state analysis and matrix subtraction Need = Max - Alloc.",
+      actionType: "tutor",
+    },
+    CN: {
+      title: "Reinforce IP Addressing & Subnetting",
+      topicName: "IP Addressing & Subnetting",
+      durationMinutes: 15,
+      difficulty: "Level 2 Prerequisite",
+      reason: "CIDR prefix calculations and host bit formulas (2^h - 2) were missed in the diagnostic.",
+      actionType: "tutor",
+    },
+    DSA: {
+      title: "Master Dynamic Programming Substructure",
+      topicName: "Dynamic Programming",
+      durationMinutes: 20,
+      difficulty: "Level 3 Prerequisite",
+      reason: "Recurrence relation formulation and overlapping subproblem memoization is currently blocking graph shortest path algorithms.",
+      actionType: "tutor",
+    },
   };
+
+  const nextAction = profile?.aiAnalysis?.nextBestAction || defaultActionBySubject[activeSubject];
+
+  const depChainBySubject: Record<SubjectKey, { first: string; second: string; third: string }> = {
+    Maths: {
+      first: "Algebraic Manipulation (84% ✓)",
+      second: "⚠️ Factorisation (38% Prerequisite Gap)",
+      third: "Quadratic Equations (Blocked 🚫)",
+    },
+    DBMS: {
+      first: "ER Modeling (82% ✓)",
+      second: "⚠️ Normalization (35% Gap)",
+      third: "Transactions (Blocked 🚫)",
+    },
+    OS: {
+      first: "Process Scheduling (82% ✓)",
+      second: "⚠️ Deadlocks & Banker's Algo (36% Gap)",
+      third: "Virtual Memory & Paging (Blocked 🚫)",
+    },
+    CN: {
+      first: "OSI & TCP/IP Stack (86% ✓)",
+      second: "⚠️ IP Addressing & Subnetting (34% Gap)",
+      third: "TCP Flow & Congestion Control (Blocked 🚫)",
+    },
+    DSA: {
+      first: "Asymptotic Complexity (88% ✓)",
+      second: "⚠️ Dynamic Programming (32% Gap)",
+      third: "Graph Algorithms (Blocked 🚫)",
+    },
+  };
+
+  const depChain = depChainBySubject[activeSubject];
 
   const streak = profile?.aiAnalysis?.streak || 8;
   const weeklyGoal = profile?.aiAnalysis?.weeklyGoal || { current: 4, target: 5 };
@@ -306,7 +550,7 @@ export default function DashboardPage() {
     <AppLayout>
       <div className="space-y-6 max-w-6xl mx-auto">
         {/* Welcome & Track Switcher Header */}
-        <div data-scroll="fade-down" className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div data-scroll="fade-down" className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
           <div>
             <div className="flex items-center gap-2">
               <h1 className="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight">
@@ -321,28 +565,26 @@ export default function DashboardPage() {
             </p>
           </div>
 
-          {/* Subject Track Switcher */}
-          <div className="flex items-center gap-2 p-1.5 bg-slate-200/70 rounded-xl self-start sm:self-auto">
-            <button
-              onClick={() => setActiveSubject("Maths")}
-              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
-                activeSubject === "Maths"
-                  ? "bg-indigo-600 text-white shadow-xs"
-                  : "text-slate-600 hover:text-slate-900"
-              }`}
-            >
-              📐 Mathematics (Demo)
-            </button>
-            <button
-              onClick={() => setActiveSubject("DBMS")}
-              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
-                activeSubject === "DBMS"
-                  ? "bg-indigo-600 text-white shadow-xs"
-                  : "text-slate-600 hover:text-slate-900"
-              }`}
-            >
-              🗄️ Database Systems
-            </button>
+          {/* Subject Track Switcher — All 5 Supported Subjects */}
+          <div className="flex flex-wrap items-center gap-1.5 p-1.5 bg-slate-200/70 rounded-xl self-start lg:self-auto">
+            {SUBJECT_TRACKS.map((track) => {
+              const isActive = activeSubject === track.key;
+              return (
+                <button
+                  key={track.key}
+                  type="button"
+                  onClick={() => setActiveSubject(track.key)}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+                    isActive
+                      ? "bg-indigo-600 text-white shadow-xs"
+                      : "text-slate-700 hover:text-slate-900 hover:bg-slate-300/60"
+                  }`}
+                >
+                  <span>{track.icon}</span>
+                  <span>{track.label}</span>
+                </button>
+              );
+            })}
           </div>
         </div>
 
@@ -388,15 +630,15 @@ export default function DashboardPage() {
                   <Network className="w-3.5 h-3.5" /> Dependency Chain:
                 </span>
                 <span className="px-2.5 py-1 rounded-lg bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 font-medium">
-                  {activeSubject === "Maths" ? "Algebraic Manipulation (84% ✓)" : "ER Modeling (82% ✓)"}
+                  {depChain.first}
                 </span>
                 <span className="text-indigo-400 font-bold">→</span>
                 <span className="px-2.5 py-1 rounded-lg bg-rose-500/30 text-rose-200 border border-rose-400/50 font-bold ring-2 ring-rose-400/30 animate-pulse">
-                  ⚠️ {activeSubject === "Maths" ? "Factorisation (38% Prerequisite Gap)" : "Normalization (35% Gap)"}
+                  {depChain.second}
                 </span>
                 <span className="text-indigo-400 font-bold">→</span>
                 <span className="px-2.5 py-1 rounded-lg bg-white/10 text-white/70 border border-white/20">
-                  {activeSubject === "Maths" ? "Quadratic Equations (Blocked 🚫)" : "Transactions (Blocked 🚫)"}
+                  {depChain.third}
                 </span>
               </div>
             </div>

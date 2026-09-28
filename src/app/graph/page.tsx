@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import AppLayout from "@/components/AppLayout";
-import SkillGraph, { MATH_SKILLS, DBMS_SKILLS } from "@/components/SkillGraph";
+import SkillGraph, { getSubjectGraphData, SupportedSubject } from "@/components/SkillGraph";
 import Link from "next/link";
 import {
   Brain,
@@ -16,18 +16,27 @@ import {
 } from "lucide-react";
 
 export default function SkillGraphPage() {
-  const [subject, setSubject] = useState<"Maths" | "DBMS">("Maths");
+  const [subject, setSubject] = useState<SupportedSubject>("Maths");
 
-  const skills = subject === "Maths" ? MATH_SKILLS : DBMS_SKILLS;
+  const graphData = getSubjectGraphData(subject);
+  const skills = graphData.skills;
   const weakSkills = skills.filter((s) => s.status === "weak" || s.isPrerequisiteGap);
   const masteredSkills = skills.filter((s) => s.status === "mastered");
+
+  const SUBJECTS_LIST: Array<{ id: SupportedSubject; name: string; icon: string }> = [
+    { id: "Maths", name: "Mathematics", icon: "📐" },
+    { id: "DBMS", name: "Database Systems", icon: "🗄️" },
+    { id: "OS", name: "Operating Systems", icon: "💻" },
+    { id: "CN", name: "Computer Networks", icon: "🌐" },
+    { id: "DSA", name: "Data Structures & Algo", icon: "⚡" },
+  ];
 
   return (
     <AppLayout>
       <div className="space-y-6 max-w-6xl mx-auto">
         {/* Header with Subject Switcher */}
         <div data-scroll="fade-down" className="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-6 sm:p-8 card-hover-lift">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
             <div>
               <div className="flex items-center gap-2">
                 <span className="p-2 rounded-xl bg-indigo-50 text-indigo-600">
@@ -43,29 +52,25 @@ export default function SkillGraphPage() {
             </div>
 
             {/* Subject Toggle */}
-            <div className="flex items-center gap-2 p-1.5 bg-slate-100 rounded-xl">
-              <button
-                type="button"
-                onClick={() => setSubject("Maths")}
-                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
-                  subject === "Maths"
-                    ? "bg-indigo-600 text-white shadow-xs"
-                    : "text-slate-600 hover:text-slate-900"
-                }`}
-              >
-                📐 Mathematics (Demo)
-              </button>
-              <button
-                type="button"
-                onClick={() => setSubject("DBMS")}
-                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
-                  subject === "DBMS"
-                    ? "bg-indigo-600 text-white shadow-xs"
-                    : "text-slate-600 hover:text-slate-900"
-                }`}
-              >
-                🗄️ Database Systems
-              </button>
+            <div className="flex flex-wrap items-center gap-1.5 p-1.5 bg-slate-100 rounded-xl">
+              {SUBJECTS_LIST.map((sub) => {
+                const isActive = subject === sub.id;
+                return (
+                  <button
+                    key={sub.id}
+                    type="button"
+                    onClick={() => setSubject(sub.id)}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+                      isActive
+                        ? "bg-indigo-600 text-white shadow-xs"
+                        : "text-slate-600 hover:text-slate-900 hover:bg-slate-200/60"
+                    }`}
+                  >
+                    <span>{sub.icon}</span>
+                    <span>{sub.name}</span>
+                  </button>
+                );
+              })}
             </div>
           </div>
 

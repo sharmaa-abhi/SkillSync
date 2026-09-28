@@ -234,8 +234,249 @@ export const DBMS_EDGES: EdgeDefinition[] = [
   { from: "transactions", to: "concurrency", status: "locked", label: "Locked Milestone" },
 ];
 
+export const OS_SKILLS: SkillNode[] = [
+  {
+    id: "proc-sched",
+    name: "Process Scheduling",
+    levelTag: "Foundation",
+    status: "mastered",
+    masteryScore: 82,
+    estimatedMinutes: 15,
+    x: 120,
+    y: 160,
+    prerequisites: [],
+    nextSkills: ["deadlocks"],
+    description: "Preemptive vs non-preemptive algorithms: FCFS, SJF, Round Robin, and Priority Scheduling.",
+    whyItMatters: "CPU utilization and multiprogramming foundation.",
+    diagnosticNotes: "Demonstrated 82% accuracy in baseline scheduler metrics.",
+    keyFormulas: ["Turnaround Time = Completion - Arrival", "Waiting Time = Turnaround - Burst"],
+  },
+  {
+    id: "deadlocks",
+    name: "Deadlocks & Banker's Algo",
+    levelTag: "Prerequisite",
+    status: "weak",
+    masteryScore: 36,
+    estimatedMinutes: 20,
+    x: 380,
+    y: 160,
+    prerequisites: ["proc-sched"],
+    nextSkills: ["virt-mem"],
+    isPrerequisiteGap: true,
+    description: "Four Coffman conditions, resource allocation graphs, and safe state matrix analysis.",
+    whyItMatters: "Direct prerequisite for concurrency synchronization and distributed systems.",
+    diagnosticNotes: "Prerequisite gap: Struggled with Banker's Algorithm matrix subtraction Need = Max - Alloc.",
+    keyFormulas: ["Need[i][j] = Max[i][j] - Allocation[i][j]", "Work = Work + Allocation[i]"],
+  },
+  {
+    id: "virt-mem",
+    name: "Virtual Memory & Paging",
+    levelTag: "Concept",
+    status: "practicing",
+    masteryScore: 65,
+    estimatedMinutes: 20,
+    x: 640,
+    y: 160,
+    prerequisites: ["deadlocks"],
+    nextSkills: ["concurrency-os"],
+    description: "MMU address translation, page tables, page faults, and LRU replacement.",
+    whyItMatters: "Core benchmark for operating systems memory isolation.",
+    diagnosticNotes: "Understands paging, but page fault effective access time calculation needs practice.",
+    keyFormulas: ["EAT = (1-p)*Access + p*Fault_Overhead", "Virtual Address = Page # + Offset"],
+  },
+  {
+    id: "concurrency-os",
+    name: "Concurrency & Mutex",
+    levelTag: "Milestone",
+    status: "learning",
+    masteryScore: 45,
+    estimatedMinutes: 25,
+    x: 880,
+    y: 160,
+    prerequisites: ["virt-mem"],
+    nextSkills: [],
+    description: "Critical section problem, Peterson's algorithm, mutex locks, and counting semaphores.",
+    whyItMatters: "Essential for multithreaded systems programming and backend scale.",
+    diagnosticNotes: "Path unlocked once Deadlock prerequisite gap is cleared.",
+    keyFormulas: ["wait(S): S <= 0 block, S--", "signal(S): S++"],
+  },
+];
+
+export const OS_EDGES: EdgeDefinition[] = [
+  { from: "proc-sched", to: "deadlocks", status: "satisfied", label: "Satisfied (82%)" },
+  { from: "deadlocks", to: "virt-mem", status: "blocking", label: "⚠️ Prerequisite Gap" },
+  { from: "virt-mem", to: "concurrency-os", status: "active", label: "Active Pathway" },
+];
+
+export const CN_SKILLS: SkillNode[] = [
+  {
+    id: "osi-tcp",
+    name: "OSI & TCP/IP Stack",
+    levelTag: "Foundation",
+    status: "mastered",
+    masteryScore: 86,
+    estimatedMinutes: 15,
+    x: 120,
+    y: 160,
+    prerequisites: [],
+    nextSkills: ["ip-subnet"],
+    description: "7-layer vs 4-layer architecture, encapsulation, and protocol headers.",
+    whyItMatters: "The bedrock of all network communications and protocol design.",
+    diagnosticNotes: "Solid understanding of OSI layer boundaries and PDUs.",
+    keyFormulas: ["Encapsulation: Data -> Segment -> Packet -> Frame"],
+  },
+  {
+    id: "ip-subnet",
+    name: "IP Addressing & Subnetting",
+    levelTag: "Prerequisite",
+    status: "weak",
+    masteryScore: 34,
+    estimatedMinutes: 25,
+    x: 380,
+    y: 160,
+    prerequisites: ["osi-tcp"],
+    nextSkills: ["tcp-flow"],
+    isPrerequisiteGap: true,
+    description: "IPv4/IPv6 CIDR prefixes, subnet masks, network IDs, and host range calculation.",
+    whyItMatters: "Prerequisite bottleneck: Blocks packet routing and transport protocol mastery.",
+    diagnosticNotes: "Prerequisite gap: Struggled with binary host bits and slash notation (/26, /28).",
+    keyFormulas: ["Hosts = 2^(32 - prefix) - 2", "Network ID = IP AND Subnet Mask"],
+  },
+  {
+    id: "tcp-flow",
+    name: "TCP Flow & Congestion Control",
+    levelTag: "Concept",
+    status: "practicing",
+    masteryScore: 68,
+    estimatedMinutes: 20,
+    x: 640,
+    y: 160,
+    prerequisites: ["ip-subnet"],
+    nextSkills: ["routing-proto"],
+    description: "Three-way handshake, sliding window, slow start, congestion avoidance, and AIMD.",
+    whyItMatters: "Core protocol reliability layer for web applications and microservices.",
+    diagnosticNotes: "Understands handshake; requires reinforcement on AIMD additive increase / mult decrease.",
+    keyFormulas: ["Window = min(cwnd, rwnd)", "Slow Start: cwnd *= 2 each RTT"],
+  },
+  {
+    id: "routing-proto",
+    name: "Routing Protocols (OSPF/BGP)",
+    levelTag: "Milestone",
+    status: "learning",
+    masteryScore: 40,
+    estimatedMinutes: 30,
+    x: 880,
+    y: 160,
+    prerequisites: ["tcp-flow"],
+    nextSkills: [],
+    description: "Distance Vector (Bellman-Ford) vs Link State (Dijkstra) and autonomous system BGP peering.",
+    whyItMatters: "Internet-scale routing and topology management.",
+    diagnosticNotes: "Milestone queued after IP Subnetting prerequisite remediation.",
+    keyFormulas: ["Bellman-Ford: Dx(y) = min_v { c(x,v) + Dv(y) }"],
+  },
+];
+
+export const CN_EDGES: EdgeDefinition[] = [
+  { from: "osi-tcp", to: "ip-subnet", status: "satisfied", label: "Satisfied (86%)" },
+  { from: "ip-subnet", to: "tcp-flow", status: "blocking", label: "⚠️ Prerequisite Gap" },
+  { from: "tcp-flow", to: "routing-proto", status: "active", label: "Active Pathway" },
+];
+
+export const DSA_SKILLS: SkillNode[] = [
+  {
+    id: "asymptotic",
+    name: "Asymptotic Complexity",
+    levelTag: "Foundation",
+    status: "mastered",
+    masteryScore: 88,
+    estimatedMinutes: 15,
+    x: 120,
+    y: 160,
+    prerequisites: [],
+    nextSkills: ["recursion-bst"],
+    description: "Big-O, Big-Omega, Big-Theta, and Master Theorem for divide-and-conquer.",
+    whyItMatters: "Crucial for evaluating runtime performance and scalable engineering decisions.",
+    diagnosticNotes: "Demonstrated 88% accuracy in asymptotic recurrence comparisons.",
+    keyFormulas: ["Master Theorem: T(n) = aT(n/b) + O(n^d)", "O(1) < O(log n) < O(n) < O(n log n) < O(n²)"],
+  },
+  {
+    id: "recursion-bst",
+    name: "Binary Search Trees",
+    levelTag: "Concept",
+    status: "practicing",
+    masteryScore: 74,
+    estimatedMinutes: 20,
+    x: 380,
+    y: 90,
+    prerequisites: ["asymptotic"],
+    nextSkills: ["dp-opt"],
+    description: "BST invariant, balanced AVL rotations, inorder traversal, and predecessor/successor logic.",
+    whyItMatters: "Foundation for logarithmic search, associative containers, and index trees.",
+    diagnosticNotes: "Understands BST search; AVL double rotations need review.",
+    keyFormulas: ["Inorder: Left -> Root -> Right", "Balance Factor: Height(L) - Height(R)"],
+  },
+  {
+    id: "dp-opt",
+    name: "Dynamic Programming",
+    levelTag: "Prerequisite",
+    status: "weak",
+    masteryScore: 32,
+    estimatedMinutes: 30,
+    x: 640,
+    y: 160,
+    prerequisites: ["asymptotic"],
+    nextSkills: ["graph-algo"],
+    isPrerequisiteGap: true,
+    description: "Optimal substructure, overlapping subproblems, memoization, and state transitions.",
+    whyItMatters: "Essential for advanced optimization problems, interview prep, and graph shortest paths.",
+    diagnosticNotes: "Prerequisite gap: Struggled to formulate recurrence relations and 2D table state transitions.",
+    keyFormulas: ["dp[i] = min(dp[i - coin] + 1)", "Knapsack: dp[i][w] = max(dp[i-1][w], val + dp[i-1][w-wt])"],
+  },
+  {
+    id: "graph-algo",
+    name: "Graph Algorithms",
+    levelTag: "Milestone",
+    status: "learning",
+    masteryScore: 50,
+    estimatedMinutes: 30,
+    x: 880,
+    y: 160,
+    prerequisites: ["dp-opt"],
+    nextSkills: [],
+    description: "BFS, DFS, topological sorting, Dijkstra shortest paths, and minimum spanning trees.",
+    whyItMatters: "Powers recommendation engines, routing, dependency resolution, and network flow.",
+    diagnosticNotes: "Blocked until Dynamic Programming & State transition fundamentals are fortified.",
+    keyFormulas: ["Dijkstra: dist[v] = min(dist[v], dist[u] + weight(u,v))"],
+  },
+];
+
+export const DSA_EDGES: EdgeDefinition[] = [
+  { from: "asymptotic", to: "recursion-bst", status: "satisfied", label: "Satisfied (88%)" },
+  { from: "recursion-bst", to: "dp-opt", status: "blocking", label: "⚠️ Prerequisite Gap" },
+  { from: "dp-opt", to: "graph-algo", status: "locked", label: "Locked Milestone" },
+];
+
+export type SupportedSubject = "Maths" | "DBMS" | "OS" | "CN" | "DSA" | string;
+
+export function getSubjectGraphData(subject: string) {
+  const norm = subject.toLowerCase();
+  if (norm.includes("os") || norm.includes("operat")) {
+    return { skills: OS_SKILLS, edges: OS_EDGES, defaultSelected: "deadlocks" };
+  }
+  if (norm.includes("cn") || norm.includes("network")) {
+    return { skills: CN_SKILLS, edges: CN_EDGES, defaultSelected: "ip-subnet" };
+  }
+  if (norm.includes("dsa") || norm.includes("data struct") || norm.includes("algorithm")) {
+    return { skills: DSA_SKILLS, edges: DSA_EDGES, defaultSelected: "dp-opt" };
+  }
+  if (norm.includes("dbms") || norm.includes("data") || norm.includes("sql")) {
+    return { skills: DBMS_SKILLS, edges: DBMS_EDGES, defaultSelected: "normalization" };
+  }
+  return { skills: MATH_SKILLS, edges: MATH_EDGES, defaultSelected: "factorisation" };
+}
+
 interface SkillGraphProps {
-  subject?: "Maths" | "DBMS";
+  subject?: SupportedSubject;
   compact?: boolean;
   onSelectNode?: (node: SkillNode) => void;
 }
@@ -245,20 +486,18 @@ export default function SkillGraph({
   compact = false,
   onSelectNode,
 }: SkillGraphProps) {
-  const [skillsList, setSkillsList] = useState<SkillNode[]>(
-    subject === "Maths" ? MATH_SKILLS : DBMS_SKILLS
-  );
-  const edges = subject === "Maths" ? MATH_EDGES : DBMS_EDGES;
+  const graphData = getSubjectGraphData(subject);
+  const [skillsList, setSkillsList] = useState<SkillNode[]>(graphData.skills);
+  const edges = graphData.edges;
 
   // Sync when subject prop changes
   React.useEffect(() => {
-    setSkillsList(subject === "Maths" ? MATH_SKILLS : DBMS_SKILLS);
-    setSelectedNodeId(subject === "Maths" ? "factorisation" : "normalization");
+    const nextData = getSubjectGraphData(subject);
+    setSkillsList(nextData.skills);
+    setSelectedNodeId(nextData.defaultSelected);
   }, [subject]);
 
-  const [selectedNodeId, setSelectedNodeId] = useState<string>(
-    subject === "Maths" ? "factorisation" : "normalization"
-  );
+  const [selectedNodeId, setSelectedNodeId] = useState<string>(graphData.defaultSelected);
   const [viewMode, setViewMode] = useState<"network" | "tree">("network");
   const [filter, setFilter] = useState<"all" | "weak" | "active">("all");
 
