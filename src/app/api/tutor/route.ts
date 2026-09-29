@@ -64,7 +64,20 @@ export async function POST(request: Request) {
     if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     const userId = (session.user as { id: string }).id;
 
-    const { sessionId, message, topicName, subjectId, topicId, mode, language } = await request.json();
+    const {
+      sessionId,
+      message,
+      topicName,
+      subjectId,
+      subjectName,
+      topicId,
+      mode,
+      language,
+      weaknesses: customWeaknesses,
+      strengths: customStrengths,
+      knownConcepts,
+      prerequisiteGaps,
+    } = await request.json();
 
     const user = await prisma.user.findUnique({ where: { id: userId } });
 
@@ -119,10 +132,10 @@ export async function POST(request: Request) {
     const currentTopic = topicMastery.find(t => t.topicName.toLowerCase() === tutorSession.topicName.toLowerCase());
 
     const rawWeaknesses = profile?.weaknesses;
-    const weaknesses = ((typeof rawWeaknesses === "string" ? JSON.parse(rawWeaknesses) : rawWeaknesses) || []) as string[];
+    const dbWeaknesses = ((typeof rawWeaknesses === "string" ? JSON.parse(rawWeaknesses) : rawWeaknesses) || []) as string[];
 
     const rawStrengths = profile?.strengths;
-    const strengths = ((typeof rawStrengths === "string" ? JSON.parse(rawStrengths) : rawStrengths) || []) as string[];
+    const dbStrengths = ((typeof rawStrengths === "string" ? JSON.parse(rawStrengths) : rawStrengths) || []) as string[];
 
     // Fetch latest completed quiz for contextual awareness
     const recentQuiz = await prisma.quiz.findFirst({
@@ -150,11 +163,14 @@ export async function POST(request: Request) {
       learningGoals: user?.learningGoals || undefined,
       preferredStyle: user?.preferredStyle || undefined,
       overallMastery: profile?.overallMastery,
+      subjectName: subjectName || undefined,
       topicName: tutorSession.topicName,
       masteryLevel: currentTopic?.masteryLevel || "intermediate",
       score: currentTopic?.score || 45,
-      weaknesses,
-      strengths,
+      weaknesses: (customWeaknesses && customWeaknesses.length > 0) ? customWeaknesses : dbWeaknesses,
+      strengths: (customStrengths && customStrengths.length > 0) ? customStrengths : dbStrengths,
+      knownConcepts: knownConcepts || undefined,
+      prerequisiteGaps: prerequisiteGaps || undefined,
       recentQuizPerformance,
       curriculumContext,
       conversationHistory: history.map(m => ({ role: m.role, content: m.content })),

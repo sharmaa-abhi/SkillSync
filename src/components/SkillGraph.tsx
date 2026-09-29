@@ -25,14 +25,17 @@ import {
   Info,
 } from "lucide-react";
 
-export type SkillStatus = "mastered" | "practicing" | "learning" | "weak" | "not_started";
+export type SkillStatus = "mastered" | "practicing" | "partially_known" | "learning" | "weak" | "prerequisite_gap" | "not_started";
 
 export interface SkillNode {
   id: string;
   name: string;
+  subjectId?: string;
   levelTag: "Goal" | "Foundation" | "Prerequisite" | "Concept" | "Milestone";
   status: SkillStatus;
   masteryScore: number;
+  confidence?: "Low" | "Medium" | "High";
+  importance?: "Foundational" | "Core" | "High" | "Critical";
   estimatedMinutes: number;
   x: number; // 2D layout coordinate X
   y: number; // 2D layout coordinate Y
@@ -41,6 +44,10 @@ export interface SkillNode {
   isPrerequisiteGap?: boolean;
   description: string;
   whyItMatters: string;
+  practicalUsage?: string;
+  codeExample?: string;
+  commonMistakes?: string[];
+  practiceRecommendation?: string;
   diagnosticNotes: string;
   keyFormulas?: string[];
 }
@@ -51,6 +58,271 @@ export interface EdgeDefinition {
   status: "satisfied" | "blocking" | "active" | "locked";
   label?: string;
 }
+
+export const PYTHON_SKILLS: SkillNode[] = [
+  {
+    id: "py-vars",
+    name: "Variables & Data Types",
+    subjectId: "sub_python",
+    levelTag: "Foundation",
+    status: "mastered",
+    masteryScore: 92,
+    confidence: "High",
+    importance: "Foundational",
+    estimatedMinutes: 10,
+    x: 120,
+    y: 160,
+    prerequisites: [],
+    nextSkills: ["py-cond"],
+    description: "Primitive types (int, float, str, bool), type casting, mutability, and string interpolation.",
+    whyItMatters: "The atomic bedrock of all data representation and memory allocation in Python.",
+    practicalUsage: "Parsing REST JSON payloads, database model entities, environment config, and math transformations.",
+    codeExample: `# Strongly-typed Python variable annotations
+user_id: int = 1042
+score: float = 94.5
+user_name: str = "Alex"
+tags: list[str] = ["student", "python3"]
+
+# Formatting with f-strings
+summary = f"Student {user_name} (ID: {user_id}) achieved {score:.1f}%"`,
+    commonMistakes: [
+      "Assuming numbers/strings are mutable in-place.",
+      "Assigning to Python built-in names (e.g. naming a variable 'list' or 'str').",
+    ],
+    practiceRecommendation: "Solid mastery confirmed (92%). Prerequisite ready for downstream control flow.",
+    diagnosticNotes: "Demonstrated 92% baseline accuracy. Clear understanding of immutability and casting.",
+    keyFormulas: ["type(x) inspection", "isinstance(val, expected_type)", "f\"{val:.2f}\" format specifier"],
+  },
+  {
+    id: "py-cond",
+    name: "Conditions & Branching",
+    subjectId: "sub_python",
+    levelTag: "Foundation",
+    status: "mastered",
+    masteryScore: 85,
+    confidence: "High",
+    importance: "Foundational",
+    estimatedMinutes: 12,
+    x: 280,
+    y: 160,
+    prerequisites: ["py-vars"],
+    nextSkills: ["py-loops"],
+    description: "Boolean logic, if/elif/else statements, comparison operators, and short-circuit evaluation.",
+    whyItMatters: "Directs program execution flow based on dynamic data state and security policies.",
+    practicalUsage: "API authorization checks, input validation guards, workflow routing, and defensive null handling.",
+    codeExample: `def can_access_exam(student: dict) -> bool:
+    if not student.get("is_enrolled"):
+        return False
+    elif student.get("mastery", 0) >= 70:
+        return True
+    return False`,
+    commonMistakes: [
+      "Using '==' instead of 'is' when checking against singleton None.",
+      "Forgetting indentation boundaries causing accidental block leaks.",
+    ],
+    practiceRecommendation: "Branching mechanics fully stable. Move directly to iteration patterns.",
+    diagnosticNotes: "85% accuracy on conditional logic tests. Sound comprehension of truthy/falsy values.",
+    keyFormulas: ["x if condition else y", "bool(empty_container) == False", "x is not None"],
+  },
+  {
+    id: "py-loops",
+    name: "Loops & Iteration",
+    subjectId: "sub_python",
+    levelTag: "Concept",
+    status: "practicing",
+    masteryScore: 78,
+    confidence: "Medium",
+    importance: "Core",
+    estimatedMinutes: 15,
+    x: 440,
+    y: 160,
+    prerequisites: ["py-cond"],
+    nextSkills: ["py-funcs"],
+    description: "for loops, while loops, range generator, enumerate, and break/continue execution controls.",
+    whyItMatters: "Powers repetitive processing over sequences, database result sets, and batch pipelines.",
+    practicalUsage: "ETL data transformations, crawling paginated endpoints, processing CSV records, and retry mechanisms.",
+    codeExample: `# Clean iteration with enumerate and range
+topics = ["Variables", "Loops", "Functions", "Lambda"]
+for idx, topic in enumerate(topics, start=1):
+    print(f"Step {idx}: {topic}")
+
+# Safe retry loop
+max_attempts = 3
+for attempt in range(max_attempts):
+    if ping_server():
+        break
+else:
+    notify_ops_failure()`,
+    commonMistakes: [
+      "Mutating a list while actively iterating over it (causes skipped elements).",
+      "Off-by-one errors with range(start, stop) where stop is exclusive.",
+    ],
+    practiceRecommendation: "Practice dictionary comprehension iteration and zip() parallel loops.",
+    diagnosticNotes: "78% accuracy. Demonstrated good range() handling; minor hesitation on while-else syntax.",
+    keyFormulas: ["range(start, stop, step)", "enumerate(iterable, start=0)", "for item in zip(a, b)"],
+  },
+  {
+    id: "py-funcs",
+    name: "Functions & Scope",
+    subjectId: "sub_python",
+    levelTag: "Concept",
+    status: "practicing",
+    masteryScore: 58,
+    confidence: "Medium",
+    importance: "Critical",
+    estimatedMinutes: 20,
+    x: 600,
+    y: 160,
+    prerequisites: ["py-loops"],
+    nextSkills: ["py-lambda", "py-oop"],
+    description: "def declarations, positional & keyword arguments, default values, return tuples, and LEGB scope.",
+    whyItMatters: "Encapsulates reusable business logic, eliminates duplication, and enforces clean modular architecture.",
+    practicalUsage: "FastAPI endpoint handlers, microservice utilities, data processing filters, and test fixtures.",
+    codeExample: `def calculate_total(
+    prices: list[float], 
+    tax_rate: float = 0.08, 
+    discount: float = 0.0
+) -> float:
+    \"\"\"Calculates order total with applicable discount and tax.\"\"\"
+    subtotal = sum(prices)
+    discounted = subtotal * (1.0 - discount)
+    total = discounted * (1.0 + tax_rate)
+    return round(total, 2)`,
+    commonMistakes: [
+      "CRITICAL: Using mutable default arguments like def append_item(val, items=[]).",
+      "Confusing local variable scope with module-level global variables without 'global' keyword.",
+    ],
+    practiceRecommendation: "Practice keyword-only arguments and return tuple unpacking immediately.",
+    diagnosticNotes: "58% mastery: Partial knowledge demonstrated. Correctly wrote signatures but fell into mutable default trap.",
+    keyFormulas: ["def func(*args, **kwargs)", "LEGB: Local -> Enclosing -> Global -> Built-in"],
+  },
+  {
+    id: "py-lambda",
+    name: "Lambda & Closures",
+    subjectId: "sub_python",
+    levelTag: "Prerequisite",
+    status: "weak",
+    masteryScore: 30,
+    confidence: "Low",
+    importance: "Critical",
+    estimatedMinutes: 20,
+    x: 760,
+    y: 160,
+    prerequisites: ["py-funcs"],
+    nextSkills: ["py-oop"],
+    isPrerequisiteGap: true,
+    description: "Anonymous lambda expressions, map(), filter(), sorted key projections, and lexical closures.",
+    whyItMatters: "Essential for functional transformations, Pandas/NumPy pipelines, and event-driven callbacks.",
+    practicalUsage: "Custom multi-attribute sorting, event listeners, inline data transforms, and higher-order decorators.",
+    codeExample: `# Multi-attribute custom sorting with lambda
+students = [
+    {"name": "Alex", "grade": 88, "age": 20},
+    {"name": "Maya", "grade": 95, "age": 19},
+    {"name": "Jordan", "grade": 88, "age": 21},
+]
+# Sort descending by grade, then ascending by age
+sorted_students = sorted(
+    students, 
+    key=lambda s: (-s["grade"], s["age"])
+)
+
+# Inline filter with lambda
+passing = list(filter(lambda s: s["grade"] >= 90, students))`,
+    commonMistakes: [
+      "Attempting statements (e.g. assignments, print or loops) inside lambda bodies (only expressions allowed).",
+      "Late-binding closures inside loop indices leading to identical evaluated captured values.",
+    ],
+    practiceRecommendation: "High-priority gap! Complete 5 targeted exercises on sorted() key callbacks.",
+    diagnosticNotes: "Prerequisite gap (30% score): Struggled with map/filter syntax and tuple key sorting.",
+    keyFormulas: ["lambda args: expr", "sorted(iterable, key=lambda x: ...)", "list(map(lambda x: ..., data))"],
+  },
+  {
+    id: "py-oop",
+    name: "Object-Oriented Programming",
+    subjectId: "sub_python",
+    levelTag: "Milestone",
+    status: "not_started",
+    masteryScore: 0,
+    confidence: "Low",
+    importance: "Core",
+    estimatedMinutes: 30,
+    x: 920,
+    y: 110,
+    prerequisites: ["py-funcs", "py-lambda"],
+    nextSkills: ["py-errors"],
+    description: "Classes, __init__ constructor, instance methods, self reference, inheritance, and encapsulation.",
+    whyItMatters: "Structures enterprise application domain models, ORMs (SQLAlchemy, Django), and neural networks.",
+    practicalUsage: "Creating custom domain models, API client wrappers, simulator entities, and PyTorch nn.Module architectures.",
+    codeExample: `class LearningProfile:
+    def __init__(self, student_name: str, active_subject: str):
+        self.student_name = student_name
+        self.active_subject = active_subject
+        self._mastery_scores: dict[str, float] = {}
+
+    def update_mastery(self, topic: str, score: float) -> None:
+        self._mastery_scores[topic] = min(100.0, max(0.0, score))
+
+    @property
+    def overall_mastery(self) -> float:
+        if not self._mastery_scores:
+            return 0.0
+        return sum(self._mastery_scores.values()) / len(self._mastery_scores)`,
+    commonMistakes: [
+      "Forgetting 'self' as first parameter in method signatures.",
+      "Accidentally creating shared class variables instead of instance attributes inside __init__.",
+    ],
+    practiceRecommendation: "Currently locked. Address the Lambda & Functions prerequisite gap first.",
+    diagnosticNotes: "Not yet started in curriculum progression.",
+    keyFormulas: ["class Derived(Base):", "super().__init__()", "@property & @setter"],
+  },
+  {
+    id: "py-errors",
+    name: "Error & Exception Handling",
+    subjectId: "sub_python",
+    levelTag: "Milestone",
+    status: "not_started",
+    masteryScore: 0,
+    confidence: "Low",
+    importance: "High",
+    estimatedMinutes: 20,
+    x: 920,
+    y: 220,
+    prerequisites: ["py-funcs"],
+    nextSkills: [],
+    description: "try/except/else/finally blocks, custom exception classes, raising errors, and context managers.",
+    whyItMatters: "Prevents crashes, provides informative diagnostics, and ensures secure database connection teardown.",
+    practicalUsage: "Handling network dropouts, database rollbacks, input validation, and file descriptor cleanup.",
+    codeExample: `class DiagnosticError(Exception):
+    \"\"\"Raised when student assessment state is corrupt.\"\"\"
+    pass
+
+try:
+    with open("results.json", "r") as f:
+        data = json.load(f)
+except FileNotFoundError:
+    data = {"status": "unassessed", "mastery": 0}
+except json.JSONDecodeError as err:
+    raise DiagnosticError(f"Corrupt assessment format: {err}") from err
+finally:
+    logger.info("Assessment read operation terminated.")`,
+    commonMistakes: [
+      "Catching naked 'except:' which swallows KeyboardInterrupt and system exits.",
+      "Masking the original exception stacktrace by re-raising without 'from err'.",
+    ],
+    practiceRecommendation: "Unlocks after completing OOP and class inheritance basics.",
+    diagnosticNotes: "Scheduled for next milestone once prerequisite functions are mastered.",
+    keyFormulas: ["try -> except -> else -> finally", "raise CustomError() from err"],
+  },
+];
+
+export const PYTHON_EDGES: EdgeDefinition[] = [
+  { from: "py-vars", to: "py-cond", status: "satisfied", label: "Mastered (92%)" },
+  { from: "py-cond", to: "py-loops", status: "satisfied", label: "Mastered (85%)" },
+  { from: "py-loops", to: "py-funcs", status: "satisfied", label: "Practicing (78%)" },
+  { from: "py-funcs", to: "py-lambda", status: "blocking", label: "⚠️ Prerequisite Gap (30%)" },
+  { from: "py-lambda", to: "py-oop", status: "locked", label: "Locked (Prereq Needed)" },
+  { from: "py-funcs", to: "py-errors", status: "locked", label: "Next Milestone" },
+];
 
 export const MATH_SKILLS: SkillNode[] = [
   {
@@ -386,93 +658,349 @@ export const DSA_SKILLS: SkillNode[] = [
   {
     id: "asymptotic",
     name: "Asymptotic Complexity",
+    subjectId: "sub_dsa",
     levelTag: "Foundation",
     status: "mastered",
     masteryScore: 88,
+    confidence: "High",
+    importance: "Foundational",
     estimatedMinutes: 15,
-    x: 120,
+    x: 80,
     y: 160,
     prerequisites: [],
-    nextSkills: ["recursion-bst"],
-    description: "Big-O, Big-Omega, Big-Theta, and Master Theorem for divide-and-conquer.",
+    nextSkills: ["arrays-ptrs", "dp-opt"],
+    description: "Big-O, Big-Omega, Big-Theta, and Master Theorem for divide-and-conquer recurrence relations.",
     whyItMatters: "Crucial for evaluating runtime performance and scalable engineering decisions.",
-    diagnosticNotes: "Demonstrated 88% accuracy in asymptotic recurrence comparisons.",
+    practicalUsage: "Benchmarking database queries, designing high-throughput caching algorithms, and passing technical interviews.",
+    codeExample: `// Master Theorem Recurrence Analysis
+// T(n) = 2T(n/2) + O(n) => a=2, b=2, d=1
+// Since log_b(a) = log_2(2) = 1 == d
+// Result: T(n) = O(n log n) (e.g. Merge Sort)`,
+    commonMistakes: [
+      "Assuming O(1) space when recursive call stacks consume O(depth) memory.",
+      "Treating best-case or average-case bounds as strict upper-bound Big-O.",
+    ],
+    practiceRecommendation: "Mastered with 88% confidence. Foundation ready for non-linear structures.",
+    diagnosticNotes: "Demonstrated 88% accuracy in asymptotic recurrence comparisons and amortized loops.",
     keyFormulas: ["Master Theorem: T(n) = aT(n/b) + O(n^d)", "O(1) < O(log n) < O(n) < O(n log n) < O(n²)"],
   },
   {
-    id: "recursion-bst",
-    name: "Binary Search Trees",
+    id: "arrays-ptrs",
+    name: "Arrays & Dynamic Arrays",
+    subjectId: "sub_dsa",
+    levelTag: "Foundation",
+    status: "mastered",
+    masteryScore: 90,
+    confidence: "High",
+    importance: "Foundational",
+    estimatedMinutes: 15,
+    x: 230,
+    y: 160,
+    prerequisites: ["asymptotic"],
+    nextSkills: ["linked-lists", "bst-trees"],
+    description: "Contiguous memory layout, dynamic array geometric doubling O(1) amortized, and two-pointer sweeps.",
+    whyItMatters: "The most cache-friendly data structure in computer hardware; underpins modern vectors and tensors.",
+    practicalUsage: "High-frequency trading buffers, tabular columnar stores (Parquet), and machine learning matrix batches.",
+    codeExample: `function twoSumSorted(arr: number[], target: number): [number, number] | null {
+  let left = 0, right = arr.length - 1;
+  while (left < right) {
+    const sum = arr[left] + arr[right];
+    if (sum === target) return [left, right];
+    else if (sum < target) left++;
+    else right--;
+  }
+  return null;
+}`,
+    commonMistakes: [
+      "Forgetting that inserting or deleting at index 0 shifts all elements in O(n) time.",
+      "Buffer overflow or off-by-one index mistakes when scanning boundaries.",
+    ],
+    practiceRecommendation: "High mastery (90%). Strong foundation in contiguous memory layout.",
+    diagnosticNotes: "Demonstrated 90% accuracy in sliding window and two-pointer array manipulation.",
+    keyFormulas: ["Address(A[i]) = Base + (i * ElementSize)", "Geometric doubling: Amortized O(1) append"],
+  },
+  {
+    id: "linked-lists",
+    name: "Linked Lists",
+    subjectId: "sub_dsa",
     levelTag: "Concept",
     status: "practicing",
     masteryScore: 74,
+    confidence: "Medium",
+    importance: "Core",
     estimatedMinutes: 20,
     x: 380,
+    y: 160,
+    prerequisites: ["arrays-ptrs"],
+    nextSkills: ["stacks-queues", "bst-trees"],
+    description: "Singly and doubly linked lists, pointer manipulation, Sentinel dummy nodes, and Floyd's cycle detection.",
+    whyItMatters: "Powers constant-time splice and insertion operations, LRU cache node chaining, and kernel free lists.",
+    practicalUsage: "Building LRU / LFU cache eviction policies, undo/redo buffers, and dynamic memory chunk management.",
+    codeExample: `class ListNode<T> {
+  val: T;
+  next: ListNode<T> | null = null;
+  constructor(val: T) { this.val = val; }
+}
+
+function hasCycle(head: ListNode<number> | null): boolean {
+  let slow = head, fast = head;
+  while (fast && fast.next) {
+    slow = slow!.next;
+    fast = fast.next.next;
+    if (slow === fast) return true; // Cycle detected
+  }
+  return false;
+}`,
+    commonMistakes: [
+      "Dereferencing null pointers when traversing past tail (fast.next.next when fast.next is null).",
+      "Losing reference to downstream sublists when re-wiring pointers.",
+    ],
+    practiceRecommendation: "Practice reversing a linked list in-place with 3 pointers.",
+    diagnosticNotes: "74% mastery: Good grasp of basic pointers; occasionally drops head pointers in multi-node swaps.",
+    keyFormulas: ["Floyd Cycle: slow += 1, fast += 2", "Reverse List: next = curr.next; curr.next = prev; prev = curr; curr = next"],
+  },
+  {
+    id: "stacks-queues",
+    name: "Stacks & Queues",
+    subjectId: "sub_dsa",
+    levelTag: "Concept",
+    status: "practicing",
+    masteryScore: 70,
+    confidence: "Medium",
+    importance: "Core",
+    estimatedMinutes: 20,
+    x: 520,
+    y: 160,
+    prerequisites: ["linked-lists"],
+    nextSkills: ["graph-algo"],
+    description: "LIFO (Last In First Out) and FIFO (First In First Out) semantics, monotonic stacks, and circular buffers.",
+    whyItMatters: "Underpins compiler syntax evaluation, expression parsing, call stacks, and BFS graph scheduling.",
+    practicalUsage: "Message brokers (Kafka/RabbitMQ queues), browser forward/back history, and monotonic next greater element queries.",
+    codeExample: `// Valid Parentheses check with LIFO Stack
+function isValidParentheses(s: string): boolean {
+  const stack: string[] = [];
+  const map: Record<string, string> = { ')': '(', '}': '{', ']': '[' };
+  for (const char of s) {
+    if (map[char]) {
+      if (stack.pop() !== map[char]) return false;
+    } else {
+      stack.push(char);
+    }
+  }
+  return stack.length === 0;
+}`,
+    commonMistakes: [
+      "Popping from an empty stack without checking emptiness.",
+      "Using an array as a queue with array.shift() which runs in O(n) rather than O(1).",
+    ],
+    practiceRecommendation: "Practice Monotonic Stack patterns for histogram water trapping.",
+    diagnosticNotes: "70% mastery: Confident with standard push/pop; monotonic stack edge conditions need reinforcement.",
+    keyFormulas: ["LIFO: Push/Pop O(1)", "FIFO: Enqueue/Dequeue O(1) via Ring Buffer or Doubly Linked List"],
+  },
+  {
+    id: "bst-trees",
+    name: "Binary Search Trees",
+    subjectId: "sub_dsa",
+    levelTag: "Prerequisite",
+    status: "weak",
+    masteryScore: 38,
+    confidence: "Low",
+    importance: "Critical",
+    estimatedMinutes: 25,
+    x: 660,
+    y: 110,
+    prerequisites: ["arrays-ptrs", "linked-lists"],
+    nextSkills: ["heaps-pq", "graph-algo"],
+    isPrerequisiteGap: true,
+    description: "BST invariant (Left < Root < Right), in-order traversal, successor/predecessor deletion, and AVL rotations.",
+    whyItMatters: "Direct prerequisite for logarithmic search, database index B-Trees, and self-balancing sets.",
+    practicalUsage: "Relational database index engines (B+ Trees), Linux kernel CFS scheduler Red-Black trees, and spatial KD-trees.",
+    codeExample: `class TreeNode {
+  val: number;
+  left: TreeNode | null = null;
+  right: TreeNode | null = null;
+  constructor(val: number) { this.val = val; }
+}
+
+// Inorder traversal yields sorted order
+function inorder(root: TreeNode | null, result: number[] = []): number[] {
+  if (!root) return result;
+  inorder(root.left, result);
+  result.push(root.val); // Visit Root
+  inorder(root.right, result);
+  return result;
+}`,
+    commonMistakes: [
+      "Checking only local parent-child condition instead of the global BST invariant (every left node < all ancestors).",
+      "Handling the 2-child deletion case incorrectly without finding the in-order successor.",
+    ],
+    practiceRecommendation: "Critical prerequisite gap! Solve 4 targeted problems on BST validation and in-order traversal.",
+    diagnosticNotes: "Prerequisite gap (38% score): Diagnostic revealed confusion between binary trees vs BST invariants.",
+    keyFormulas: ["BST invariant: Max(LeftSubtree) < Root < Min(RightSubtree)", "Inorder Traversal: Left -> Root -> Right (Sorted)"],
+  },
+  {
+    id: "heaps-pq",
+    name: "Heaps & Priority Queues",
+    subjectId: "sub_dsa",
+    levelTag: "Concept",
+    status: "learning",
+    masteryScore: 42,
+    confidence: "Low",
+    importance: "Core",
+    estimatedMinutes: 25,
+    x: 800,
     y: 90,
-    prerequisites: ["asymptotic"],
-    nextSkills: ["dp-opt"],
-    description: "BST invariant, balanced AVL rotations, inorder traversal, and predecessor/successor logic.",
-    whyItMatters: "Foundation for logarithmic search, associative containers, and index trees.",
-    diagnosticNotes: "Understands BST search; AVL double rotations need review.",
-    keyFormulas: ["Inorder: Left -> Root -> Right", "Balance Factor: Height(L) - Height(R)"],
+    prerequisites: ["bst-trees"],
+    nextSkills: ["graph-algo"],
+    description: "Min-heap and max-heap array representation, bottom-up O(n) heapify, sift-up/down, and top-K streaming.",
+    whyItMatters: "Essential for Dijkstra's shortest path, event simulators, and k-way stream merging.",
+    practicalUsage: "Task scheduling priority schedulers, streaming top-K trending metrics, and Huffman coding compression.",
+    codeExample: `// Array-based Binary Heap index formulas
+// Parent(i) = Math.floor((i - 1) / 2)
+// LeftChild(i) = 2 * i + 1
+// RightChild(i) = 2 * i + 2
+
+function siftDown(heap: number[], n: number, i: number) {
+  let smallest = i;
+  const left = 2 * i + 1, right = 2 * i + 2;
+  if (left < n && heap[left] < heap[smallest]) smallest = left;
+  if (right < n && heap[right] < heap[smallest]) smallest = right;
+  if (smallest !== i) {
+    [heap[i], heap[smallest]] = [heap[smallest], heap[i]];
+    siftDown(heap, n, smallest);
+  }
+}`,
+    commonMistakes: [
+      "Assuming a binary heap is sorted like a BST (heaps only guarantee root is extremum).",
+      "Thinking building a heap takes O(n log n) instead of linear O(n) bottom-up heapify.",
+    ],
+    practiceRecommendation: "Recommended after clearing the Binary Search Tree prerequisite gap.",
+    diagnosticNotes: "42% score: Partially remembers parent-child indexing; needs practice on sift-down logic.",
+    keyFormulas: ["Parent(i) = (i - 1) // 2", "Heapify All: O(n) linear time", "Extract Min: O(log n)"],
   },
   {
     id: "dp-opt",
     name: "Dynamic Programming",
+    subjectId: "sub_dsa",
     levelTag: "Prerequisite",
     status: "weak",
     masteryScore: 32,
+    confidence: "Low",
+    importance: "Critical",
     estimatedMinutes: 30,
-    x: 640,
-    y: 160,
+    x: 660,
+    y: 220,
     prerequisites: ["asymptotic"],
     nextSkills: ["graph-algo"],
     isPrerequisiteGap: true,
-    description: "Optimal substructure, overlapping subproblems, memoization, and state transitions.",
-    whyItMatters: "Essential for advanced optimization problems, interview prep, and graph shortest paths.",
-    diagnosticNotes: "Prerequisite gap: Struggled to formulate recurrence relations and 2D table state transitions.",
-    keyFormulas: ["dp[i] = min(dp[i - coin] + 1)", "Knapsack: dp[i][w] = max(dp[i-1][w], val + dp[i-1][w-wt])"],
+    description: "Optimal substructure, overlapping subproblems, memoization vs tabulation, and state transition equations.",
+    whyItMatters: "Essential for combinatorial optimization, string DNA sequence alignment, and algorithmic interview prep.",
+    practicalUsage: "Resource allocation knapsack algorithms, text diffing (Levenshtein distance), and compiler instruction scheduling.",
+    codeExample: `// 0/1 Knapsack State Transition (Memoization)
+function knapsack(weights: number[], values: number[], capacity: number): number {
+  const memo = new Map<string, number>();
+  function solve(i: number, w: number): number {
+    if (i >= weights.length || w <= 0) return 0;
+    const key = \`\${i}-\${w}\`;
+    if (memo.has(key)) return memo.get(key)!;
+    
+    // Choice 1: Skip item
+    let ans = solve(i + 1, w);
+    // Choice 2: Include item if capacity allows
+    if (weights[i] <= w) {
+      ans = Math.max(ans, values[i] + solve(i + 1, w - weights[i]));
+    }
+    memo.set(key, ans);
+    return ans;
+  }
+  return solve(0, capacity);
+}`,
+    commonMistakes: [
+      "Trying greedy solutions when overlapping subproblem constraints require global DP optimization.",
+      "Off-by-one errors when initializing base cases in 2D tabulation tables.",
+    ],
+    practiceRecommendation: "Formulate recurrence relations on paper before attempting code implementation.",
+    diagnosticNotes: "Prerequisite gap (32% score): Struggles to formulate state transition equations.",
+    keyFormulas: ["Optimal Substructure: Solution(N) = optimal(Solution(N-k))", "dp[i] = min(dp[i - coin] + 1)"],
   },
   {
     id: "graph-algo",
     name: "Graph Algorithms",
+    subjectId: "sub_dsa",
     levelTag: "Milestone",
-    status: "learning",
-    masteryScore: 50,
+    status: "not_started",
+    masteryScore: 20,
+    confidence: "Low",
+    importance: "High",
     estimatedMinutes: 30,
-    x: 880,
+    x: 940,
     y: 160,
-    prerequisites: ["dp-opt"],
+    prerequisites: ["bst-trees", "stacks-queues"],
     nextSkills: [],
-    description: "BFS, DFS, topological sorting, Dijkstra shortest paths, and minimum spanning trees.",
-    whyItMatters: "Powers recommendation engines, routing, dependency resolution, and network flow.",
-    diagnosticNotes: "Blocked until Dynamic Programming & State transition fundamentals are fortified.",
-    keyFormulas: ["Dijkstra: dist[v] = min(dist[v], dist[u] + weight(u,v))"],
+    description: "Adjacency lists, BFS shortest path, DFS connected components, Topological Sorting, and Dijkstra.",
+    whyItMatters: "Powers social network graphs, GPS pathfinding, package build dependency resolution, and network routing.",
+    practicalUsage: "Google Maps routing (Dijkstra/A*), social recommendation follower networks, and Web crawlers.",
+    codeExample: `// Breadth-First Search (BFS) using FIFO Queue
+function bfs(adjList: Map<number, number[]>, start: number): number[] {
+  const visited = new Set<number>([start]);
+  const queue: number[] = [start];
+  const order: number[] = [];
+
+  while (queue.length > 0) {
+    const node = queue.shift()!;
+    order.push(node);
+    for (const neighbor of adjList.get(node) || []) {
+      if (!visited.has(neighbor)) {
+        visited.add(neighbor);
+        queue.push(neighbor);
+      }
+    }
+  }
+  return order;
+}`,
+    commonMistakes: [
+      "Forgetting to mark nodes visited upon queue entry, leading to duplicate node processing and cycles.",
+      "Using an adjacency matrix for sparse graphs (wasting O(V²) memory).",
+    ],
+    practiceRecommendation: "Locked until Binary Search Trees and DP fundamentals are reinforced.",
+    diagnosticNotes: "Milestone queued after BST prerequisite gap is resolved.",
+    keyFormulas: ["BFS uses FIFO Queue -> Shortest Path in unweighted graphs", "Dijkstra: dist[v] = min(dist[v], dist[u] + w(u,v))"],
   },
 ];
 
 export const DSA_EDGES: EdgeDefinition[] = [
-  { from: "asymptotic", to: "recursion-bst", status: "satisfied", label: "Satisfied (88%)" },
-  { from: "recursion-bst", to: "dp-opt", status: "blocking", label: "⚠️ Prerequisite Gap" },
-  { from: "dp-opt", to: "graph-algo", status: "locked", label: "Locked Milestone" },
+  { from: "asymptotic", to: "arrays-ptrs", status: "satisfied", label: "Satisfied (88%)" },
+  { from: "arrays-ptrs", to: "linked-lists", status: "satisfied", label: "Satisfied (90%)" },
+  { from: "linked-lists", to: "stacks-queues", status: "satisfied", label: "Satisfied (74%)" },
+  { from: "arrays-ptrs", to: "bst-trees", status: "blocking", label: "⚠️ Prerequisite Gap (38%)" },
+  { from: "bst-trees", to: "heaps-pq", status: "locked", label: "Locked (Prereq Needed)" },
+  { from: "asymptotic", to: "dp-opt", status: "blocking", label: "⚠️ Weak Gap (32%)" },
+  { from: "bst-trees", to: "graph-algo", status: "locked", label: "Locked Milestone" },
 ];
 
-export type SupportedSubject = "Maths" | "DBMS" | "OS" | "CN" | "DSA" | string;
+export type SupportedSubject = "Python" | "DSA" | "Maths" | "DBMS" | "OS" | "CN" | string;
 
 export function getSubjectGraphData(subject: string) {
-  const norm = subject.toLowerCase();
+  const norm = (subject || "").toLowerCase();
+  if (norm.includes("python") || norm === "py" || norm.includes("py-101")) {
+    return { skills: PYTHON_SKILLS, edges: PYTHON_EDGES, defaultSelected: "py-funcs" };
+  }
+  if (norm.includes("dsa") || norm.includes("data struct") || norm.includes("algorithm") || norm.includes("tree")) {
+    return { skills: DSA_SKILLS, edges: DSA_EDGES, defaultSelected: "bst-trees" };
+  }
   if (norm.includes("os") || norm.includes("operat")) {
     return { skills: OS_SKILLS, edges: OS_EDGES, defaultSelected: "deadlocks" };
   }
   if (norm.includes("cn") || norm.includes("network")) {
     return { skills: CN_SKILLS, edges: CN_EDGES, defaultSelected: "ip-subnet" };
   }
-  if (norm.includes("dsa") || norm.includes("data struct") || norm.includes("algorithm")) {
-    return { skills: DSA_SKILLS, edges: DSA_EDGES, defaultSelected: "dp-opt" };
-  }
   if (norm.includes("dbms") || norm.includes("data") || norm.includes("sql")) {
     return { skills: DBMS_SKILLS, edges: DBMS_EDGES, defaultSelected: "normalization" };
   }
-  return { skills: MATH_SKILLS, edges: MATH_EDGES, defaultSelected: "factorisation" };
+  if (norm.includes("math")) {
+    return { skills: MATH_SKILLS, edges: MATH_EDGES, defaultSelected: "factorisation" };
+  }
+  return { skills: PYTHON_SKILLS, edges: PYTHON_EDGES, defaultSelected: "py-funcs" };
 }
 
 interface SkillGraphProps {
@@ -1144,6 +1672,55 @@ export default function SkillGraph({
               </span>
               <p className="text-slate-600 leading-relaxed">{selectedNode.whyItMatters}</p>
             </div>
+
+            {/* Practical Real-World Usage */}
+            {selectedNode.practicalUsage && (
+              <div className="p-3 rounded-2xl bg-emerald-50/60 border border-emerald-100 text-xs space-y-1">
+                <span className="font-extrabold text-emerald-900 text-[10px] uppercase tracking-wider block">
+                  Real-World Industry Usage:
+                </span>
+                <p className="text-emerald-800 leading-relaxed">{selectedNode.practicalUsage}</p>
+              </div>
+            )}
+
+            {/* Code / Practical Example */}
+            {selectedNode.codeExample && (
+              <div className="p-3 rounded-2xl bg-slate-900 text-slate-100 text-xs space-y-1.5 shadow-sm">
+                <div className="flex items-center justify-between">
+                  <span className="font-mono text-[10px] uppercase tracking-wider text-slate-400 font-bold">
+                    Working Example:
+                  </span>
+                  <span className="text-[10px] text-slate-400 font-mono">Code Snippet</span>
+                </div>
+                <pre className="p-2.5 rounded-xl bg-slate-950 text-indigo-200 font-mono text-[11px] overflow-x-auto leading-relaxed border border-slate-800 whitespace-pre">
+                  {selectedNode.codeExample}
+                </pre>
+              </div>
+            )}
+
+            {/* Common Mistakes */}
+            {selectedNode.commonMistakes && selectedNode.commonMistakes.length > 0 && (
+              <div className="p-3 rounded-2xl bg-amber-50/60 border border-amber-100 text-xs space-y-1.5">
+                <span className="font-extrabold text-amber-900 text-[10px] uppercase tracking-wider block">
+                  Common Pitfalls & Mistakes:
+                </span>
+                <ul className="space-y-1 list-disc list-inside text-amber-800 text-[11px]">
+                  {selectedNode.commonMistakes.map((m, idx) => (
+                    <li key={idx} className="leading-snug">{m}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {/* Practice Recommendation */}
+            {selectedNode.practiceRecommendation && (
+              <div className="p-3 rounded-2xl bg-purple-50/60 border border-purple-100 text-xs space-y-1">
+                <span className="font-extrabold text-purple-900 text-[10px] uppercase tracking-wider block">
+                  Practice Recommendation:
+                </span>
+                <p className="text-purple-800 leading-relaxed font-medium">{selectedNode.practiceRecommendation}</p>
+              </div>
+            )}
 
             {/* Judge Interactive Simulator Button */}
             {selectedNode.isPrerequisiteGap && (

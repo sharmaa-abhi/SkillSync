@@ -4,7 +4,7 @@
  * Configured exclusively in the Learner Profile (/profile).
  */
 
-export type SubjectKey = "Maths" | "DBMS" | "OS" | "CN" | "DSA";
+export type SubjectKey = "Python" | "DSA" | "Maths" | "DBMS" | "OS" | "CN";
 
 export interface SubjectTopic {
   name: string;
@@ -32,6 +32,12 @@ export interface SubjectConfig {
   defaultOverallMastery: number;
   defaultStrengths: string[];
   defaultWeaknesses: string[];
+  level?: string;
+  defaultCurrentTopic?: string;
+  defaultNextTopic?: string;
+  defaultPrerequisiteGap?: string;
+  defaultKnowledgeCoverage?: number;
+  defaultRecommendedToday?: string;
   topics: SubjectTopic[];
 }
 
@@ -39,6 +45,100 @@ export const ACTIVE_SUBJECT_STORAGE_KEY = "skillsync_active_subject";
 export const ACTIVE_SUBJECT_EVENT = "skillsync_subject_change";
 
 export const SUBJECT_CONFIGS: Record<SubjectKey, SubjectConfig> = {
+  Python: {
+    key: "Python",
+    label: "Python Programming",
+    shortLabel: "Python",
+    code: "PY-101",
+    icon: "🐍",
+    color: "emerald",
+    badgeBg: "bg-emerald-50",
+    badgeText: "text-emerald-700",
+    badgeBorder: "border-emerald-200",
+    description: "Core syntax, control flow, functions, lambdas, scope, error handling, and OOP in Python.",
+    defaultGoal: "Master Python Programming — Fortify Function Arguments, Scope & Lambda Closures",
+    defaultOverallMastery: 64,
+    defaultStrengths: ["Variables & Data Types", "Conditions & Branching"],
+    defaultWeaknesses: ["Functions & Scope", "Lambda Functions"],
+    level: "Beginner → Intermediate",
+    defaultCurrentTopic: "Functions & Scope",
+    defaultNextTopic: "Lambda Functions",
+    defaultPrerequisiteGap: "Lambda Functions & Closures",
+    defaultKnowledgeCoverage: 42,
+    defaultRecommendedToday: "Practice function parameters & return values",
+    topics: [
+      {
+        name: "Variables & Data Types",
+        label: "Variables & Types",
+        difficulty: "beginner",
+        estimatedMinutes: 15,
+        prerequisites: [],
+        keyConcept: "Everything in Python is an object; immutable vs mutable collections",
+        defaultScore: 92,
+        masteryLevel: "strong",
+      },
+      {
+        name: "Conditions & Branching",
+        label: "Conditions",
+        difficulty: "beginner",
+        estimatedMinutes: 15,
+        prerequisites: ["Variables & Data Types"],
+        keyConcept: "Short-circuit evaluation and truthy/falsy truth tables",
+        defaultScore: 85,
+        masteryLevel: "strong",
+      },
+      {
+        name: "Loops & Iteration",
+        label: "Loops",
+        difficulty: "beginner",
+        estimatedMinutes: 20,
+        prerequisites: ["Conditions & Branching"],
+        keyConcept: "for loops, while loops, and range() generator mechanics",
+        defaultScore: 78,
+        masteryLevel: "medium",
+      },
+      {
+        name: "Functions & Scope",
+        label: "Functions",
+        difficulty: "intermediate",
+        estimatedMinutes: 25,
+        prerequisites: ["Loops & Iteration"],
+        keyConcept: "def, positional & keyword arguments, and mutable default pitfalls",
+        defaultScore: 58,
+        masteryLevel: "medium",
+      },
+      {
+        name: "Lambda Functions",
+        label: "Lambda Functions",
+        difficulty: "intermediate",
+        estimatedMinutes: 25,
+        prerequisites: ["Functions & Scope"],
+        keyConcept: "Anonymous lambda expressions and higher-order map/filter",
+        defaultScore: 30,
+        masteryLevel: "weak",
+      },
+      {
+        name: "Object-Oriented Programming",
+        label: "OOP & Classes",
+        difficulty: "advanced",
+        estimatedMinutes: 35,
+        prerequisites: ["Functions & Scope"],
+        keyConcept: "Classes, __init__, self reference, inheritance, and encapsulation",
+        defaultScore: 0,
+        masteryLevel: "weak",
+      },
+      {
+        name: "Error & Exception Handling",
+        label: "Exception Handling",
+        difficulty: "intermediate",
+        estimatedMinutes: 20,
+        prerequisites: ["Functions & Scope"],
+        keyConcept: "try, except, else, finally blocks and custom exception raising",
+        defaultScore: 0,
+        masteryLevel: "weak",
+      },
+    ],
+  },
   Maths: {
     key: "Maths",
     label: "Mathematics",
@@ -308,18 +408,24 @@ export const SUBJECT_CONFIGS: Record<SubjectKey, SubjectConfig> = {
   DSA: {
     key: "DSA",
     label: "Data Structures & Algorithms",
-    shortLabel: "DSA",
+    shortLabel: "Data Structures",
     code: "CS-201",
     icon: "⚡",
-    color: "emerald",
-    badgeBg: "bg-emerald-50",
-    badgeText: "text-emerald-700",
-    badgeBorder: "border-emerald-200",
-    description: "Asymptotic Big-O notation, Dynamic Programming memoization, Graph traversals, and Heaps.",
-    defaultGoal: "Crack Technical Interview DSA — Master DP Subproblems & Graph BFS/DFS Cycle Detection",
+    color: "purple",
+    badgeBg: "bg-purple-50",
+    badgeText: "text-purple-700",
+    badgeBorder: "border-purple-200",
+    description: "Asymptotic analysis, Arrays, Linked Lists, Binary Search Trees, Heaps, and Dynamic Programming.",
+    defaultGoal: "Crack Technical Interview DSA — Master Binary Search Trees & DP Subproblems",
     defaultOverallMastery: 54,
-    defaultStrengths: ["Asymptotic Complexity Analysis", "Binary Search Trees & Heaps"],
-    defaultWeaknesses: ["Dynamic Programming", "Graph Algorithms & Traversals"],
+    defaultStrengths: ["Arrays & Dynamic Arrays", "Asymptotic Complexity Analysis"],
+    defaultWeaknesses: ["Binary Search Trees", "Dynamic Programming"],
+    level: "Intermediate → Advanced",
+    defaultCurrentTopic: "Binary Search Trees",
+    defaultNextTopic: "Dynamic Programming",
+    defaultPrerequisiteGap: "Binary Search Trees",
+    defaultKnowledgeCoverage: 38,
+    defaultRecommendedToday: "Practice BST inorder traversal & tree invariants",
     topics: [
       {
         name: "Asymptotic Complexity Analysis",
@@ -328,17 +434,57 @@ export const SUBJECT_CONFIGS: Record<SubjectKey, SubjectConfig> = {
         estimatedMinutes: 15,
         prerequisites: [],
         keyConcept: "Big-O, Big-Omega, Big-Theta, recursion trees, and Master Theorem",
-        defaultScore: 79,
+        defaultScore: 88,
         masteryLevel: "strong",
       },
       {
-        name: "Binary Search Trees & Heaps",
-        label: "BST & Heaps",
+        name: "Arrays & Dynamic Arrays",
+        label: "Arrays & Pointers",
+        difficulty: "beginner",
+        estimatedMinutes: 20,
+        prerequisites: ["Asymptotic Complexity Analysis"],
+        keyConcept: "Contiguous memory layout, dynamic array resizing O(1) amortized, and two pointers",
+        defaultScore: 90,
+        masteryLevel: "strong",
+      },
+      {
+        name: "Linked Lists",
+        label: "Linked Lists",
         difficulty: "intermediate",
         estimatedMinutes: 25,
-        prerequisites: ["Asymptotic Complexity Analysis"],
-        keyConcept: "BST balancing, min/max heap properties, priority queues, and heapify",
-        defaultScore: 68,
+        prerequisites: ["Arrays & Dynamic Arrays"],
+        keyConcept: "Singly/doubly linked pointer manipulation and Floyd cycle detection",
+        defaultScore: 74,
+        masteryLevel: "medium",
+      },
+      {
+        name: "Stacks & Queues",
+        label: "Stacks & Queues",
+        difficulty: "intermediate",
+        estimatedMinutes: 20,
+        prerequisites: ["Linked Lists"],
+        keyConcept: "LIFO/FIFO invariants, monotonic stacks, and BFS queues",
+        defaultScore: 70,
+        masteryLevel: "medium",
+      },
+      {
+        name: "Binary Search Trees",
+        label: "Trees & BST",
+        difficulty: "intermediate",
+        estimatedMinutes: 30,
+        prerequisites: ["Linked Lists", "Arrays & Dynamic Arrays"],
+        keyConcept: "BST invariant (Left < Root < Right), inorder traversal, and AVL balance factors",
+        defaultScore: 38,
+        masteryLevel: "weak",
+      },
+      {
+        name: "Heaps & Priority Queues",
+        label: "Heaps",
+        difficulty: "intermediate",
+        estimatedMinutes: 25,
+        prerequisites: ["Binary Search Trees"],
+        keyConcept: "Min/max heap array representation, heapify O(n), and top-K elements",
+        defaultScore: 42,
         masteryLevel: "medium",
       },
       {
@@ -352,13 +498,13 @@ export const SUBJECT_CONFIGS: Record<SubjectKey, SubjectConfig> = {
         masteryLevel: "weak",
       },
       {
-        name: "Graph Algorithms & Traversals",
+        name: "Graph Algorithms",
         label: "Graph Algorithms",
         difficulty: "advanced",
         estimatedMinutes: 30,
-        prerequisites: ["Binary Search Trees & Heaps"],
+        prerequisites: ["Binary Search Trees", "Stacks & Queues"],
         keyConcept: "Adjacency lists, BFS, DFS, Dijkstra shortest path, and topological sort",
-        defaultScore: 41,
+        defaultScore: 20,
         masteryLevel: "weak",
       },
     ],
@@ -368,23 +514,24 @@ export const SUBJECT_CONFIGS: Record<SubjectKey, SubjectConfig> = {
 export const ALL_SUBJECTS = Object.values(SUBJECT_CONFIGS);
 
 export function normalizeSubjectKey(val?: string | null): SubjectKey {
-  if (!val) return "Maths";
+  if (!val) return "Python";
   const normalized = val.trim().toLowerCase();
+  if (normalized.includes("python") || normalized === "py" || normalized.includes("py101")) return "Python";
+  if (normalized.includes("dsa") || normalized.includes("algo") || normalized.includes("struct") || normalized.includes("tree")) return "DSA";
   if (normalized === "maths" || normalized === "math" || normalized.includes("mathem")) return "Maths";
-  if (normalized === "dbms" || normalized.includes("database")) return "DBMS";
+  if (normalized === "dbms" || normalized.includes("database") || normalized.includes("sql")) return "DBMS";
   if (normalized === "os" || normalized.includes("operat")) return "OS";
   if (normalized === "cn" || normalized.includes("network")) return "CN";
-  if (normalized === "dsa" || normalized.includes("algo") || normalized.includes("struct")) return "DSA";
-  return "Maths";
+  return "Python";
 }
 
 export function getActiveSubjectKey(): SubjectKey {
-  if (typeof window === "undefined") return "Maths";
+  if (typeof window === "undefined") return "Python";
   try {
     const saved = localStorage.getItem(ACTIVE_SUBJECT_STORAGE_KEY);
     return normalizeSubjectKey(saved);
   } catch {
-    return "Maths";
+    return "Python";
   }
 }
 

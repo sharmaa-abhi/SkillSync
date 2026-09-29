@@ -249,6 +249,90 @@ async function seedMultiSubjects() {
     }
   }
 
+  // 4. Python Programming
+  const python = await prisma.subject.upsert({
+    where: { name: "Python Programming" },
+    update: { isActive: true },
+    create: {
+      name: "Python Programming",
+      description: "Modern Python fundamentals from variables, conditionals, loops, functions to OOP and error handling.",
+      icon: "🐍",
+      isActive: true,
+    },
+  });
+  console.log(`✅ Subject: ${python.name} (${python.id})`);
+
+  const pythonTopics = [
+    { name: "Variables & Data Types", description: "Dynamic typing, immutable vs mutable types, strings, numbers, lists, tuples, dictionaries.", order: 1, difficulty: "beginner" },
+    { name: "Conditions & Branching", description: "Boolean logic, if-elif-else branching, truthy and falsy values, match-case statements.", order: 2, difficulty: "beginner" },
+    { name: "Loops & Iteration", description: "for loops, while loops, range(), break, continue, and list comprehensions.", order: 3, difficulty: "beginner" },
+    { name: "Functions & Scope", description: "def, positional & keyword arguments, *args, **kwargs, return values, and LEGB variable scope.", order: 4, difficulty: "intermediate" },
+    { name: "Lambda Functions", description: "Anonymous functions, higher-order functions: map, filter, sorted key functions.", order: 5, difficulty: "intermediate" },
+    { name: "Object-Oriented Programming", description: "Classes, instances, __init__, self, inheritance, encapsulation, and dunder methods.", order: 6, difficulty: "advanced" },
+    { name: "Error Handling", description: "try-except-else-finally blocks, raising exceptions, and custom Exception classes.", order: 7, difficulty: "intermediate" },
+  ];
+
+  for (const t of pythonTopics) {
+    const topic = await prisma.topic.upsert({
+      where: { subjectId_name: { subjectId: python.id, name: t.name } },
+      update: {},
+      create: { ...t, subjectId: python.id },
+    });
+
+    const existingQ = await prisma.question.findFirst({ where: { topicId: topic.id } });
+    if (!existingQ) {
+      if (t.name === "Functions & Scope") {
+        await prisma.question.create({
+          data: {
+            topicId: topic.id,
+            text: "What will be printed by the following Python code?\n\ndef func(a, b=[]):\n    b.append(a)\n    return b\n\nprint(func(1))\nprint(func(2))",
+            options: JSON.stringify(["[1] and [2]", "[1] and [1, 2]", "[1, 2] and [1, 2]", "TypeError"]),
+            correctAnswer: 1,
+            explanation: "Default parameter values in Python are evaluated once when the function is defined, making mutable default arguments like lists persistent across calls.",
+            difficulty: "medium",
+            type: "assessment",
+          },
+        });
+      } else if (t.name === "Lambda Functions") {
+        await prisma.question.create({
+          data: {
+            topicId: topic.id,
+            text: "Which of the following correctly describes a Python lambda expression?",
+            options: JSON.stringify(["An anonymous function restricted to a single expression whose result is implicitly returned", "A generator function capable of yielding multiple values", "A multi-statement function block defined without a return statement", "A decorator syntax applied to class methods"]),
+            correctAnswer: 0,
+            explanation: "Python lambda functions are syntactically restricted to a single expression, and they automatically evaluate and return that expression's value.",
+            difficulty: "easy",
+            type: "assessment",
+          },
+        });
+      } else if (t.name === "Variables & Data Types") {
+        await prisma.question.create({
+          data: {
+            topicId: topic.id,
+            text: "Which of the following Python data types is immutable?",
+            options: JSON.stringify(["Tuple", "List", "Dictionary", "Set"]),
+            correctAnswer: 0,
+            explanation: "Tuples (like strings and integers) are immutable in Python; elements cannot be modified or reassigned after creation.",
+            difficulty: "easy",
+            type: "assessment",
+          },
+        });
+      } else {
+        await prisma.question.create({
+          data: {
+            topicId: topic.id,
+            text: "In Python, which keyword combination guarantees that a cleanup block executes whether an exception was raised or not?",
+            options: JSON.stringify(["finally", "except Exception", "else", "ensure"]),
+            correctAnswer: 0,
+            explanation: "The 'finally' clause is always executed prior to leaving the try statement, regardless of whether an exception occurred.",
+            difficulty: "easy",
+            type: "assessment",
+          },
+        });
+      }
+    }
+  }
+
   console.log("✨ All subjects, topics, and diagnostic questions seeded successfully!");
 }
 

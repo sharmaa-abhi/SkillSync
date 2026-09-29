@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useContext } from "react";
 import {
   SubjectKey,
   SubjectConfig,
@@ -12,18 +12,35 @@ import {
   setActiveSubjectKey,
   getSubjectConfig,
 } from "@/lib/activeSubject";
+import { useSubjectContext } from "@/context/SubjectContext";
 
 export function useActiveSubject() {
-  const [activeSubject, setActiveSubjectState] = useState<SubjectKey>("Maths");
+  // If wrapped in SubjectProvider, leverage central context directly
+  try {
+    const context = useSubjectContext();
+    return {
+      activeSubject: context.activeSubject,
+      activeSubjectConfig: context.activeSubjectConfig,
+      setActiveSubject: context.setActiveSubject,
+      allSubjects: context.allSubjects,
+      isHydrated: context.isHydrated,
+      context,
+    };
+  } catch {
+    // Fallback for standalone/unwrapped components
+    return useStandaloneActiveSubject();
+  }
+}
+
+function useStandaloneActiveSubject() {
+  const [activeSubject, setActiveSubjectState] = useState<SubjectKey>("Python");
   const [isHydrated, setIsHydrated] = useState(false);
 
   useEffect(() => {
-    // Initial read on client mount
     const initial = getActiveSubjectKey();
     setActiveSubjectState(initial);
     setIsHydrated(true);
 
-    // Event listener for cross-component or cross-page updates
     const handleSubjectChange = (e: Event) => {
       const customEvent = e as CustomEvent<SubjectKey>;
       if (customEvent.detail && SUBJECT_CONFIGS[customEvent.detail]) {
@@ -58,5 +75,6 @@ export function useActiveSubject() {
     setActiveSubject,
     allSubjects: ALL_SUBJECTS,
     isHydrated,
+    context: null,
   };
 }

@@ -20,7 +20,12 @@ import {
   Globe,
   Eye,
   Volume2,
+  ChevronDown,
+  Layers,
+  Check,
 } from "lucide-react";
+import { useSubjectContext } from "@/context/SubjectContext";
+import AdaptiveLoopStatus from "@/components/AdaptiveLoopStatus";
 
 interface AppLayoutProps {
   children: React.ReactNode;
@@ -29,7 +34,9 @@ interface AppLayoutProps {
 export default function AppLayout({ children }: AppLayoutProps) {
   const pathname = usePathname();
   const { data: session } = useSession();
+  const { activeSubject, activeSubjectConfig, setActiveSubject, allSubjects } = useSubjectContext();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [sidebarSubjectOpen, setSidebarSubjectOpen] = useState(false);
   const [language, setLanguage] = useState<"en" | "hi">("en");
   const [highContrast, setHighContrast] = useState(false);
 
@@ -92,22 +99,77 @@ export default function AppLayout({ children }: AppLayoutProps) {
           </Link>
         </div>
 
-        {/* Adaptive Loop Indicator */}
-        <div className="px-4 py-3 m-3 rounded-xl bg-gradient-to-b from-indigo-50/70 to-purple-50/70 border border-indigo-100/90 shadow-xs hover:border-indigo-200 transition-all duration-300">
-          <div className="flex items-center gap-2 text-xs font-semibold text-indigo-900 mb-1">
-            <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-indigo-600"></span>
-            </span>
-            <Sparkles className="w-3.5 h-3.5 text-indigo-600" />
-            <span>{language === "hi" ? "एडेप्टिव लूप सक्रिय" : "Adaptive Loop Active"}</span>
+        {/* Global Active Subject Switcher Card in Sidebar */}
+        <div className="px-3 pt-3">
+          <div className="relative">
+            <button
+              type="button"
+              onClick={() => setSidebarSubjectOpen(!sidebarSubjectOpen)}
+              className="w-full text-left p-3 rounded-2xl bg-slate-50 hover:bg-slate-100/80 border border-slate-200/90 hover:border-indigo-300 transition-all cursor-pointer shadow-2xs group"
+            >
+              <div className="flex items-center justify-between mb-1.5">
+                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                  Active Subject
+                </span>
+                <span className="text-[9px] font-mono font-bold text-indigo-700 bg-indigo-50 px-1.5 py-0.5 rounded border border-indigo-100">
+                  {activeSubjectConfig.code}
+                </span>
+              </div>
+              <div className="flex items-center justify-between gap-2">
+                <div className="flex items-center gap-2 truncate">
+                  <span className="text-xl flex-shrink-0">{activeSubjectConfig.icon}</span>
+                  <div className="truncate">
+                    <span className="font-extrabold text-xs text-slate-900 block truncate group-hover:text-indigo-600 transition-colors">
+                      {activeSubjectConfig.label}
+                    </span>
+                    <span className="text-[10px] text-slate-500 block truncate">
+                      {activeSubjectConfig.level || "Beginner → Intermediate"}
+                    </span>
+                  </div>
+                </div>
+                <ChevronDown className={`w-3.5 h-3.5 text-slate-400 transition-transform duration-200 flex-shrink-0 ${sidebarSubjectOpen ? "rotate-180" : ""}`} />
+              </div>
+            </button>
+
+            {/* Subject Dropdown Menu */}
+            {sidebarSubjectOpen && (
+              <div className="absolute left-0 right-0 mt-1.5 bg-white rounded-2xl border border-slate-200 shadow-xl p-1.5 z-40 animate-scale-in">
+                <div className="px-2.5 py-1 text-[9px] font-extrabold uppercase text-slate-400">
+                  Switch Active Track
+                </div>
+                <div className="space-y-1">
+                  {allSubjects.map((sub) => {
+                    const isSelected = activeSubject === sub.key;
+                    return (
+                      <button
+                        key={sub.key}
+                        type="button"
+                        onClick={() => {
+                          setActiveSubject(sub.key);
+                          setSidebarSubjectOpen(false);
+                        }}
+                        className={`w-full flex items-center justify-between px-2.5 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+                          isSelected
+                            ? "bg-indigo-600 text-white"
+                            : "text-slate-700 hover:bg-slate-50"
+                        }`}
+                      >
+                        <div className="flex items-center gap-2 truncate">
+                          <span className="text-base">{sub.icon}</span>
+                          <span className="truncate">{sub.label}</span>
+                        </div>
+                        {isSelected && <Check className="w-3.5 h-3.5 text-white flex-shrink-0" />}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
           </div>
-          <p className="text-[11px] text-slate-600 leading-tight">
-            {language === "hi"
-              ? "आपकी कमजोरियों और गलतियों के अनुसार अनुकूलित।"
-              : "Calibrated to your diagnostic & prerequisite gaps."}
-          </p>
         </div>
+
+        {/* Functional Adaptive Loop Active Component */}
+        <AdaptiveLoopStatus />
 
         {/* Nav Links */}
         <nav className="flex-1 px-3 space-y-1 overflow-y-auto">
@@ -189,7 +251,13 @@ export default function AppLayout({ children }: AppLayoutProps) {
           <div className="w-8 h-8 rounded-xl bg-indigo-600 flex items-center justify-center text-white">
             <Zap className="w-4 h-4 fill-current" />
           </div>
-          <span className="font-bold text-base text-slate-900">SkillSync AI</span>
+          <div className="flex items-center gap-2">
+            <span className="font-bold text-base text-slate-900">SkillSync AI</span>
+            <span className="text-[11px] bg-indigo-50 text-indigo-700 font-bold px-2 py-0.5 rounded-full border border-indigo-100 flex items-center gap-1">
+              <span>{activeSubjectConfig.icon}</span>
+              <span>{activeSubjectConfig.shortLabel}</span>
+            </span>
+          </div>
         </Link>
         <div className="flex items-center gap-2">
           <button
@@ -210,7 +278,38 @@ export default function AppLayout({ children }: AppLayoutProps) {
       {/* Mobile Menu Dropdown */}
       {mobileMenuOpen && (
         <div className="lg:hidden fixed inset-0 top-16 bg-slate-900/50 backdrop-blur-xs z-30">
-          <div className="bg-white border-b border-slate-200 p-4 space-y-2">
+          <div className="bg-white border-b border-slate-200 p-4 space-y-3 max-h-[85vh] overflow-y-auto">
+            {/* Mobile Subject Switcher */}
+            <div className="p-3 rounded-2xl bg-slate-50 border border-slate-200">
+              <span className="text-[10px] font-extrabold uppercase text-slate-400 block mb-2">
+                Active Learning Track
+              </span>
+              <div className="grid grid-cols-2 gap-1.5">
+                {allSubjects.map((sub) => {
+                  const isSelected = activeSubject === sub.key;
+                  return (
+                    <button
+                      key={sub.key}
+                      type="button"
+                      onClick={() => {
+                        setActiveSubject(sub.key);
+                        setMobileMenuOpen(false);
+                      }}
+                      className={`flex items-center gap-2 p-2 rounded-xl text-xs font-bold transition-all text-left ${
+                        isSelected
+                          ? "bg-indigo-600 text-white"
+                          : "bg-white text-slate-700 border border-slate-200"
+                      }`}
+                    >
+                      <span className="text-base">{sub.icon}</span>
+                      <span className="truncate">{sub.shortLabel}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            <div className="space-y-1">
             {navigation.map((item) => {
               const isActive = pathname === item.href;
               return (
@@ -238,6 +337,7 @@ export default function AppLayout({ children }: AppLayoutProps) {
             </div>
           </div>
         </div>
+      </div>
       )}
 
       {/* Main Content Area */}

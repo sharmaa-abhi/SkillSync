@@ -196,6 +196,7 @@ JSON SCHEMA:
 
 export interface TutorInput {
   topicName: string;
+  subjectName?: string;
   masteryLevel: string;
   score: number;
   educationLevel: string;
@@ -205,6 +206,8 @@ export interface TutorInput {
   overallMastery?: number;
   weaknesses?: string[];
   strengths?: string[];
+  knownConcepts?: string[];
+  prerequisiteGaps?: string[];
   recentQuizPerformance?: string;
   curriculumContext?: string;
   conversationHistory: { role: string; content: string }[];
@@ -253,18 +256,22 @@ export async function tutorRespond(input: TutorInput): Promise<string> {
     hinglish: "Language: Hinglish (Natural Indian colloquial mix of Hindi and English written in Latin script, e.g., 'Chaliye isko step-by-step samajhte hain...'). Keep mathematical terms in English.",
   }[language];
 
+  const combinedStrengths = Array.from(new Set([...(input.strengths || []), ...(input.knownConcepts || [])]));
+  const combinedGaps = Array.from(new Set([...(input.weaknesses || []), ...(input.prerequisiteGaps || [])]));
+
   const prompt = `You are the SkillSync Socratic AI Learning Coach. You are tutoring a student with the following comprehensive learning context:
 
 STUDENT LEARNING CONTEXT:
 - Student Name: ${input.studentName || "Alex"}
+- Active Subject: ${input.subjectName || "Computer Science / Core Curriculum"}
 - Education Level: ${input.educationLevel}
 - Target Learning Goal: ${input.learningGoals || "Pass with strong conceptual foundation"}
 - Preferred Learning Style: ${input.preferredStyle || "Socratic 1-on-1 coaching"}
-- Overall Academic Mastery: ${input.overallMastery !== undefined ? `${input.overallMastery}%` : "Not evaluated"}
+- Overall Subject Mastery: ${input.overallMastery !== undefined ? `${input.overallMastery}%` : "Not evaluated"}
 - Active Topic: ${input.topicName} (Current Mastery: ${input.score}% — ${input.masteryLevel})
-- Proven Strengths: ${input.strengths && input.strengths.length > 0 ? input.strengths.join(", ") : "Building foundational competencies"}
-- Identified Deficits / Prerequisite Gaps: ${input.weaknesses && input.weaknesses.length > 0 ? input.weaknesses.join(", ") : "None detected"}
-${input.recentQuizPerformance ? `- Recent Quiz Performance: ${input.recentQuizPerformance}` : ""}
+- Proven Strengths / Known Concepts: ${combinedStrengths.length > 0 ? combinedStrengths.join(", ") : "Building foundational competencies"}
+- Identified Deficits / Prerequisite Gaps: ${combinedGaps.length > 0 ? combinedGaps.join(", ") : "None detected"}
+${input.recentQuizPerformance ? `- Recent Practice Performance: ${input.recentQuizPerformance}` : ""}
 
 ${input.curriculumContext ? `AUTHORITATIVE CURRICULUM GROUNDING (RAG TEXTBOOK REFERENCE):\n${input.curriculumContext}\n` : ""}
 
@@ -276,10 +283,11 @@ ${languageInstructions}
 
 GENERAL CONSTRAINTS:
 - Keep the response concise, punchy, and under 250 words.
-- Format equations cleanly using standard readable math notation or LaTeX-style delimiters (e.g. $ax^2 + bx + c = 0$ or $(x - 2)(x + 3)$).
+- Format equations or code cleanly using standard readable markdown (e.g. \`def example():\` or $ax^2 + bx + c = 0$).
 - Use bullet points and bold highlights for readability.
 - Be encouraging, respectful, and pedagogically sound.
-- If the student has prerequisite weaknesses (${input.weaknesses?.slice(0, 2).join(", ") || "earlier foundational topics"}), help bridge those gaps so they can conquer "${input.topicName}".
+- If the student has prerequisite weaknesses (${combinedGaps.slice(0, 2).join(", ") || "earlier foundational topics"}), help bridge those gaps so they can conquer "${input.topicName}".
+- Never behave like a generic chatbot; contextualize your answers explicitly to ${input.subjectName || "the active subject"} and the student's demonstrated mastery.
 
 CONVERSATION:
 ${historyText ? `Recent conversation:\n${historyText}\n` : ""}

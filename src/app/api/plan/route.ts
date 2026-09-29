@@ -21,6 +21,9 @@ export async function GET(request: Request) {
           OR: [
             { id: subjectParam },
             { name: { contains: subjectParam, mode: "insensitive" } },
+            ...(lower.includes("python") || lower === "py"
+              ? [{ name: { contains: "Python", mode: "insensitive" as const } }]
+              : []),
             ...(lower.includes("math")
               ? [{ name: { contains: "Math", mode: "insensitive" as const } }]
               : []),
