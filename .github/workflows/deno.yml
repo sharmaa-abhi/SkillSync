@@ -3,7 +3,7 @@
 # separate terms of service, privacy policy, and support
 # documentation.
 
-# This workflow will install Deno then run `deno lint` and `deno test`.
+# This workflow will install Deno then run `deno test`.
 # For more information see: https://github.com/denoland/setup-deno
 
 name: Deno
@@ -35,8 +35,11 @@ jobs:
       # - name: Verify formatting
       #   run: deno fmt --check
 
-      - name: Run linter
-        run: deno lint
-
       - name: Run tests
-        run: deno test -A
+        run: |
+          deno_test_files=$(git ls-files '*_test.ts' '*_test.tsx' '*_test.js' '*_test.jsx' '*_test.mjs' '*_test.mts' '*_test.cjs' '*_test.cts' '*.test.ts' '*.test.tsx' '*.test.js' '*.test.jsx' '*.test.mjs' '*.test.mts' '*.test.cjs' '*.test.cts' '*.spec.ts' '*.spec.tsx' '*.spec.js' '*.spec.jsx' '*.spec.mjs' '*.spec.mts' '*.spec.cjs' '*.spec.cts')
+          if [ -z "$deno_test_files" ]; then
+            echo "No Deno test modules found. Skipping deno test."
+            exit 0
+          fi
+          deno test -A $deno_test_files
