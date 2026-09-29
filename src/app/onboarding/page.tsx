@@ -3,6 +3,8 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
+import { useActiveSubject } from "@/hooks/useActiveSubject";
+import { type SubjectKey } from "@/lib/activeSubject";
 import {
   Zap,
   ArrowRight,
@@ -28,6 +30,7 @@ interface Subject {
 export default function OnboardingPage() {
   const router = useRouter();
   const { data: session, status } = useSession();
+  const { setActiveSubject } = useActiveSubject();
   const [currentStep, setCurrentStep] = useState(1);
   const [subjects, setSubjects] = useState<Subject[]>([]);
   const [loading, setLoading] = useState(false);
@@ -72,6 +75,19 @@ export default function OnboardingPage() {
   const handleFinishOnboarding = async () => {
     setSubmitting(true);
     try {
+      // Map chosen onboarding subject to canonical active subject key
+      const chosen = subjects.find((s) => s.id === selectedSubjectId);
+      if (chosen) {
+        let key: SubjectKey = "Maths";
+        const nameLower = chosen.name.toLowerCase();
+        if (nameLower.includes("data") || nameLower.includes("dbms")) key = "DBMS";
+        else if (nameLower.includes("operat") || nameLower.includes("os")) key = "OS";
+        else if (nameLower.includes("netw") || nameLower.includes("cn")) key = "CN";
+        else if (nameLower.includes("algo") || nameLower.includes("dsa") || nameLower.includes("struct")) key = "DSA";
+        else if (nameLower.includes("math")) key = "Maths";
+        setActiveSubject(key);
+      }
+
       await fetch("/api/users", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },

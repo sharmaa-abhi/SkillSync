@@ -11,7 +11,38 @@ export async function GET(request: Request) {
     const userId = (session.user as { id: string }).id;
 
     const { searchParams } = new URL(request.url);
-    const subjectId = searchParams.get("subjectId");
+    let subjectId = searchParams.get("subjectId");
+    const subjectParam = searchParams.get("subject");
+
+    if (!subjectId && subjectParam) {
+      const lower = subjectParam.toLowerCase();
+      const subject = await prisma.subject.findFirst({
+        where: {
+          OR: [
+            { id: subjectParam },
+            { name: { contains: subjectParam, mode: "insensitive" } },
+            ...(lower.includes("math")
+              ? [{ name: { contains: "Math", mode: "insensitive" as const } }]
+              : []),
+            ...(lower.includes("dbms") || lower.includes("database")
+              ? [{ name: { contains: "Database", mode: "insensitive" as const } }]
+              : []),
+            ...(lower === "os" || lower.includes("operat")
+              ? [{ name: { contains: "Operating", mode: "insensitive" as const } }]
+              : []),
+            ...(lower === "cn" || lower.includes("network")
+              ? [{ name: { contains: "Network", mode: "insensitive" as const } }]
+              : []),
+            ...(lower === "dsa" || lower.includes("struct") || lower.includes("algo")
+              ? [{ name: { contains: "Structure", mode: "insensitive" as const } }]
+              : []),
+          ],
+        },
+      });
+      if (subject) {
+        subjectId = subject.id;
+      }
+    }
 
     // Get active learning plan
     let plan = await prisma.learningPlan.findFirst({

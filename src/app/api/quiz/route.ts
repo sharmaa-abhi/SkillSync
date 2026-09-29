@@ -44,7 +44,18 @@ export async function POST(request: Request) {
         }
 
         if (targetTopics.length === 0) {
-          targetTopics = [{ topicName: "Factorisation", mastery: 38 }];
+          const subLower = String(subjectId || subject || "").toLowerCase();
+          if (subLower.includes("dbms") || subLower.includes("data")) {
+            targetTopics = [{ topicName: "Normalization", mastery: 36 }];
+          } else if (subLower.includes("os") || subLower.includes("operat")) {
+            targetTopics = [{ topicName: "Deadlocks", mastery: 34 }];
+          } else if (subLower.includes("cn") || subLower.includes("network")) {
+            targetTopics = [{ topicName: "IP Addressing & Subnetting", mastery: 39 }];
+          } else if (subLower.includes("dsa") || subLower.includes("algo") || subLower.includes("struct")) {
+            targetTopics = [{ topicName: "Dynamic Programming", mastery: 32 }];
+          } else {
+            targetTopics = [{ topicName: "Factorisation", mastery: 38 }];
+          }
         }
       }
 

@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import AppLayout from "@/components/AppLayout";
+import { useActiveSubject } from "@/hooks/useActiveSubject";
 import {
   TrendingUp,
   Award,
@@ -27,58 +28,34 @@ interface ProgressItem {
 }
 
 export default function ProgressPage() {
+  const { activeSubject, activeSubjectConfig } = useActiveSubject();
   const [loading, setLoading] = useState(true);
-  const [overallMastery, setOverallMastery] = useState(72);
+  const [overallMastery, setOverallMastery] = useState(activeSubjectConfig.defaultOverallMastery || 72);
   const [streakDays, setStreakDays] = useState(8);
   const [studyMinutes, setStudyMinutes] = useState(65);
   const [weeklyGoal, setWeeklyGoal] = useState({ current: 4, target: 5 });
   const [reteachRate, setReteachRate] = useState("28%");
-  const [improvements, setImprovements] = useState<ProgressItem[]>([
-    {
-      topicName: "Factorisation",
-      before: 25,
-      now: 38,
-      change: 13,
-      status: "Prerequisite Gap",
-    },
-    {
-      topicName: "Quadratic Equations",
-      before: 60,
-      now: 72,
-      change: 12,
-      status: "Improving",
-    },
-    {
-      topicName: "Algebraic Manipulation",
-      before: 70,
-      now: 84,
-      change: 14,
-      status: "Mastered",
-    },
-    {
-      topicName: "Polynomials",
-      before: 55,
-      now: 65,
-      change: 10,
-      status: "Improving",
-    },
-    {
-      topicName: "Coordinate Geometry",
-      before: 35,
-      now: 40,
-      change: 5,
-      status: "Needs Attention",
-    },
-  ]);
+  const [improvements, setImprovements] = useState<ProgressItem[]>(() =>
+    activeSubjectConfig.topics.map((t) => {
+      const before = Math.max(15, t.defaultScore - 12);
+      const now = t.defaultScore;
+      const change = now - before;
+      let status: ProgressItem["status"] = "Improving";
+      if (t.masteryLevel === "strong") status = "Mastered";
+      else if (t.masteryLevel === "weak") status = "Prerequisite Gap";
+      else if (t.defaultScore < 50) status = "Needs Attention";
+      return { topicName: t.name, before, now, change, status };
+    })
+  );
 
   useEffect(() => {
     async function loadData() {
       try {
-        const res = await fetch("/api/dashboard");
+        const res = await fetch(`/api/dashboard?subject=${encodeURIComponent(activeSubject)}`);
         if (res.ok) {
           const json = await res.json();
           if (json.profile) {
-            setOverallMastery(json.profile.overallMastery || 72);
+            setOverallMastery(json.profile.overallMastery || activeSubjectConfig.defaultOverallMastery || 72);
             setStudyMinutes(json.profile.totalStudyMinutes || 65);
             if (json.profile.aiAnalysis?.streak) {
               setStreakDays(json.profile.aiAnalysis.streak);
@@ -91,6 +68,19 @@ export default function ProgressPage() {
             }
           }
         }
+
+        // Dynamically compute topic progression from active subject
+        const items: ProgressItem[] = activeSubjectConfig.topics.map((t) => {
+          const before = Math.max(15, t.defaultScore - 12);
+          const now = t.defaultScore;
+          const change = now - before;
+          let status: ProgressItem["status"] = "Improving";
+          if (t.masteryLevel === "strong") status = "Mastered";
+          else if (t.masteryLevel === "weak") status = "Prerequisite Gap";
+          else if (t.defaultScore < 50) status = "Needs Attention";
+          return { topicName: t.name, before, now, change, status };
+        });
+        setImprovements(items);
       } catch (err) {
         console.error("Failed to load progress data", err);
       } finally {
@@ -99,7 +89,7 @@ export default function ProgressPage() {
     }
 
     loadData();
-  }, []);
+  }, [activeSubject, activeSubjectConfig]);
 
   if (loading) {
     return (
@@ -116,17 +106,39 @@ export default function ProgressPage() {
     <AppLayout>
       <div className="max-w-4xl mx-auto space-y-6">
         {/* Header */}
-        <div data-scroll="fade-down">
-          <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-indigo-50 text-indigo-700 text-xs font-semibold mb-1 border border-indigo-100">
-            <TrendingUp className="w-3.5 h-3.5" />
-            <span>Progress Intelligence</span>
+        <div data-scroll="fade-down" className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+          <div>
+            <div className="flex flex-wrap items-center gap-2 mb-1">
+              <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-indigo-50 text-indigo-700 text-xs font-semibold border border-indigo-100">
+                <TrendingUp className="w-3.5 h-3.5" />
+                <span>Progress Intelligence</span>
+              </div>
+
+              {/* Locked Active Track Badge */}
+              <div className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-slate-100 border border-slate-200 text-xs">
+                <span className="text-sm">{activeSubjectConfig.icon}</span>
+                <span className="font-bold text-slate-800">{activeSubjectConfig.label}</span>
+                <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-slate-200 text-slate-700 font-semibold">
+                  {activeSubjectConfig.code}
+                </span>
+                <span className="text-slate-300">|</span>
+                <Link
+                  href="/profile"
+                  className="text-[11px] font-semibold text-indigo-600 hover:text-indigo-800 flex items-center gap-0.5"
+                  title="Subject track is configured in Learner Profile"
+                >
+                  <span>Profile</span>
+                  <ArrowRight className="w-3 h-3" />
+                </Link>
+              </div>
+            </div>
+            <h1 className="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight">
+              Your Progress & Growth
+            </h1>
+            <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
+              Real-time tracking for {activeSubjectConfig.label}: &ldquo;Where am I growing and what needs reteaching?&rdquo;
+            </p>
           </div>
-          <h1 className="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight">
-            Your Progress & Growth
-          </h1>
-          <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
-            Real-time tracking answering: &ldquo;Where am I growing and what needs reteaching?&rdquo;
-          </p>
         </div>
 
         {/* 4 Milestone Stats Cards */}

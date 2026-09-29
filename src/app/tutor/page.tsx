@@ -2,8 +2,10 @@
 
 import React, { useState, useEffect, useRef, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
+import Link from "next/link";
 import AppLayout from "@/components/AppLayout";
 import FormattedMessage from "@/components/FormattedMessage";
+import { useActiveSubject } from "@/hooks/useActiveSubject";
 import { type DifficultyPrediction } from "@/lib/cohortAnalytics";
 import {
   Sparkles,
@@ -70,16 +72,27 @@ const COACHING_MODES: { id: CoachingMode; label: string; icon: React.ComponentTy
 function TutorContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const initialTopic = searchParams.get("topic") || "Factorisation";
+  const { activeSubject, activeSubjectConfig } = useActiveSubject();
+
+  const paramTopic = searchParams.get("topic");
+  const initialTopic =
+    paramTopic ||
+    activeSubjectConfig.defaultWeaknesses[0] ||
+    activeSubjectConfig.topics[0]?.name ||
+    "Factorisation";
 
   const [currentTopic, setCurrentTopic] = useState(initialTopic);
-  const [masteryScore, setMasteryScore] = useState<number>(45);
+  const [masteryScore, setMasteryScore] = useState<number>(() => {
+    const found = activeSubjectConfig.topics.find(
+      (t) => t.name.toLowerCase() === initialTopic.toLowerCase()
+    );
+    return found?.defaultScore ?? 45;
+  });
   const [masteryLevel, setMasteryLevel] = useState<string>("in_progress");
   const [coachingMode, setCoachingMode] = useState<CoachingMode>("socratic");
   const [language, setLanguage] = useState<LanguageOption>("en");
 
-  // Topic selector drawer state
-  const [subjectsList, setSubjectsList] = useState<SubjectWithTopics[]>([]);
+  // Topic selector modal state (scoped strictly to active subject topics)
   const [isTopicModalOpen, setIsTopicModalOpen] = useState(false);
 
   // Audio Speech state
@@ -94,12 +107,9 @@ function TutorContent() {
   const [messages, setMessages] = useState<Message[]>([
     {
       role: "tutor",
-      content:
-        initialTopic === "Factorisation"
-          ? "Hello Alex! I see you're focusing on **Factorisation**.\n\nYour diagnostic indicates a prerequisite gap (Mastery: **38%**) that is currently blocking quadratic equation fluency.\n\nInstead of handing you final answers, I'm here to coach you Socratic-style so the pattern clicks naturally! Where would you like to start: **factoring common terms** or **splitting the middle term of trinomials**?"
-          : `Hello Alex! I am your Socratic AI Coach for **${initialTopic}**.\n\nBased on your learning profile (Mastery: **${masteryScore}%**), we will master this step-by-step. What specific problem or concept would you like to tackle first?`,
+      content: `Hello Alex! I am your Socratic AI Coach for **${activeSubjectConfig.label}** (${activeSubjectConfig.code}), currently focused on **${initialTopic}**.\n\nBased on your active track diagnostics, we will master this concept step-by-step with targeted reasoning and hints. Where would you like to start?`,
       timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-      source: "NCERT Mathematics Class 10 — Chapter 4",
+      source: `${activeSubjectConfig.label} Curriculum Standard — ${initialTopic}`,
       confidence: 95,
     },
   ]);
@@ -167,19 +177,38 @@ function TutorContent() {
     }
   }, [language]);
 
-  // Fetch subjects and topics for switcher
+  // Ensure current topic belongs to active subject track
+  useEffect(() => {
+    if (activeSubjectConfig && activeSubjectConfig.topics.length > 0) {
+      const isValid = activeSubjectConfig.topics.some(
+        (t) => t.name.toLowerCase() === currentTopic.toLowerCase()
+      );
+      if (!isValid) {
+        const fallbackTopic =
+          activeSubjectConfig.defaultWeaknesses[0] || activeSubjectConfig.topics[0].name;
+        setCurrentTopic(fallbackTopic);
+        const topicConf = activeSubjectConfig.topics.find(
+          (t) => t.name.toLowerCase() === fallbackTopic.toLowerCase()
+        );
+        setMasteryScore(topicConf?.defaultScore ?? 45);
+        setMessages([
+          {
+            role: "tutor",
+            content: `Switched focus to **${fallbackTopic}** in **${activeSubjectConfig.label}** (${activeSubjectConfig.code}).\n\n${topicConf?.keyConcept ? `Foundational Rule: *${topicConf.keyConcept}*\n\n` : ""}Where would you like to begin?`,
+            timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+            source: `${activeSubjectConfig.label} Curriculum Standard — ${fallbackTopic}`,
+            confidence: 95,
+          },
+        ]);
+      }
+    }
+  }, [activeSubjectConfig]);
+
+  // Fetch tutor data for current topic
   useEffect(() => {
     async function loadData() {
       try {
-        const [subjectsRes, tutorRes] = await Promise.all([
-          fetch("/api/subjects"),
-          fetch(`/api/tutor?topicName=${encodeURIComponent(currentTopic)}`),
-        ]);
-
-        if (subjectsRes.ok) {
-          const data = await subjectsRes.json();
-          if (data.subjects) setSubjectsList(data.subjects);
-        }
+        const tutorRes = await fetch(`/api/tutor?topicName=${encodeURIComponent(currentTopic)}`);
 
         if (tutorRes.ok) {
           const tutorData = await tutorRes.json();
@@ -194,7 +223,7 @@ function TutorContent() {
                 role: m.role,
                 content: m.content,
                 timestamp: new Date(m.timestamp).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-                source: `Curriculum Standard — ${currentTopic}`,
+                source: `${activeSubjectConfig.label} Curriculum Standard — ${currentTopic}`,
                 confidence: 94,
               }))
             );
@@ -214,7 +243,7 @@ function TutorContent() {
       }
     }
     loadData();
-  }, [currentTopic]);
+  }, [currentTopic, activeSubjectConfig.label]);
 
   const handleGenerateSummary = async () => {
     setIsSummarizing(true);
@@ -343,17 +372,21 @@ function TutorContent() {
     }
   };
 
-  // Switch topic
+  // Switch topic within active subject track
   const handleSelectTopic = (topicName: string) => {
     setCurrentTopic(topicName);
     setIsTopicModalOpen(false);
     router.push(`/tutor?topic=${encodeURIComponent(topicName)}`);
+    const topicConfig = activeSubjectConfig.topics.find((t) => t.name.toLowerCase() === topicName.toLowerCase());
+    if (topicConfig) {
+      setMasteryScore(topicConfig.defaultScore);
+    }
     setMessages([
       {
         role: "tutor",
-        content: `Switched to **${topicName}**! I'm calibrating my guidance to your current mastery level.\n\nWhat would you like to explore first?`,
+        content: `Switched to **${topicName}** in **${activeSubjectConfig.label}**! I'm calibrating my guidance to your current mastery level.\n\n${topicConfig?.keyConcept ? `Key Concept: *${topicConfig.keyConcept}*\n\n` : ""}What would you like to explore first?`,
         timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-        source: `Standard Curriculum — ${topicName}`,
+        source: `${activeSubjectConfig.label} Curriculum Standard — ${topicName}`,
         confidence: 95,
       },
     ]);
@@ -442,12 +475,30 @@ function TutorContent() {
                   Socratic AI Learning Coach
                 </h1>
 
+                {/* Locked Active Track Badge */}
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-100 border border-slate-200 text-xs">
+                  <span className="text-sm">{activeSubjectConfig.icon}</span>
+                  <span className="font-bold text-slate-800">{activeSubjectConfig.label}</span>
+                  <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-slate-200 text-slate-700 font-semibold">
+                    {activeSubjectConfig.code}
+                  </span>
+                  <span className="text-slate-300">|</span>
+                  <Link
+                    href="/profile"
+                    className="text-[11px] font-semibold text-indigo-600 hover:text-indigo-800 flex items-center gap-0.5"
+                    title="Subject track is configured in Learner Profile"
+                  >
+                    <span>Profile</span>
+                    <ArrowRight className="w-3 h-3" />
+                  </Link>
+                </div>
+
                 {/* Topic Switcher Trigger Button */}
                 <button
                   type="button"
                   onClick={() => setIsTopicModalOpen(true)}
                   className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-xs font-bold border border-indigo-200 transition-colors cursor-pointer"
-                  title="Click to switch topic"
+                  title={`Choose topic from ${activeSubjectConfig.label}`}
                 >
                   <span>{currentTopic}</span>
                   <ChevronDown className="w-3.5 h-3.5 text-indigo-500" />
@@ -777,14 +828,17 @@ function TutorContent() {
         </div>
       </div>
 
-      {/* Topic Switcher Modal */}
+      {/* Topic Switcher Modal - Strictly scoped to Active Subject */}
       {isTopicModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-in fade-in">
           <div className="bg-white rounded-3xl border border-slate-200 shadow-2xl max-w-lg w-full max-h-[85vh] flex flex-col overflow-hidden animate-in zoom-in-95">
             <div className="p-5 border-b border-slate-100 flex items-center justify-between">
               <div>
-                <h3 className="text-base font-bold text-slate-900">Select Learning Topic</h3>
-                <p className="text-xs text-slate-500 mt-0.5">Switch AI Coach focus across subjects</p>
+                <div className="flex items-center gap-2">
+                  <span className="text-xl">{activeSubjectConfig.icon}</span>
+                  <h3 className="text-base font-bold text-slate-900">{activeSubjectConfig.label} Topics</h3>
+                </div>
+                <p className="text-xs text-slate-500 mt-0.5">Select a focus topic for your AI Coach</p>
               </div>
               <button
                 onClick={() => setIsTopicModalOpen(false)}
@@ -794,44 +848,54 @@ function TutorContent() {
               </button>
             </div>
 
-            <div className="p-5 overflow-y-auto space-y-4 max-h-[60vh]">
-              {subjectsList.length > 0 ? (
-                subjectsList.map((subject) => (
-                  <div key={subject.id} className="space-y-2">
-                    <div className="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
-                      <BookOpen className="w-3.5 h-3.5 text-indigo-500" />
-                      <span>{subject.name}</span>
-                    </div>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                      {subject.topics.map((t) => {
-                        const isCurrent = t.name.toLowerCase() === currentTopic.toLowerCase();
-                        return (
-                          <button
-                            key={t.id}
-                            type="button"
-                            onClick={() => handleSelectTopic(t.name)}
-                            className={`p-3 rounded-xl border text-left transition-all cursor-pointer flex flex-col justify-between ${
-                              isCurrent
-                                ? "bg-indigo-50 border-indigo-300 ring-2 ring-indigo-500/20"
-                                : "bg-white border-slate-200 hover:bg-slate-50 hover:border-slate-300"
-                            }`}
-                          >
-                            <span className="text-xs font-bold text-slate-900 line-clamp-1">{t.name}</span>
-                            <div className="flex items-center justify-between mt-2 text-[10px]">
-                              <span className="text-slate-500 capitalize">{t.difficulty}</span>
-                              {isCurrent && <span className="text-indigo-600 font-bold">Active</span>}
-                            </div>
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </div>
-                ))
-              ) : (
-                <div className="py-8 text-center text-slate-500 text-xs">
-                  <p>Loading available curriculum topics...</p>
-                </div>
-              )}
+            {/* Locked Subject Notice */}
+            <div className="px-5 py-2.5 bg-slate-50 border-b border-slate-100 flex items-center justify-between text-xs">
+              <span className="text-slate-600">
+                Active Track: <strong className="text-slate-800">{activeSubjectConfig.label}</strong> ({activeSubjectConfig.code})
+              </span>
+              <Link
+                href="/profile"
+                className="text-indigo-600 font-semibold hover:text-indigo-800 flex items-center gap-0.5"
+              >
+                <span>Change track in Profile</span>
+                <ArrowRight className="w-3 h-3" />
+              </Link>
+            </div>
+
+            <div className="p-5 overflow-y-auto space-y-3 max-h-[60vh]">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                {activeSubjectConfig.topics.map((t) => {
+                  const isCurrent = t.name.toLowerCase() === currentTopic.toLowerCase();
+                  return (
+                    <button
+                      key={t.name}
+                      type="button"
+                      onClick={() => handleSelectTopic(t.name)}
+                      className={`p-3 rounded-xl border text-left transition-all cursor-pointer flex flex-col justify-between ${
+                        isCurrent
+                          ? "bg-indigo-50 border-indigo-300 ring-2 ring-indigo-500/20 shadow-xs"
+                          : "bg-white border-slate-200 hover:bg-slate-50 hover:border-slate-300"
+                      }`}
+                    >
+                      <div className="flex items-start justify-between gap-1">
+                        <span className="text-xs font-bold text-slate-900 leading-snug">{t.label || t.name}</span>
+                        {isCurrent && (
+                          <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-indigo-600 text-white font-bold flex-shrink-0">
+                            Active
+                          </span>
+                        )}
+                      </div>
+                      {t.keyConcept && (
+                        <p className="text-[11px] text-slate-500 mt-1 line-clamp-1 italic">{t.keyConcept}</p>
+                      )}
+                      <div className="flex items-center justify-between mt-2.5 pt-2 border-t border-slate-100 text-[10px]">
+                        <span className="text-slate-500 capitalize">{t.difficulty}</span>
+                        <span className="font-semibold text-slate-700">~{t.estimatedMinutes}m prep</span>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
             </div>
 
             <div className="p-4 bg-slate-50 border-t border-slate-100 flex justify-end">

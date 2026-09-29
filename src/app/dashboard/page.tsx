@@ -102,11 +102,13 @@ export const SUBJECT_TRACKS: Array<{ key: SubjectKey; label: string; icon: strin
   { key: "DSA", label: "Data Structures & Algo", icon: "⚡" },
 ];
 
+import { useActiveSubject } from "@/hooks/useActiveSubject";
+
 export default function DashboardPage() {
   const { data: session } = useSession();
+  const { activeSubject, activeSubjectConfig } = useActiveSubject();
   const [data, setData] = useState<DashboardData | null>(null);
   const [loading, setLoading] = useState(true);
-  const [activeSubject, setActiveSubject] = useState<SubjectKey>("Maths");
   const [reviewQueue, setReviewQueue] = useState<ReviewItem[]>([]);
   const [reviewStats, setReviewStats] = useState<{ totalDue: number; averageRetention: number } | null>(null);
 
@@ -561,26 +563,24 @@ export default function DashboardPage() {
             </p>
           </div>
 
-          {/* Subject Track Switcher — All 5 Supported Subjects */}
-          <div className="flex flex-wrap items-center gap-1.5 p-1.5 bg-slate-200/70 rounded-xl self-start lg:self-auto">
-            {SUBJECT_TRACKS.map((track) => {
-              const isActive = activeSubject === track.key;
-              return (
-                <button
-                  key={track.key}
-                  type="button"
-                  onClick={() => setActiveSubject(track.key)}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
-                    isActive
-                      ? "bg-indigo-600 text-white shadow-xs"
-                      : "text-slate-700 hover:text-slate-900 hover:bg-slate-300/60"
-                  }`}
-                >
-                  <span>{track.icon}</span>
-                  <span>{track.label}</span>
-                </button>
-              );
-            })}
+          {/* Active Subject Track (Configured in Learner Profile) */}
+          <div className="flex items-center gap-3 px-4 py-2.5 rounded-2xl bg-indigo-50/80 border border-indigo-200/90 shadow-2xs self-start lg:self-auto">
+            <span className="text-2xl p-1 rounded-xl bg-white border border-indigo-100 flex-shrink-0 shadow-2xs">
+              {activeSubjectConfig.icon}
+            </span>
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-bold text-slate-900">
+                  Active Track: {activeSubjectConfig.label}
+                </span>
+                <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-indigo-100 text-indigo-700 font-semibold border border-indigo-200">
+                  {activeSubjectConfig.code}
+                </span>
+              </div>
+              <span className="text-[10px] text-slate-500 block">
+                Track managed in <Link href="/profile" className="text-indigo-600 hover:text-indigo-800 font-semibold underline">Learner Profile</Link>
+              </span>
+            </div>
           </div>
         </div>
 

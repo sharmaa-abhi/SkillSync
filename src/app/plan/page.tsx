@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import AppLayout from "@/components/AppLayout";
+import { useActiveSubject } from "@/hooks/useActiveSubject";
 import {
   BookOpen,
   Sparkles,
@@ -35,15 +36,16 @@ interface PlanData {
 }
 
 export default function PlanPage() {
+  const { activeSubject, activeSubjectConfig } = useActiveSubject();
   const [plan, setPlan] = useState<PlanData | null>(null);
   const [completedOrders, setCompletedOrders] = useState<Record<number, boolean>>({});
   const [loading, setLoading] = useState(true);
   const [regenerating, setRegenerating] = useState(false);
 
-  async function loadPlan() {
+  async function loadPlan(subjectKey = activeSubject) {
     try {
-      // First try dedicated /api/plan route
-      const res = await fetch("/api/plan");
+      // First try dedicated /api/plan route with active subject
+      const res = await fetch(`/api/plan?subject=${encodeURIComponent(subjectKey)}`);
       if (res.ok) {
         const data = await res.json();
         if (data.plan && data.plan.items?.length > 0) {
@@ -59,7 +61,7 @@ export default function PlanPage() {
       }
 
       // Fallback to dashboard plan if needed
-      const dashRes = await fetch("/api/dashboard");
+      const dashRes = await fetch(`/api/dashboard?subject=${encodeURIComponent(subjectKey)}`);
       if (dashRes.ok) {
         const data = await dashRes.json();
         if (data.plan && data.plan.items?.length > 0) {
@@ -76,81 +78,40 @@ export default function PlanPage() {
     }
   }
 
-  function loadFallbackPlan() {
+  function loadFallbackPlan(cfg = activeSubjectConfig) {
+    const topics = cfg?.topics || [];
+    const items: PlanItem[] = topics.map((t, idx) => ({
+      order: idx + 1,
+      topic: t.name,
+      activity: `${t.name} Core Concepts & Fluency Drills`,
+      durationMinutes: t.estimatedMinutes || 15,
+      priority: t.masteryLevel === "weak" ? "critical" : t.masteryLevel === "medium" ? "high" : "medium",
+      reason: t.keyConcept ? `Foundational concept: ${t.keyConcept}` : `Essential track requirement for ${cfg.label}.`,
+      isCompleted: false,
+    }));
+
+    if (items.length < 7) {
+      items.push({
+        order: items.length + 1,
+        topic: topics[0]?.name || cfg.label,
+        activity: `Adaptive Milestone Practice & Skill Graph Update`,
+        durationMinutes: 20,
+        priority: "high",
+        reason: `Verifies whether prerequisite gaps in ${cfg.label} have shifted to Mastered.`,
+        isCompleted: false,
+      });
+    }
+
     setPlan({
-      title: "7-Day Mathematics Mastery Roadmap",
-      estimatedDuration: "1.5 hours total (10-15 mins/day)",
-      items: [
-        {
-          order: 1,
-          topic: "Factorisation",
-          activity: "Common Factors & Difference of Two Squares",
-          durationMinutes: 10,
-          priority: "critical",
-          reason: "Identified prerequisite gap: Core mechanical foundation before solving quadratic equations.",
-          isCompleted: false,
-        },
-        {
-          order: 2,
-          topic: "Factorisation",
-          activity: "Monic Trinomial Decomposition Practice",
-          durationMinutes: 12,
-          priority: "high",
-          reason: "Required before factoring standard form quadratics (ax² + bx + c = 0).",
-          isCompleted: false,
-        },
-        {
-          order: 3,
-          topic: "Quadratic Equations",
-          activity: "Solving Quadratics by Factoring",
-          durationMinutes: 15,
-          priority: "high",
-          reason: "Current focus: Connects prerequisite factoring into equation roots via zero-product property.",
-          isCompleted: false,
-        },
-        {
-          order: 4,
-          topic: "Quadratic Equations",
-          activity: "Completing the Square Intuition",
-          durationMinutes: 10,
-          priority: "medium",
-          reason: "Provides the geometric bridge to the quadratic formula.",
-          isCompleted: false,
-        },
-        {
-          order: 5,
-          topic: "Quadratic Equations",
-          activity: "Discriminant & Nature of Roots Test",
-          durationMinutes: 12,
-          priority: "medium",
-          reason: "Formula fluency: Δ = b² - 4ac and root multiplicity.",
-          isCompleted: false,
-        },
-        {
-          order: 6,
-          topic: "Polynomials",
-          activity: "Factor Theorem Applications",
-          durationMinutes: 15,
-          priority: "low",
-          reason: "Expands quadratic methods to cubic polynomials and synthetic division.",
-          isCompleted: false,
-        },
-        {
-          order: 7,
-          topic: "Mathematics",
-          activity: "Adaptive Milestone Practice & Skill Graph Update",
-          durationMinutes: 15,
-          priority: "high",
-          reason: "Verifies whether the Factorisation prerequisite gap has shifted from Weak to Mastered.",
-          isCompleted: false,
-        },
-      ],
+      title: `7-Day ${cfg.label} Mastery Roadmap`,
+      estimatedDuration: `~${items.reduce((acc, i) => acc + i.durationMinutes, 0)} mins total (15-20 mins/day)`,
+      items,
     });
   }
 
   useEffect(() => {
-    loadPlan();
-  }, []);
+    loadPlan(activeSubject);
+  }, [activeSubject]);
 
   const toggleTaskCompletion = async (order: number) => {
     const newStatus = !completedOrders[order];
@@ -182,7 +143,7 @@ export default function PlanPage() {
       const res = await fetch("/api/plan", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({}),
+        body: JSON.stringify({ subject: activeSubject }),
       });
 
       if (res.ok) {
@@ -192,7 +153,7 @@ export default function PlanPage() {
           setCompletedOrders({});
         }
       } else {
-        await loadPlan();
+        await loadPlan(activeSubject);
       }
     } catch (e) {
       console.error("Plan regeneration failed", e);
@@ -218,15 +179,35 @@ export default function PlanPage() {
         {/* Header */}
         <div data-scroll="fade-down" className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
           <div>
-            <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-indigo-50 text-indigo-700 text-xs font-semibold mb-1 border border-indigo-100">
-              <Sparkles className="w-3.5 h-3.5" />
-              <span>AI-Generated Daily Roadmap</span>
+            <div className="flex flex-wrap items-center gap-2 mb-1">
+              <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-indigo-50 text-indigo-700 text-xs font-semibold border border-indigo-100">
+                <Sparkles className="w-3.5 h-3.5" />
+                <span>AI-Generated Daily Roadmap</span>
+              </div>
+
+              {/* Locked Active Track Badge */}
+              <div className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-slate-100 border border-slate-200 text-xs">
+                <span className="text-sm">{activeSubjectConfig.icon}</span>
+                <span className="font-bold text-slate-800">{activeSubjectConfig.label}</span>
+                <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-slate-200 text-slate-700 font-semibold">
+                  {activeSubjectConfig.code}
+                </span>
+                <span className="text-slate-300">|</span>
+                <Link
+                  href="/profile"
+                  className="text-[11px] font-semibold text-indigo-600 hover:text-indigo-800 flex items-center gap-0.5"
+                  title="Subject track is configured in Learner Profile"
+                >
+                  <span>Profile</span>
+                  <ArrowRight className="w-3 h-3" />
+                </Link>
+              </div>
             </div>
             <h1 className="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight">
               Personalized Learning Plan
             </h1>
             <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
-              Targeted modules arranged by priority to fix your conceptual gaps efficiently.
+              Targeted modules in {activeSubjectConfig.label} arranged by priority to fix your conceptual gaps efficiently.
             </p>
           </div>
 

@@ -14,16 +14,26 @@ export async function GET(request: Request) {
     const subjectParam = searchParams.get("subject");
 
     if (!subjectId && subjectParam) {
+      const lower = subjectParam.toLowerCase();
       const subject = await prisma.subject.findFirst({
         where: {
           OR: [
             { id: subjectParam },
             { name: { contains: subjectParam, mode: "insensitive" } },
-            ...(subjectParam.toLowerCase().includes("math")
+            ...(lower.includes("math")
               ? [{ name: { contains: "Math", mode: "insensitive" as const } }]
               : []),
-            ...(subjectParam.toLowerCase().includes("dbms")
+            ...(lower.includes("dbms") || lower.includes("database")
               ? [{ name: { contains: "Database", mode: "insensitive" as const } }]
+              : []),
+            ...(lower === "os" || lower.includes("operat")
+              ? [{ name: { contains: "Operating", mode: "insensitive" as const } }]
+              : []),
+            ...(lower === "cn" || lower.includes("network")
+              ? [{ name: { contains: "Network", mode: "insensitive" as const } }]
+              : []),
+            ...(lower === "dsa" || lower.includes("struct") || lower.includes("algo")
+              ? [{ name: { contains: "Structure", mode: "insensitive" as const } }]
               : []),
           ],
         },

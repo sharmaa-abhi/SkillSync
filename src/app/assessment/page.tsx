@@ -2,6 +2,8 @@
 
 import React, { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import Link from "next/link";
+import { useActiveSubject } from "@/hooks/useActiveSubject";
 import {
   Zap,
   ArrowRight,
@@ -32,6 +34,7 @@ function AssessmentContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const subjectIdParam = searchParams.get("subjectId");
+  const { activeSubject, activeSubjectConfig } = useActiveSubject();
 
   const [subjects, setSubjects] = useState<Subject[]>([]);
   const [selectedSubject, setSelectedSubject] = useState<Subject | null>(null);
@@ -44,7 +47,7 @@ function AssessmentContent() {
   const [error, setError] = useState<string | null>(null);
   const [startTime, setStartTime] = useState<number>(Date.now());
 
-  // Fetch available subjects
+  // Fetch available subjects and lock to active subject
   useEffect(() => {
     async function loadSubjectsAndStart() {
       try {
@@ -54,10 +57,19 @@ function AssessmentContent() {
         const available: Subject[] = subData.subjects || [];
         setSubjects(available);
 
-        // Find target subject: prioritize subjectIdParam, or "Mathematics", or first subject
-        let target = available.find((s) => s.id === subjectIdParam);
-        if (!target) {
-          target = available.find((s) => s.name.toLowerCase().includes("math")) || available[0];
+        // Lock target subject strictly to active subject chosen in Learner Profile
+        let target = available.find(
+          (s) =>
+            s.name.toLowerCase().includes(activeSubjectConfig.label.toLowerCase()) ||
+            s.name.toLowerCase().includes(activeSubject.toLowerCase())
+        );
+
+        if (!target && subjectIdParam) {
+          target = available.find((s) => s.id === subjectIdParam);
+        }
+
+        if (!target && available.length > 0) {
+          target = available[0];
         }
 
         if (target) {
@@ -74,7 +86,7 @@ function AssessmentContent() {
     }
 
     loadSubjectsAndStart();
-  }, [subjectIdParam]);
+  }, [activeSubject, activeSubjectConfig.label, subjectIdParam]);
 
   const initAssessmentForSubject = async (subId: string) => {
     try {
@@ -241,29 +253,27 @@ function AssessmentContent() {
             <Zap className="w-4 h-4 fill-current" />
           </div>
           <div>
-            <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center gap-2">
               <h1 className="text-sm font-bold text-slate-900">Diagnostic Assessment</h1>
-              {subjects.length > 1 && (
-                <select
-                  value={selectedSubject?.id || ""}
-                  onChange={(e) => {
-                    const found = subjects.find((s) => s.id === e.target.value);
-                    if (found) {
-                      setSelectedSubject(found);
-                      initAssessmentForSubject(found.id);
-                    }
-                  }}
-                  className="text-[11px] bg-slate-100 hover:bg-slate-200 font-semibold text-slate-700 rounded-md px-1.5 py-0.5 border-0 focus:ring-1 focus:ring-indigo-500 cursor-pointer"
+              {/* Locked Active Track Badge */}
+              <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-slate-100 border border-slate-200 text-xs">
+                <span className="text-sm">{activeSubjectConfig.icon}</span>
+                <span className="font-bold text-slate-800">{activeSubjectConfig.label}</span>
+                <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-slate-200 text-slate-700 font-semibold">
+                  {activeSubjectConfig.code}
+                </span>
+                <span className="text-slate-300">|</span>
+                <Link
+                  href="/profile"
+                  className="text-[10px] font-semibold text-indigo-600 hover:text-indigo-800 flex items-center gap-0.5"
+                  title="Subject track is configured in Learner Profile"
                 >
-                  {subjects.map((s) => (
-                    <option key={s.id} value={s.id}>
-                      {s.name}
-                    </option>
-                  ))}
-                </select>
-              )}
+                  <span>Profile</span>
+                  <ArrowRight className="w-3 h-3" />
+                </Link>
+              </div>
             </div>
-            <p className="text-[11px] text-slate-500">{selectedSubject?.name || "Mathematics — High-Yield Algebra & Quadratics"}</p>
+            <p className="text-[11px] text-slate-500">{selectedSubject?.name || activeSubjectConfig.label}</p>
           </div>
         </div>
 
