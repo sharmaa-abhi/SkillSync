@@ -10,7 +10,7 @@ export async function POST(request: Request) {
     if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     const userId = (session.user as { id: string }).id;
 
-    const { action, quizId, answers, subjectId, topicName, difficultyPreference } = await request.json();
+    const { action, quizId, answers, subjectId, subject, topicName, difficultyPreference } = await request.json();
 
     if (action === "generate") {
       // Get learning profile to target topics

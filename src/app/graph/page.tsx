@@ -97,7 +97,7 @@ export default function SkillGraphPage() {
                 Current Focus
               </span>
               <span className="text-xs font-bold text-indigo-900 truncate block mt-1">
-                {subject === "Maths" ? "Quadratic Equations" : "Transactions"}
+                {activeSubjectConfig.topics[1]?.name || activeSubjectConfig.label}
               </span>
             </div>
           </div>
@@ -105,7 +105,7 @@ export default function SkillGraphPage() {
 
         {/* Skill Graph Component */}
         <div data-scroll="scale">
-          <SkillGraph subject={subject} />
+          <SkillGraph subject={activeSubject} />
         </div>
 
         {/* Action Callout based on Prerequisite Gap */}
@@ -118,7 +118,7 @@ export default function SkillGraphPage() {
                   <span>Prerequisite Gap Detected</span>
                 </div>
                 <h3 className="text-xl font-bold tracking-tight">
-                  Clear {weakSkills[0].name} to Unlock {subject === "Maths" ? "Quadratic Mastery" : "Transactions"}
+                  Clear {weakSkills[0].name} to Unlock {activeSubjectConfig.topics[1]?.name || activeSubjectConfig.label}
                 </h3>
                 <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
                   Your last diagnostic discovered an foundational gap in {weakSkills[0].name}.
