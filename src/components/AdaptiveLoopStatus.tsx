@@ -48,32 +48,34 @@ export default function AdaptiveLoopStatus() {
   return (
     <>
       {/* Clickable Sidebar Card / Trigger */}
-      <button
-        type="button"
-        onClick={() => setModalOpen(true)}
-        className="w-full text-left px-4 py-3 m-3 rounded-2xl bg-gradient-to-b from-indigo-50/80 via-purple-50/50 to-indigo-50/70 border border-indigo-200/90 shadow-2xs hover:border-indigo-300 hover:shadow-xs transition-all duration-300 cursor-pointer group"
-      >
-        <div className="flex items-center justify-between gap-1 mb-1">
-          <div className="flex items-center gap-2 text-xs font-bold text-indigo-950">
-            <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-indigo-600"></span>
+      <div className="px-3 py-1.5">
+        <button
+          type="button"
+          onClick={() => setModalOpen(true)}
+          className="w-full text-left p-3 rounded-2xl bg-gradient-to-b from-indigo-50/80 via-purple-50/50 to-indigo-50/70 border border-indigo-200/90 shadow-2xs hover:border-indigo-300 hover:shadow-xs transition-all duration-300 cursor-pointer group"
+        >
+          <div className="flex items-center justify-between gap-1 mb-1">
+            <div className="flex items-center gap-2 text-xs font-bold text-indigo-950">
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-indigo-600"></span>
+              </span>
+              <Sparkles className="w-3.5 h-3.5 text-indigo-600 group-hover:rotate-12 transition-transform" />
+              <span>Adaptive Loop Active</span>
+            </div>
+            <span className="text-[10px] font-mono font-bold text-indigo-700 bg-white/80 px-1.5 py-0.5 rounded border border-indigo-100">
+              {activeSubjectConfig.shortLabel}
             </span>
-            <Sparkles className="w-3.5 h-3.5 text-indigo-600 group-hover:rotate-12 transition-transform" />
-            <span>Adaptive Loop Active</span>
           </div>
-          <span className="text-[10px] font-mono font-bold text-indigo-700 bg-white/80 px-1.5 py-0.5 rounded border border-indigo-100">
-            {activeSubjectConfig.shortLabel}
-          </span>
-        </div>
-        <p className="text-[11px] text-slate-600 leading-tight">
-          Calibrated to your {activeSubjectConfig.label} diagnostic & prerequisite gaps.
-        </p>
-        <div className="mt-2 flex items-center justify-between text-[10px] text-indigo-700 font-semibold pt-1 border-t border-indigo-100/70">
-          <span>Stage: {adaptiveLoop.currentStage}</span>
-          <span className="underline group-hover:text-indigo-900">View Cycle →</span>
-        </div>
-      </button>
+          <p className="text-[11px] text-slate-600 leading-tight">
+            Calibrated to your {activeSubjectConfig.label} diagnostic & prerequisite gaps.
+          </p>
+          <div className="mt-2 flex items-center justify-between text-[10px] text-indigo-700 font-semibold pt-1 border-t border-indigo-100/70">
+            <span>Stage: {adaptiveLoop.currentStage}</span>
+            <span className="underline group-hover:text-indigo-900">View Cycle →</span>
+          </div>
+        </button>
+      </div>
 
       {/* Interactive Modal */}
       {modalOpen && (
