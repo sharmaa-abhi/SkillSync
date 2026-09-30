@@ -49,9 +49,11 @@ export default function ActiveSubjectHeader({ showQuickSwitcher = true }: Active
   const primaryGap = aiTutorContext.prerequisiteGaps[0] || activeSubjectConfig.defaultPrerequisiteGap;
 
   return (
-    <div className="bg-white rounded-3xl border border-slate-200/90 shadow-sm p-5 sm:p-7 relative overflow-hidden">
-      {/* Background ambient gradient */}
-      <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-bl from-indigo-50/70 via-purple-50/40 to-transparent rounded-full pointer-events-none -mr-20 -mt-20 blur-2xl" />
+    <div className="bg-white rounded-3xl border border-slate-200/90 shadow-sm p-5 sm:p-7 relative z-20">
+      {/* Background ambient gradient clipped strictly to card boundary without clipping dropdowns */}
+      <div className="absolute inset-0 rounded-3xl overflow-hidden pointer-events-none">
+        <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-bl from-indigo-50/70 via-purple-50/40 to-transparent rounded-full -mr-20 -mt-20 blur-2xl" />
+      </div>
 
       <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-5">
         {/* Left: Active Subject & Context */}
@@ -98,6 +100,8 @@ export default function ActiveSubjectHeader({ showQuickSwitcher = true }: Active
                 type="button"
                 onClick={() => setDropdownOpen(!dropdownOpen)}
                 className="flex items-center gap-2.5 px-4 py-2.5 rounded-2xl bg-slate-50 hover:bg-slate-100 border border-slate-200 font-bold text-xs text-slate-800 transition-all shadow-2xs cursor-pointer group"
+                aria-expanded={dropdownOpen}
+                aria-haspopup="true"
               >
                 <Layers className="w-4 h-4 text-indigo-600 group-hover:scale-110 transition-transform" />
                 <span>Switch Subject</span>
@@ -105,9 +109,14 @@ export default function ActiveSubjectHeader({ showQuickSwitcher = true }: Active
               </button>
 
               {dropdownOpen && (
-                <div className="absolute right-0 mt-2 w-64 bg-white rounded-2xl border border-slate-200/90 shadow-xl p-2 z-50 animate-scale-in">
-                  <div className="px-3 py-1.5 text-[10px] font-extrabold uppercase tracking-wider text-slate-400">
-                    Curriculum Subjects
+                <div className="absolute right-0 mt-2 w-72 sm:w-80 bg-white rounded-2xl border border-slate-200 shadow-2xl p-2 z-50 animate-scale-in max-h-[380px] overflow-y-auto">
+                  <div className="flex items-center justify-between px-3 py-1.5 border-b border-slate-100 mb-1">
+                    <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">
+                      Curriculum Subjects
+                    </span>
+                    <span className="text-[10px] font-bold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-full border border-indigo-100">
+                      {allSubjects.length} Tracks Available
+                    </span>
                   </div>
                   <div className="space-y-1">
                     {allSubjects.map((sub) => {
@@ -123,17 +132,33 @@ export default function ActiveSubjectHeader({ showQuickSwitcher = true }: Active
                           className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
                             isSelected
                               ? "bg-indigo-600 text-white shadow-xs"
-                              : "text-slate-700 hover:bg-slate-50"
+                              : "text-slate-700 hover:bg-slate-50 hover:text-slate-900"
                           }`}
                         >
                           <div className="flex items-center gap-2.5 truncate">
-                            <span className="text-base">{sub.icon}</span>
-                            <span className="truncate">{sub.label}</span>
+                            <span className="text-lg flex-shrink-0">{sub.icon}</span>
+                            <div className="text-left truncate">
+                              <span className="truncate block font-bold">{sub.label}</span>
+                              <span className={`text-[10px] font-mono block ${isSelected ? "text-indigo-100" : "text-slate-400"}`}>
+                                {sub.code} • {sub.topics.length} topics
+                              </span>
+                            </div>
                           </div>
-                          {isSelected && <Check className="w-3.5 h-3.5 text-white flex-shrink-0" />}
+                          {isSelected && <Check className="w-4 h-4 text-white flex-shrink-0 ml-2" />}
                         </button>
                       );
                     })}
+                  </div>
+                  <div className="mt-2 pt-2 border-t border-slate-100 px-2 flex items-center justify-between text-[11px]">
+                    <span className="text-slate-400">Want full curriculum?</span>
+                    <Link
+                      href="/profile"
+                      onClick={() => setDropdownOpen(false)}
+                      className="text-indigo-600 hover:text-indigo-800 font-bold flex items-center gap-1 hover:underline"
+                    >
+                      <span>Manage in Profile</span>
+                      <ArrowRight className="w-3 h-3" />
+                    </Link>
                   </div>
                 </div>
               )}

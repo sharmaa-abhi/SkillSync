@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useSession, signOut } from "next-auth/react";
@@ -37,8 +37,20 @@ export default function AppLayout({ children }: AppLayoutProps) {
   const { activeSubject, activeSubjectConfig, setActiveSubject, allSubjects } = useSubjectContext();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [sidebarSubjectOpen, setSidebarSubjectOpen] = useState(false);
+  const sidebarSubjectRef = useRef<HTMLDivElement>(null);
   const [language, setLanguage] = useState<"en" | "hi">("en");
   const [highContrast, setHighContrast] = useState(false);
+
+  // Close sidebar subject dropdown when clicking outside
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (sidebarSubjectRef.current && !sidebarSubjectRef.current.contains(event.target as Node)) {
+        setSidebarSubjectOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -101,11 +113,13 @@ export default function AppLayout({ children }: AppLayoutProps) {
 
         {/* Global Active Subject Switcher Card in Sidebar */}
         <div className="px-3 pt-3">
-          <div className="relative">
+          <div className="relative" ref={sidebarSubjectRef}>
             <button
               type="button"
               onClick={() => setSidebarSubjectOpen(!sidebarSubjectOpen)}
               className="w-full text-left p-3 rounded-2xl bg-slate-50 hover:bg-slate-100/80 border border-slate-200/90 hover:border-indigo-300 transition-all cursor-pointer shadow-2xs group"
+              aria-expanded={sidebarSubjectOpen}
+              aria-haspopup="true"
             >
               <div className="flex items-center justify-between mb-1.5">
                 <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
@@ -133,9 +147,10 @@ export default function AppLayout({ children }: AppLayoutProps) {
 
             {/* Subject Dropdown Menu */}
             {sidebarSubjectOpen && (
-              <div className="absolute left-0 right-0 mt-1.5 bg-white rounded-2xl border border-slate-200 shadow-xl p-1.5 z-40 animate-scale-in">
-                <div className="px-2.5 py-1 text-[9px] font-extrabold uppercase text-slate-400">
-                  Switch Active Track
+              <div className="absolute left-0 right-0 mt-1.5 bg-white rounded-2xl border border-slate-200 shadow-xl p-1.5 z-40 animate-scale-in max-h-72 overflow-y-auto">
+                <div className="px-2.5 py-1 text-[9px] font-extrabold uppercase text-slate-400 flex items-center justify-between">
+                  <span>Switch Active Track</span>
+                  <span className="text-[9px] font-mono text-indigo-600 font-bold">{allSubjects.length} Tracks</span>
                 </div>
                 <div className="space-y-1">
                   {allSubjects.map((sub) => {
@@ -155,7 +170,7 @@ export default function AppLayout({ children }: AppLayoutProps) {
                         }`}
                       >
                         <div className="flex items-center gap-2 truncate">
-                          <span className="text-base">{sub.icon}</span>
+                          <span className="text-base flex-shrink-0">{sub.icon}</span>
                           <span className="truncate">{sub.label}</span>
                         </div>
                         {isSelected && <Check className="w-3.5 h-3.5 text-white flex-shrink-0" />}

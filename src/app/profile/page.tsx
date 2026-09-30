@@ -325,10 +325,10 @@ export default function ProfilePage() {
             })}
           </div>
 
-          <div className="text-[11px] text-slate-400 bg-slate-50 p-2.5 rounded-xl border border-slate-100 flex items-center gap-2">
+          <div className="text-[11px] text-slate-500 bg-slate-50 p-2.5 rounded-xl border border-slate-100 flex items-center gap-2">
             <Sparkles className="w-3.5 h-3.5 text-indigo-500 flex-shrink-0" />
             <span>
-              <strong>Note:</strong> To maintain focus, other pages (Smart Practice, AI Tutor, Skill Graph) cannot switch subjects. Change your primary subject here in your Learner Profile whenever needed.
+              <strong>Tip:</strong> You can switch your active subject anytime using the &quot;Switch Subject&quot; button in the header, the sidebar switcher, or right here in your Learner Profile.
             </span>
           </div>
         </div>
