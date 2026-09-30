@@ -197,9 +197,9 @@ JSON SCHEMA:
 export interface TutorInput {
   topicName: string;
   subjectName?: string;
-  masteryLevel: string;
+  masteryLevel?: string;
   score: number;
-  educationLevel: string;
+  educationLevel?: string;
   studentName?: string;
   learningGoals?: string;
   preferredStyle?: string;
@@ -210,7 +210,7 @@ export interface TutorInput {
   prerequisiteGaps?: string[];
   recentQuizPerformance?: string;
   curriculumContext?: string;
-  conversationHistory: { role: string; content: string }[];
+  conversationHistory?: { role: string; content: string }[];
   studentMessage: string;
   mode?: "socratic" | "step_by_step" | "analogy" | "practice" | "review";
   language?: "en" | "hi" | "hinglish";
@@ -220,7 +220,7 @@ export async function tutorRespond(input: TutorInput): Promise<string> {
   const mode = input.mode || "socratic";
   const language = input.language || "en";
 
-  const historyText = input.conversationHistory
+  const historyText = (input.conversationHistory || [])
     .slice(-8)
     .map(m => `${m.role === "student" ? "Student" : "Coach"}: ${m.content}`)
     .join("\n");
