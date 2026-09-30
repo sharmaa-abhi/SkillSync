@@ -145,20 +145,51 @@ export async function POST(request: Request) {
     if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     const userId = (session.user as { id: string }).id;
 
-    const { subjectId } = await request.json().catch(() => ({}));
+    const body = await request.json().catch(() => ({}));
+    const rawSubject = body.subjectId || body.subject || body.subjectName;
+
+    // Resolve subject if provided
+    let subject = null;
+    if (rawSubject) {
+      const lower = String(rawSubject).toLowerCase();
+      subject = await prisma.subject.findFirst({
+        where: {
+          OR: [
+            { id: rawSubject },
+            { name: { contains: rawSubject, mode: "insensitive" } },
+            ...(lower.includes("python") || lower === "py"
+              ? [{ name: { contains: "Python", mode: "insensitive" as const } }]
+              : []),
+            ...(lower.includes("math")
+              ? [{ name: { contains: "Math", mode: "insensitive" as const } }]
+              : []),
+            ...(!lower.includes("struct") && !lower.includes("algo") && (lower.includes("dbms") || lower.includes("database"))
+              ? [{ name: { contains: "Database", mode: "insensitive" as const } }]
+              : []),
+            ...(lower === "os" || lower.includes("operat")
+              ? [{ name: { contains: "Operating", mode: "insensitive" as const } }]
+              : []),
+            ...(lower === "cn" || lower.includes("network")
+              ? [{ name: { contains: "Network", mode: "insensitive" as const } }]
+              : []),
+            ...(lower === "dsa" || lower.includes("struct") || lower.includes("algo")
+              ? [{ name: { contains: "Structure", mode: "insensitive" as const } }]
+              : []),
+          ],
+        },
+      });
+    }
 
     // Find profile
     const profile = await prisma.learningProfile.findFirst({
-      where: { userId, ...(subjectId ? { subjectId } : {}) },
+      where: { userId, ...(subject ? { subjectId: subject.id } : {}) },
       orderBy: { updatedAt: "desc" },
     });
 
     const user = await prisma.user.findUnique({ where: { id: userId } });
-    const targetSubjectId = subjectId || profile?.subjectId;
 
-    let subject = null;
-    if (targetSubjectId) {
-      subject = await prisma.subject.findUnique({ where: { id: targetSubjectId } });
+    if (!subject && profile?.subjectId) {
+      subject = await prisma.subject.findUnique({ where: { id: profile.subjectId } });
     }
     if (!subject) {
       subject = await prisma.subject.findFirst({ where: { isActive: true } });

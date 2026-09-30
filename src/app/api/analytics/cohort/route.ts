@@ -12,12 +12,49 @@ export async function GET(request: Request) {
 
     const { searchParams } = new URL(request.url);
     const topicName = searchParams.get("topicName");
+    const subjectParam = searchParams.get("subject") || searchParams.get("subjectId");
 
-    // Fetch user profile
+    // Resolve subject if provided
+    let subject = null;
+    if (subjectParam) {
+      const lower = subjectParam.toLowerCase();
+      subject = await prisma.subject.findFirst({
+        where: {
+          OR: [
+            { id: subjectParam },
+            { name: { contains: subjectParam, mode: "insensitive" } },
+            ...(lower.includes("python") || lower === "py"
+              ? [{ name: { contains: "Python", mode: "insensitive" as const } }]
+              : []),
+            ...(lower.includes("math")
+              ? [{ name: { contains: "Math", mode: "insensitive" as const } }]
+              : []),
+            ...(!lower.includes("struct") && !lower.includes("algo") && (lower.includes("dbms") || lower.includes("database"))
+              ? [{ name: { contains: "Database", mode: "insensitive" as const } }]
+              : []),
+            ...(lower === "os" || lower.includes("operat")
+              ? [{ name: { contains: "Operating", mode: "insensitive" as const } }]
+              : []),
+            ...(lower === "cn" || lower.includes("network")
+              ? [{ name: { contains: "Network", mode: "insensitive" as const } }]
+              : []),
+            ...(lower === "dsa" || lower.includes("struct") || lower.includes("algo")
+              ? [{ name: { contains: "Structure", mode: "insensitive" as const } }]
+              : []),
+          ],
+        },
+      });
+    }
+
+    // Fetch user profile scoped to subject
     const profile = await prisma.learningProfile.findFirst({
-      where: { userId },
+      where: { userId, ...(subject ? { subjectId: subject.id } : {}) },
       orderBy: { updatedAt: "desc" },
     });
+
+    if (!subject && profile?.subjectId) {
+      subject = await prisma.subject.findUnique({ where: { id: profile.subjectId } });
+    }
 
     const rawMastery = profile?.topicMastery;
     const topicMastery = ((typeof rawMastery === "string" ? JSON.parse(rawMastery) : rawMastery) || []) as Array<{
@@ -31,13 +68,21 @@ export async function GET(request: Request) {
       return NextResponse.json({ prediction });
     }
 
-    // Return predictions for all topics
-    const predictions = Object.keys(COHORT_BENCHMARKS).map(tName => {
+    // Filter benchmarks by subject if available
+    const benchmarkEntries = Object.entries(COHORT_BENCHMARKS).filter(([_, b]) => {
+      if (!subject) return true;
+      return b.subjectName.toLowerCase() === subject.name.toLowerCase();
+    });
+
+    const targetList = benchmarkEntries.length > 0 ? benchmarkEntries : Object.entries(COHORT_BENCHMARKS);
+
+    const predictions = targetList.map(([tName]) => {
       const studentScore = topicMastery.find(t => t.topicName.toLowerCase() === tName.toLowerCase())?.score ?? 45;
       return predictDifficulty(tName, studentScore);
     });
 
     return NextResponse.json({
+      subject: subject?.name || "All Subjects",
       predictions,
       totalTrackedTopics: predictions.length,
       criticalBottlenecksCount: predictions.filter(p => p.riskLevel === "critical_bottleneck").length,

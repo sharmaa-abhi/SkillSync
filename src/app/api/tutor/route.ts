@@ -13,9 +13,33 @@ export async function GET(request: Request) {
 
     const { searchParams } = new URL(request.url);
     const topicName = searchParams.get("topicName");
+    const subjectParam = searchParams.get("subject") || searchParams.get("subjectId");
+    let resolvedSubjectId: string | undefined = undefined;
 
-    // Fetch user's profile for topic mastery
-    const profile = await prisma.learningProfile.findFirst({ where: { userId } });
+    if (subjectParam) {
+      const subLower = subjectParam.toLowerCase();
+      const sub = await prisma.subject.findFirst({
+        where: {
+          OR: [
+            { id: subjectParam },
+            { name: { contains: subjectParam, mode: "insensitive" } },
+            ...(subLower.includes("python") || subLower === "py" ? [{ name: { contains: "Python", mode: "insensitive" as const } }] : []),
+            ...(subLower.includes("math") ? [{ name: { contains: "Math", mode: "insensitive" as const } }] : []),
+            ...(subLower.includes("dbms") || subLower.includes("database") ? [{ name: { contains: "Database", mode: "insensitive" as const } }] : []),
+            ...(subLower === "os" || subLower.includes("operat") ? [{ name: { contains: "Operating", mode: "insensitive" as const } }] : []),
+            ...(subLower === "cn" || subLower.includes("network") ? [{ name: { contains: "Network", mode: "insensitive" as const } }] : []),
+            ...(subLower === "dsa" || subLower.includes("struct") || subLower.includes("algo") ? [{ name: { contains: "Structure", mode: "insensitive" as const } }] : []),
+          ],
+        },
+      });
+      if (sub) resolvedSubjectId = sub.id;
+    }
+
+    // Fetch user's profile for topic mastery scoped to subject
+    const profile = await prisma.learningProfile.findFirst({
+      where: { userId, ...(resolvedSubjectId ? { subjectId: resolvedSubjectId } : {}) },
+      orderBy: { updatedAt: "desc" },
+    });
     const rawMastery = profile?.topicMastery;
     const topicMastery = ((typeof rawMastery === "string" ? JSON.parse(rawMastery) : rawMastery) || []) as Array<{ topicName: string; score: number; masteryLevel: string }>;
 
@@ -70,6 +94,7 @@ export async function POST(request: Request) {
       topicName,
       subjectId,
       subjectName,
+      activeSubject,
       topicId,
       mode,
       language,
@@ -80,6 +105,29 @@ export async function POST(request: Request) {
     } = await request.json();
 
     const user = await prisma.user.findUnique({ where: { id: userId } });
+
+    let targetSubjectId = subjectId;
+    const subQuery = subjectName || activeSubject || subjectId;
+    if (subQuery) {
+      const subLower = String(subQuery).toLowerCase();
+      const subjectRecord = await prisma.subject.findFirst({
+        where: {
+          OR: [
+            { id: subQuery },
+            { name: { contains: subQuery, mode: "insensitive" } },
+            ...(subLower.includes("python") || subLower === "py" ? [{ name: { contains: "Python", mode: "insensitive" as const } }] : []),
+            ...(subLower.includes("math") ? [{ name: { contains: "Math", mode: "insensitive" as const } }] : []),
+            ...(subLower.includes("dbms") || subLower.includes("database") ? [{ name: { contains: "Database", mode: "insensitive" as const } }] : []),
+            ...(subLower === "os" || subLower.includes("operat") ? [{ name: { contains: "Operating", mode: "insensitive" as const } }] : []),
+            ...(subLower === "cn" || subLower.includes("network") ? [{ name: { contains: "Network", mode: "insensitive" as const } }] : []),
+            ...(subLower === "dsa" || subLower.includes("struct") || subLower.includes("algo") ? [{ name: { contains: "Structure", mode: "insensitive" as const } }] : []),
+          ],
+        },
+      });
+      if (subjectRecord) {
+        targetSubjectId = subjectRecord.id;
+      }
+    }
 
     // Start new session or continue existing
     let tutorSession;
@@ -92,13 +140,16 @@ export async function POST(request: Request) {
             userId,
             topicId: topicId || "unknown",
             topicName: topicName || "General",
-            subjectId: subjectId || "unknown",
+            subjectId: targetSubjectId || "unknown",
           },
         });
       }
     } else {
       // Get mastery info for context
-      const profile = await prisma.learningProfile.findFirst({ where: { userId } });
+      const profile = await prisma.learningProfile.findFirst({
+        where: { userId, ...(targetSubjectId ? { subjectId: targetSubjectId } : {}) },
+        orderBy: { updatedAt: "desc" },
+      });
       const rawMastery = profile?.topicMastery;
       const topicMastery = ((typeof rawMastery === "string" ? JSON.parse(rawMastery) : rawMastery) || []) as Array<{ topicName: string; score: number; masteryLevel: string }>;
       const currentTopic = topicMastery.find(t => t.topicName.toLowerCase() === (topicName || "").toLowerCase());
@@ -108,7 +159,7 @@ export async function POST(request: Request) {
           userId,
           topicId: topicId || "unknown",
           topicName: topicName || "General",
-          subjectId: subjectId || "unknown",
+          subjectId: targetSubjectId || "unknown",
           context: JSON.stringify({ mastery: currentTopic?.score || 45, masteryLevel: currentTopic?.masteryLevel || "intermediate" }),
         },
       });
@@ -125,8 +176,11 @@ export async function POST(request: Request) {
       orderBy: { createdAt: "asc" },
     });
 
-    // Get full student profile context
-    const profile = await prisma.learningProfile.findFirst({ where: { userId } });
+    // Get full student profile context scoped to subject
+    const profile = await prisma.learningProfile.findFirst({
+      where: { userId, ...(targetSubjectId ? { subjectId: targetSubjectId } : {}) },
+      orderBy: { updatedAt: "desc" },
+    });
     const rawMastery = profile?.topicMastery;
     const topicMastery = ((typeof rawMastery === "string" ? JSON.parse(rawMastery) : rawMastery) || []) as Array<{ topicName: string; score: number; masteryLevel: string }>;
     const currentTopic = topicMastery.find(t => t.topicName.toLowerCase() === tutorSession.topicName.toLowerCase());

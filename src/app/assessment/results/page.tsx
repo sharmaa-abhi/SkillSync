@@ -106,22 +106,146 @@ function ResultsContent() {
 
     function loadDemoResults() {
       const subjectParam = (searchParams.get("subject") || "").toLowerCase();
-      const isDbms = subjectParam.includes("dbms") || subjectParam.includes("database");
+      const isPython = subjectParam.includes("python") || subjectParam === "py";
+      const isDsa = subjectParam.includes("dsa") || subjectParam.includes("struct") || subjectParam.includes("algo");
+      const isOs = subjectParam === "os" || subjectParam.includes("operat");
+      const isCn = subjectParam === "cn" || subjectParam.includes("network");
+      const isDbms = !isDsa && (subjectParam.includes("dbms") || subjectParam.includes("database") || subjectParam.includes("sql"));
 
-      if (isDbms) {
+      if (isPython) {
+        setOverallScore(61);
+        setTopicScores([
+          { topicName: "Python Basics & Syntax", totalQuestions: 5, correctAnswers: 4, percentage: 85, masteryLevel: "strong" },
+          { topicName: "Data Structures (Lists, Dictionaries, Sets)", totalQuestions: 5, correctAnswers: 4, percentage: 75, masteryLevel: "strong" },
+          { topicName: "Control Flow & Loops", totalQuestions: 5, correctAnswers: 3, percentage: 70, masteryLevel: "medium" },
+          { topicName: "Functions & Scope", totalQuestions: 5, correctAnswers: 2, percentage: 40, masteryLevel: "weak" },
+          { topicName: "Object-Oriented Programming (OOP)", totalQuestions: 5, correctAnswers: 2, percentage: 35, masteryLevel: "weak" },
+        ]);
+        setAiAnalysis({
+          summary: "Strong foundational syntax and data structure comprehension (75%), but variable scoping (LEGB) and OOP class design are bottlenecking complex problem solving.",
+          strengths: ["Python Basics & Syntax", "Data Structures (Lists, Dictionaries, Sets)"],
+          weaknesses: ["Functions & Scope", "Object-Oriented Programming (OOP)"],
+          priorityTopics: ["Functions & Scope"],
+          recommendations: [
+            "Review Python LEGB (Local, Enclosing, Global, Built-in) scope rules and mutable default arguments.",
+            "Practice implementing class hierarchies and understanding the difference between instance and class variables.",
+          ],
+          reasoning: [
+            "Scoping questions revealed confusion regarding the `global` and `nonlocal` keywords inside nested functions.",
+            "OOP assessment showed difficulty with `super().__init__()` inheritance patterns.",
+          ],
+          topicMastery: [
+            { topicName: "Python Basics & Syntax", score: 85, masteryLevel: "strong" },
+            { topicName: "Data Structures (Lists, Dictionaries, Sets)", score: 75, masteryLevel: "strong" },
+            { topicName: "Control Flow & Loops", score: 70, masteryLevel: "medium" },
+            { topicName: "Functions & Scope", score: 40, masteryLevel: "weak" },
+            { topicName: "Object-Oriented Programming (OOP)", score: 35, masteryLevel: "weak" },
+          ],
+        });
+      } else if (isDsa) {
+        setOverallScore(59);
+        setTopicScores([
+          { topicName: "Arrays & Strings", totalQuestions: 5, correctAnswers: 4, percentage: 80, masteryLevel: "strong" },
+          { topicName: "Linked Lists", totalQuestions: 5, correctAnswers: 4, percentage: 72, masteryLevel: "strong" },
+          { topicName: "Stacks & Queues", totalQuestions: 5, correctAnswers: 3, percentage: 65, masteryLevel: "medium" },
+          { topicName: "Trees & Binary Search Trees", totalQuestions: 5, correctAnswers: 2, percentage: 45, masteryLevel: "weak" },
+          { topicName: "Graph Algorithms & Traversals", totalQuestions: 5, correctAnswers: 2, percentage: 35, masteryLevel: "weak" },
+        ]);
+        setAiAnalysis({
+          summary: "Solid grasp of linear data structures, but tree invariants and recursive graph traversals require targeted prerequisite intervention.",
+          strengths: ["Arrays & Strings", "Linked Lists"],
+          weaknesses: ["Trees & Binary Search Trees", "Graph Algorithms & Traversals"],
+          priorityTopics: ["Trees & Binary Search Trees"],
+          recommendations: [
+            "Practice recursive DFS/BFS traversals on Binary Search Trees.",
+            "Review cycle detection using visited sets in directed graphs.",
+          ],
+          reasoning: [
+            "Tree questions indicated difficulty recognizing BST property violations during in-order traversal.",
+            "Graph traversal questions suffered from missing cycle termination checks.",
+          ],
+          topicMastery: [
+            { topicName: "Arrays & Strings", score: 80, masteryLevel: "strong" },
+            { topicName: "Linked Lists", score: 72, masteryLevel: "strong" },
+            { topicName: "Stacks & Queues", score: 65, masteryLevel: "medium" },
+            { topicName: "Trees & Binary Search Trees", score: 45, masteryLevel: "weak" },
+            { topicName: "Graph Algorithms & Traversals", score: 35, masteryLevel: "weak" },
+          ],
+        });
+      } else if (isOs) {
+        setOverallScore(60);
+        setTopicScores([
+          { topicName: "Processes & Threads", totalQuestions: 5, correctAnswers: 4, percentage: 80, masteryLevel: "strong" },
+          { topicName: "File Systems & Disk Scheduling", totalQuestions: 5, correctAnswers: 3, percentage: 65, masteryLevel: "medium" },
+          { topicName: "CPU Scheduling Algorithms", totalQuestions: 5, correctAnswers: 3, percentage: 70, masteryLevel: "medium" },
+          { topicName: "Memory Management & Paging", totalQuestions: 5, correctAnswers: 2, percentage: 45, masteryLevel: "weak" },
+          { topicName: "Process Synchronization & Deadlocks", totalQuestions: 5, correctAnswers: 2, percentage: 40, masteryLevel: "weak" },
+        ]);
+        setAiAnalysis({
+          summary: "Competent in process lifecycle and scheduling algorithms, but race conditions, semaphores, and address translation require focused study.",
+          strengths: ["Processes & Threads", "CPU Scheduling Algorithms"],
+          weaknesses: ["Process Synchronization & Deadlocks", "Memory Management & Paging"],
+          priorityTopics: ["Process Synchronization & Deadlocks"],
+          recommendations: [
+            "Review Peterson's algorithm, mutex locks, and semaphores for mutual exclusion.",
+            "Practice calculating physical memory addresses from logical page numbers and offsets.",
+          ],
+          reasoning: [
+            "Deadlock avoidance questions showed confusion over Banker's Algorithm safe sequence derivation.",
+            "Paging questions indicated difficulty computing page table indexing with multilevel paging.",
+          ],
+          topicMastery: [
+            { topicName: "Processes & Threads", score: 80, masteryLevel: "strong" },
+            { topicName: "CPU Scheduling Algorithms", score: 70, masteryLevel: "medium" },
+            { topicName: "File Systems & Disk Scheduling", score: 65, masteryLevel: "medium" },
+            { topicName: "Memory Management & Paging", score: 45, masteryLevel: "weak" },
+            { topicName: "Process Synchronization & Deadlocks", score: 40, masteryLevel: "weak" },
+          ],
+        });
+      } else if (isCn) {
+        setOverallScore(63);
+        setTopicScores([
+          { topicName: "OSI & TCP/IP Models", totalQuestions: 5, correctAnswers: 4, percentage: 85, masteryLevel: "strong" },
+          { topicName: "Transport Layer (TCP vs UDP)", totalQuestions: 5, correctAnswers: 4, percentage: 75, masteryLevel: "strong" },
+          { topicName: "Application Layer Protocols (HTTP, DNS)", totalQuestions: 5, correctAnswers: 3, percentage: 70, masteryLevel: "medium" },
+          { topicName: "Routing Protocols & Algorithms", totalQuestions: 5, correctAnswers: 2, percentage: 48, masteryLevel: "weak" },
+          { topicName: "IP Addressing & Subnetting", totalQuestions: 5, correctAnswers: 2, percentage: 42, masteryLevel: "weak" },
+        ]);
+        setAiAnalysis({
+          summary: "Strong conceptual understanding of OSI models and TCP handshake mechanics, but CIDR subnetting and link-state routing algorithms need practice.",
+          strengths: ["OSI & TCP/IP Models", "Transport Layer (TCP vs UDP)"],
+          weaknesses: ["IP Addressing & Subnetting", "Routing Protocols & Algorithms"],
+          priorityTopics: ["IP Addressing & Subnetting"],
+          recommendations: [
+            "Practice IPv4 CIDR prefix calculation and usable host ranges (2^h - 2).",
+            "Review Dijkstra's shortest path routing algorithm and distance-vector count-to-infinity problem.",
+          ],
+          reasoning: [
+            "Subnetting questions showed calculation errors when finding broadcast and network addresses for /27 and /28 prefixes.",
+            "Routing questions missed convergence mechanics in RIP vs OSPF.",
+          ],
+          topicMastery: [
+            { topicName: "OSI & TCP/IP Models", score: 85, masteryLevel: "strong" },
+            { topicName: "Transport Layer (TCP vs UDP)", score: 75, masteryLevel: "strong" },
+            { topicName: "Application Layer Protocols (HTTP, DNS)", score: 70, masteryLevel: "medium" },
+            { topicName: "Routing Protocols & Algorithms", score: 48, masteryLevel: "weak" },
+            { topicName: "IP Addressing & Subnetting", score: 42, masteryLevel: "weak" },
+          ],
+        });
+      } else if (isDbms) {
         setOverallScore(63);
         setTopicScores([
           { topicName: "SQL Fundamentals", totalQuestions: 5, correctAnswers: 4, percentage: 84, masteryLevel: "strong" },
-          { topicName: "Indexing", totalQuestions: 4, correctAnswers: 3, percentage: 71, masteryLevel: "strong" },
-          { topicName: "Transactions", totalQuestions: 5, correctAnswers: 3, percentage: 56, masteryLevel: "medium" },
-          { topicName: "Normalization", totalQuestions: 5, correctAnswers: 2, percentage: 42, masteryLevel: "weak" },
-          { topicName: "ER Model", totalQuestions: 5, correctAnswers: 3, percentage: 60, masteryLevel: "medium" },
+          { topicName: "Indexing & Query Optimization", totalQuestions: 4, correctAnswers: 3, percentage: 71, masteryLevel: "strong" },
+          { topicName: "Transactions & Concurrency", totalQuestions: 5, correctAnswers: 3, percentage: 56, masteryLevel: "medium" },
+          { topicName: "Normalization & Normal Forms", totalQuestions: 5, correctAnswers: 2, percentage: 42, masteryLevel: "weak" },
+          { topicName: "ER Modeling & Schema Design", totalQuestions: 5, correctAnswers: 3, percentage: 60, masteryLevel: "medium" },
         ]);
         setAiAnalysis({
           summary: "You are strong in SQL fundamentals and Indexing, but need focused practice with Normalization and Transactions.",
-          strengths: ["SQL Fundamentals", "Indexing"],
-          weaknesses: ["Normalization", "Transactions"],
-          priorityTopics: ["Normalization", "Transactions"],
+          strengths: ["SQL Fundamentals", "Indexing & Query Optimization"],
+          weaknesses: ["Normalization & Normal Forms", "Transactions & Concurrency"],
+          priorityTopics: ["Normalization & Normal Forms", "Transactions & Concurrency"],
           recommendations: [
             "Study functional dependencies and 2NF vs 3NF decomposition.",
             "Review ACID isolation levels and anomaly prevention.",
@@ -132,10 +256,10 @@ function ResultsContent() {
           ],
           topicMastery: [
             { topicName: "SQL Fundamentals", score: 84, masteryLevel: "strong" },
-            { topicName: "Indexing", score: 71, masteryLevel: "strong" },
-            { topicName: "Transactions", score: 56, masteryLevel: "medium" },
-            { topicName: "Normalization", score: 42, masteryLevel: "weak" },
-            { topicName: "ER Model", score: 60, masteryLevel: "medium" },
+            { topicName: "Indexing & Query Optimization", score: 71, masteryLevel: "strong" },
+            { topicName: "Transactions & Concurrency", score: 56, masteryLevel: "medium" },
+            { topicName: "Normalization & Normal Forms", score: 42, masteryLevel: "weak" },
+            { topicName: "ER Modeling & Schema Design", score: 60, masteryLevel: "medium" },
           ],
         });
       } else {

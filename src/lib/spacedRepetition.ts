@@ -122,17 +122,45 @@ export function generateTopicReviewCards(
     nextDue.setDate(nextDue.getDate() + (retentionRate < 60 ? 0 : 2));
 
     const keyConcepts: Record<string, string> = {
+      // Mathematics
       Factorisation: "Middle-term trinomial splitting & Difference of Two Squares identity",
       "Quadratic Equations": "Discriminant Δ = b² - 4ac & Quadratic Formula roots",
       "Algebraic Manipulation": "Distributive law expansion & GCF extraction",
       Polynomials: "Factor Theorem & Remainder Theorem roots",
       "Coordinate Geometry": "Parabola vertex coordinates (h, k) & axis of symmetry",
-      "Process Scheduling": "Round Robin time quantum trade-off & CPU utilization",
-      Deadlocks: "Four Coffman conditions & Banker's Algorithm safe sequence",
-      "Virtual Memory & Paging": "Page fault handling, MMU address translation, and LRU replacement",
-      "OSI & TCP/IP Models": "Layer encapsulation and segment/datagram boundaries",
-      "TCP Flow & Congestion Control": "Three-way handshake, slow start, and AIMD congestion window",
-      "Dynamic Programming": "Optimal substructure, overlapping subproblems, and state transitions",
+      // Python Programming
+      "Python Basics & Syntax": "Dynamic typing, duck typing, and PEP 8 style conventions",
+      "Control Flow & Loops": "Loop invariants, break/continue semantics, and comprehension syntax",
+      "Functions & Scope": "LEGB scope resolution, closures, *args, and **kwargs keyword arguments",
+      "Data Structures (Lists, Dictionaries, Sets)": "O(1) dictionary hash lookups, list mutation semantics, and set uniqueness",
+      "Object-Oriented Programming (OOP)": "Inheritance, encapsulation with dunder methods, and super() dispatch",
+      "File Handling & Exceptions": "Context managers with `with` statement and exception hierarchy handling",
+      "Modules & Libraries": "Virtual environments, sys.path import resolution, and pip package management",
+      // Database Management Systems
+      "SQL Fundamentals": "Relational algebra, SELECT filtering, and GROUP BY aggregation semantics",
+      "Indexing & Query Optimization": "B-Tree vs Hash index structures, execution plans, and sargable queries",
+      "Transactions & Concurrency": "ACID guarantees, two-phase locking (2PL), and isolation levels (dirty reads to serializable)",
+      "Normalization & Normal Forms": "Functional dependencies, Boyce-Codd (BCNF), and 3NF lossless decompositions",
+      "ER Modeling & Schema Design": "Entity-Relationship constraints, cardinalities, and primary/foreign key mappings",
+      // Operating Systems
+      "Processes & Threads": "PCB structures, kernel context switching, and user vs kernel threads",
+      "CPU Scheduling Algorithms": "Preemptive vs non-preemptive scheduling, Round Robin quantum tuning, and SJF",
+      "Process Synchronization & Deadlocks": "Peterson's algorithm, semaphores, mutexes, and Banker's safe sequence",
+      "Memory Management & Paging": "MMU virtual-to-physical address translation, TLB hits, and LRU page replacement",
+      "File Systems & Disk Scheduling": "Inode file representation, directory structures, and SSTF / SCAN elevator algorithms",
+      // Computer Networks
+      "OSI & TCP/IP Models": "7-layer vs 4-layer encapsulation, protocol headers, and PDU transitions",
+      "IP Addressing & Subnetting": "IPv4 CIDR notation, subnet masks, usable host ranges (2^h - 2), and NAT",
+      "Routing Protocols & Algorithms": "Dijkstra link-state (OSPF) vs Bellman-Ford distance vector (RIP)",
+      "Transport Layer (TCP vs UDP)": "Three-way handshake, sequence/ACK numbering, sliding window, and UDP multiplexing",
+      "Application Layer Protocols (HTTP, DNS)": "HTTP/1.1 vs HTTP/2 multiplexing, DNS resolution hierarchy, and TLS handshake",
+      // Data Structures & Algorithms
+      "Arrays & Strings": "Contiguous memory layout, two-pointer techniques, and sliding window patterns",
+      "Linked Lists": "Node pointer manipulation, fast/slow pointer cycle detection, and reversal",
+      "Stacks & Queues": "LIFO/FIFO invariants, monotonic stacks, and circular buffer queues",
+      "Trees & Binary Search Trees": "BST search invariants, in-order/pre-order traversals, and balance factors",
+      "Sorting & Searching Algorithms": "Divide-and-conquer mergesort/quicksort and binary search lower/upper bounds",
+      "Graph Algorithms & Traversals": "BFS shortest paths, DFS topological sort, and cycle detection in DAGs",
     };
 
     return {

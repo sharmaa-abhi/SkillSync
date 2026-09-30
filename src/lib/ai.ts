@@ -302,94 +302,111 @@ Respond as the AI Coach:`;
   }
 }
 
-function generateFallbackTutorResponse(
+export function generateFallbackTutorResponse(
   input: TutorInput,
   mode: "socratic" | "step_by_step" | "analogy" | "practice" | "review",
   language: "en" | "hi" | "hinglish"
 ): string {
   const topic = input.topicName;
   const msg = input.studentMessage.toLowerCase();
-  const lastMessages = input.conversationHistory.slice(-4);
-  const fullContextText = lastMessages.map(m => m.content).join(" ");
+  const subLower = (input.subjectName || "").toLowerCase();
+  const topLower = topic.toLowerCase();
 
-  // Check if there is an active problem in the recent history
-  const hasActiveProblem15 = fullContextText.includes("8x + 15") || fullContextText.includes("x^2 + 8x + 15");
-  const hasActiveProblem12 = fullContextText.includes("7x + 12") || fullContextText.includes("x^2 + 7x + 12");
-  const hasActiveProblem6 = fullContextText.includes("5x + 6") || fullContextText.includes("x^2 + 5x + 6");
-
-  // Check student intent
   const asksForHint = msg.includes("hint") || msg.includes("help") || msg.includes("clue") || msg.includes("stuck");
   const asksForTraps = msg.includes("trap") || msg.includes("mistake") || msg.includes("error") || msg.includes("common");
-  const answersFactors = msg.includes("3") && (msg.includes("5") || msg.includes("4"));
-  const answersRoots = msg.includes("-3") || msg.includes("-5") || msg.includes("-4");
 
-  // Dynamic context-aware responses in English
-  if (language === "en") {
-    // Handling active problem: x^2 + 8x + 15 = 0
-    if (hasActiveProblem15) {
-      if (answersRoots) {
-        return `🎉 **Outstanding work!**\n\nYou solved it completely:\n- Factors: $(x + 3)(x + 5) = 0$\n- Roots: **$x = -3$** and **$x = -5$**\n\nNotice how the signs flip when solving $x + 3 = 0 \\implies x = -3$. Ready for another practice challenge or a slightly harder quadratic?`;
-      }
-      if (answersFactors) {
-        return `🎯 **Spot on!** The numbers are indeed **$3$** and **$5$**, because:\n- Product: $3 \\times 5 = 15$\n- Sum: $3 + 5 = 8$\n\nNow, write the expression in factored form: **$(x + 3)(x + 5) = 0$**.\n\nUsing the Zero-Product Property, what are the two solutions for $x$?`;
-      }
-      if (asksForHint) {
-        return `Here is your targeted hint for **$x^2 + 8x + 15 = 0$**:\n\n1. Look at the factor pairs of the constant term $15$:\n   - Pair A: $1 \\times 15$\n   - Pair B: $3 \\times 5$\n\n2. Which of these two pairs adds up to the middle coefficient **$8$**?\n\nGive it a try — what do you get?`;
-      }
-      if (asksForTraps) {
-        return `### ⚠️ Top Traps to Avoid on $x^2 + 8x + 15 = 0$:\n\n1. **The Sign Flip Mistake (Most Common!)**:\n   Students find $(x + 3)(x + 5) = 0$ and wrongly conclude the answers are $+3$ and $+5$.\n   - Remember: $x + 3 = 0 \\implies \\mathbf{x = -3}$\n   - And $x + 5 = 0 \\implies \\mathbf{x = -5}$\n2. **Choosing the Wrong Factor Pair**:\n   Picking $1$ and $15$ because they multiply to $15$, without checking that $1 + 15 = 16 \\neq 8$.\n3. **Dropping the Squared Term**: Forgetting that $x \\cdot x = x^2$.\n\nDoes this make the sign rule clear? What step would you like to take next?`;
-      }
-    }
+  // Determine subject domain
+  const isPython = subLower.includes("python") || topLower.includes("function") || topLower.includes("lambda") || topLower.includes("scope") || topLower.includes("loop") || topLower.includes("variable");
+  const isDSA = subLower.includes("dsa") || subLower.includes("algo") || subLower.includes("struct") || topLower.includes("tree") || topLower.includes("dynamic") || topLower.includes("graph") || topLower.includes("array") || topLower.includes("heap");
+  const isDBMS = subLower.includes("dbms") || subLower.includes("database") || topLower.includes("normal") || topLower.includes("concurr") || topLower.includes("transact") || topLower.includes("sql") || topLower.includes("er model");
+  const isOS = subLower.includes("os") || subLower.includes("operat") || topLower.includes("deadlock") || topLower.includes("schedul") || topLower.includes("paging") || topLower.includes("mutex");
+  const isCN = subLower.includes("cn") || subLower.includes("network") || topLower.includes("subnet") || topLower.includes("tcp") || topLower.includes("osi") || topLower.includes("routing");
 
-    // Handling general hints
+  if (isPython) {
     if (asksForHint) {
-      return `Here is a progressive hint for **${topic}**:\n\n- To factor a trinomial like $x^2 + bx + c$, look for two numbers $p$ and $q$ where:\n  - $p \\times q = c$ (the constant term)\n  - $p + q = b$ (the middle coefficient)\n\nWhat is the specific equation or problem you want us to test this on?`;
+      return `Here is your progressive hint for **${topic}** in Python:\n\n- Remember the **LEGB rule**: Python looks for names in Local $\\to$ Enclosing $\\to$ Global $\\to$ Built-in scope.\n- When functions are defined, default parameter expressions evaluate *only once* at definition time, not on each call.\n\nWhat is the specific line of code or behavior you are inspecting?`;
     }
-
-    // Handling general traps
     if (asksForTraps || mode === "review") {
-      return `### ⚡ Common Traps & High-Yield Rules: ${topic}\n\n1. **Sign Flip in Roots**: Factored form $(x - p)(x - q) = 0$ gives roots $x = +p$ and $x = +q$. Always solve $x - p = 0$ explicitly.\n2. **Always Check for GCF First**: Before splitting the middle term, factor out any greatest common numerical factor.\n3. **Negative Parentheses**: When factoring out a negative (e.g. $-2x - 6 = -2(x + 3)$), don't forget to change the inside sign to positive!\n\nWould you like an interactive question to test yourself against these traps?`;
-    }
-
-    // Default mode handling
-    switch (mode) {
-      case "analogy":
-        return `Think of **${topic}** like assembling furniture with modular Lego blocks:\n\nInstead of dealing with one large, complicated structure all at once, you find the identical connecting pieces (common factors) and separate them into neat, predictable units.\n\nLooking at your expression, what "matching pieces" do you notice across the terms?`;
-      case "step_by_step":
-        return `Let's break down **${topic}** into 3 manageable steps:\n\n1. **Inspect for Common Factors**: Look at all numerical coefficients and variable powers.\n2. **Identify the Pattern**: Determine if it matches standard forms (like $(a+b)^2$, difference of squares, or quadratic trinomials).\n3. **Group and Simplify**: Factor out terms systematically.\n\nWhich of these 3 steps would you like to execute first on your problem?`;
-      case "practice":
-        return `Here is a calibrated practice problem for **${topic}** (Mastery: ${input.score}%):\n\n> **Solve/Factor:** $x^2 + 8x + 15 = 0$\n\n**Coaching Nudge:** Look for two integers that multiply to $15$ and add up to $8$.\n\nWhat pair of numbers comes to mind first?`;
-      case "socratic":
-      default:
-        return `That's a thoughtful question about **${topic}**!\n\nTo build your intuition here: if you were to expand an expression like $(x + 2)(x + 3)$, what would the middle term look like?\n\nWorking backwards from that expansion is the secret to factoring. What do you observe?`;
-    }
-  }
-
-  // Hindi responses
-  if (language === "hi") {
-    if (hasActiveProblem15 && asksForHint) {
-      return `**$x^2 + 8x + 15 = 0$ के लिए संकेत:**\n\n15 के गुणनखंड देखें: $1 \\times 15$ और $3 \\times 5$। इनमें से कौन सी जोड़ी जोड़ने पर मध्य पद **8** देती है?`;
+      return `### ⚡ Top Traps to Avoid in ${topic} (Python):\n\n1. **Mutable Default Arguments**: Writing \`def add_item(val, items=[])\` causes all calls to share the *same list object* in memory. Use \`items=None\` instead!\n2. **Unintended Shadowing**: Naming a variable \`list\`, \`str\`, or \`dict\` shadows Python's built-in type constructors.\n3. **Lambda Scope Late Binding**: In loops creating lambdas like \`[lambda: i for i in range(3)]\`, all lambdas evaluate \`i\` to 2 unless defaulted (\`lambda i=i: i\`).\n\nWould you like a quick code puzzle to test your eye for this trap?`;
     }
     if (mode === "analogy") {
-      return `**${topic}** को एक उदाहरण से समझें:\n\nजैसे किसी मशीन के पुर्ज़ों को अलग-अलग करके उसकी बनावट को समझा जाता है, वैसे ही गणित में हम व्यंजक को उसके मूल घटकों में तोड़ते हैं।\n\nक्या आप बता सकते हैं कि आपके दिए गए प्रश्न में कौन सा घटक दोनों पदों में उभयनिष्ठ (common) है?`;
+      return `Think of **${topic}** like a set of nesting Russian Matryoshka dolls:\n\nYour inner function (the smallest doll) can look outward and read everything inside the outer dolls (Enclosing and Global namespaces), but code outside cannot reach inside without an explicit key (\`nonlocal\` or \`return\`).\n\nHow does this mental model apply to the variable you are trying to access?`;
+    }
+    if (mode === "step_by_step") {
+      return `Let's break down **${topic}** in Python into 3 logical steps:\n\n1. **Examine Variable Binding**: Is the variable assigned inside this function, or read from an outer enclosing block?\n2. **Check Argument Types**: Are parameters passed as immutable primitives (int, str) or mutable references (list, dict)?\n3. **Trace Return State**: Follow the exact object returned by the function invocation.\n\nWhich step would you like us to walk through together?`;
     }
     if (mode === "practice") {
-      return `यहाँ **${topic}** के लिए एक अभ्यास प्रश्न है:\n\n**प्रश्न:** $x^2 + 8x + 15 = 0$ के हल ज्ञात कीजिए।\n\n**संकेत:** ऐसी दो संख्याएँ सोचिए जिनका गुणनफल 15 और योग 8 हो। आपका पहला कदम क्या होगा?`;
+      return `Here is a calibrated practice challenge for **${topic}** (Mastery: ${input.score}%):\n\n\`\`\`python\ndef counter_factory():\n    count = 0\n    def inc():\n        nonlocal count\n        count += 1\n        return count\n    return inc\n\nc1 = counter_factory()\nprint(c1(), c1())\n\`\`\`\n\nWhat will this print, and why is the \`nonlocal\` keyword strictly necessary here?`;
     }
-    return `**${topic}** को समझने के लिए एक मुख्य सिद्धांत याद रखें:\n\nजब भी हम किसी समस्या को हल करते हैं, सबसे पहले यह देखें कि क्या कोई पद उभयनिष्ठ है या कोई सर्वसमिका लागू हो रही है।\n\nआप इस प्रश्न में सबसे पहले किस पद पर ध्यान केंद्रित करना चाहेंगे?`;
+    return `That is a fundamental concept in Python's **${topic}**!\n\nTo build your intuition: when Python executes a \`def\` block, what happens to default argument expressions, and how does the interpreter differentiate between local reassignments and outer scope reads? What have you tried so far?`;
   }
 
-  // Hinglish responses
-  if (hasActiveProblem15 && asksForHint) {
-    return `**$x^2 + 8x + 15 = 0$ ke liye hint:**\n\n15 ke factors hote hain: $1 \\times 15$ aur $3 \\times 5$.\nIn dono me se kaun sa pair add karke middle term **8** banata hai?\n\nAapko kaun se 2 numbers lagte hain?`;
+  if (isDSA) {
+    if (asksForHint) {
+      return `Here is a progressive hint for **${topic}** in DSA:\n\n- For trees: The BST invariant requires that **every single descendant** in the left subtree is $< K$, and in the right subtree is $> K$.\n- For Dynamic Programming: Write down the English definition of your state $dp[i]$ before writing any code or table transitions.\n\nWhat is your current formulation of the subproblem?`;
+    }
+    if (asksForTraps || mode === "review") {
+      return `### ⚡ Top Traps to Avoid in ${topic} (DSA):\n\n1. **Local vs Global Invariant in BSTs**: Only checking if a node is greater than its immediate left child is insufficient; a left descendant can still illegally exceed an ancestor!\n2. **Overlapping Subproblems vs Divide & Conquer**: Mergesort divides into independent subproblems; DP requires overlapping instances where memoization saves exponential recomputation.\n3. **Off-by-One in DP Base Cases**: Forgetting $dp[0]$ initialization or 1-indexed capacity bounds.\n\nWhich of these traps would you like to verify against your solution?`;
+    }
+    if (mode === "practice") {
+      return `Here is a calibrated practice problem for **${topic}** (Mastery: ${input.score}%):\n\n> **Challenge:** You are deleting a node $N$ with TWO children from a Binary Search Tree.\n\nWhich node must take $N$'s place to guarantee the BST invariant remains unbroken across the entire tree, and why?`;
+    }
+    return `That's an important problem in **${topic}**!\n\nWhen you think about the asymptotic cost and invariant conditions, what is the bottleneck operation? How does changing from an array to a pointer-based tree structure alter the lookup complexity?`;
   }
-  if (mode === "analogy") {
-    return `**${topic}** ko ek simple example se samajhte hain:\n\nJaise kisi team me har player ka specific role hota hai, waise hi algebraic terms me numbers aur variables ke specific patterns hote hain. Jab hum unhe group karte hain, toh solution bahut simple ho jata hai!\n\nAapko is expression me sabse pehle kaun sa pattern ya common factor dikh raha hai?`;
+
+  if (isDBMS) {
+    if (asksForHint) {
+      return `Here is a hint for **${topic}** in Database Systems:\n\n- For Normalization: In $X \\to Y$, check if $X$ contains a candidate key (superkey). If not, $Y$ must be a prime attribute (part of some key) for 3NF.\n- For Transactions: Write-Ahead Logging (WAL) ensures changes are durable on disk before buffer pool pages are written.\n\nWhich functional dependency or transaction schedule are you analyzing?`;
+    }
+    if (asksForTraps || mode === "review") {
+      return `### ⚡ Common Traps & High-Yield Rules: ${topic} (DBMS):\n\n1. **Confusing 2NF with 3NF**: 2NF removes partial dependencies on *composite* candidate keys. 3NF removes transitive dependencies ($X \\to Y \\to Z$).\n2. **Aggregate in WHERE clause**: \`WHERE count(*) > 5\` is invalid SQL! Use \`HAVING count(*) > 5\` after \`GROUP BY\`.\n3. **2PL vs Strict 2PL**: Standard 2PL allows releasing read locks before commit; Strict 2PL holds exclusive locks until commit, preventing cascading rollbacks.\n\nWould you like an example dependency set to test your 3NF decomposition?`;
+    }
+    return `Let's break down **${topic}** from relational principles.\n\nWhen we model relational entities and transactions, our primary goal is eliminating redundant state and preventing anomaly states (dirty reads, loss of updates). What candidate keys exist in your relation?`;
   }
-  if (mode === "practice") {
-    return `Chaliye **${topic}** par ek practice problem solve karte hain!\n\n**Problem:** Solve/Factorize $x^2 + 8x + 15 = 0$.\n\n**Nudge:** Hamein aisi 2 numbers chahiye jinka product 15 ho aur sum 8 ho. Aapke hisaab se kaun se numbers fit honge?`;
+
+  if (isOS) {
+    if (asksForHint) {
+      return `Here is a targeted hint for **${topic}** in Operating Systems:\n\n- For Deadlocks: Remember the 4 Coffman conditions: Mutual Exclusion, Hold and Wait, No Preemption, Circular Wait. Breaking *any single one* prevents deadlock.\n- For Paging: Virtual address = Page number + Offset. The page size dictates the number of bits in the offset.\n\nWhich specific condition or memory access is under test?`;
+    }
+    if (asksForTraps || mode === "review") {
+      return `### ⚡ Common Traps & Exam Rules: ${topic} (OS):\n\n1. **Deadlock Prevention vs Avoidance**: Prevention eliminates at least one Coffman condition statically; Avoidance (Banker's Algorithm) evaluates safety dynamically per resource request.\n2. **Round Robin Quantum Extremes**: Extremely small quantum causes high context-switch overhead; extremely large quantum degenerates into FCFS.\n3. **Belady's Anomaly**: FIFO page replacement can experience *more* page faults with *more* physical memory frames!\n\nWould you like a quick Banker's safe-state sequence challenge?`;
+    }
+    return `Great inquiry on Operating Systems: **${topic}**!\n\nAt the kernel level, how does the OS arbitrate between competing threads or hardware interrupts while guaranteeing state consistency? What trade-off are you observing here?`;
   }
-  return `Great effort! **${topic}** me sabse zaroori step yeh identify karna hota hai ki expression ka structure kaisa hai.\n\nKya aap mujhe bata sakte hain ki aapne is problem me pehla step kya try kiya tha? Main wahi se guide karta hoon!`;
+
+  if (isCN) {
+    if (asksForHint) {
+      return `Here is your targeted hint for **${topic}** in Computer Networks:\n\n- Subnet host calculation: For a prefix $/n$, host bits $h = 32 - n$. Usable hosts $= 2^h - 2$ (subtracting network ID and broadcast address).\n- TCP Flow Control: Driven by the receiver's \`rwnd\`, whereas Congestion Control is driven by network packet loss/delay via \`cwnd\`.\n\nWhat prefix or header field are you calculating?`;
+    }
+    return `That's a key question in Networking: **${topic}**!\n\nRemember that layered architecture encapsulates payloads into protocol data units: Segments at Layer 4, Packets at Layer 3, and Frames at Layer 2. What layer is primarily responsible for the behavior you are analyzing?`;
+  }
+
+  // Mathematics Fallback (Algebra, Quadratics, Factoring)
+  if (language === "hi") {
+    return `**${topic}** को समझने के लिए एक मुख्य सिद्धांत याद रखें:\n\nजब भी हम किसी समस्या को हल करते हैं, सबसे पहले यह देखें कि क्या कोई पद उभयनिष्ठ (common) है या कोई सर्वसमिका लागू हो रही है।\n\nआप इस प्रश्न में सबसे पहले किस पद पर ध्यान केंद्रित करना चाहेंगे?`;
+  }
+  if (language === "hinglish") {
+    return `Great effort! **${topic}** me sabse zaroori step yeh identify karna hota hai ki expression ka structure kaisa hai.\n\nKya aap mujhe bata sakte hain ki aapne is problem me pehla step kya try kiya tha? Main wahi se step-by-step guide karta hoon!`;
+  }
+
+  // English Maths fallback
+  if (asksForHint) {
+    return `Here is a progressive hint for **${topic}**:\n\n- To factor a trinomial like $x^2 + bx + c$, look for two numbers $p$ and $q$ where:\n  - $p \\times q = c$ (the constant term)\n  - $p + q = b$ (the middle coefficient)\n\nWhat is the specific equation or problem you want us to test this on?`;
+  }
+  if (asksForTraps || mode === "review") {
+    return `### ⚡ Common Traps & High-Yield Rules: ${topic}\n\n1. **Sign Flip in Roots**: Factored form $(x - p)(x - q) = 0$ gives roots $x = +p$ and $x = +q$. Always solve $x - p = 0$ explicitly.\n2. **Always Check for GCF First**: Before splitting the middle term, factor out any greatest common numerical factor.\n3. **Negative Parentheses**: When factoring out a negative (e.g. $-2x - 6 = -2(x + 3)$), don't forget to change the inside sign to positive!\n\nWould you like an interactive question to test yourself against these traps?`;
+  }
+  switch (mode) {
+    case "analogy":
+      return `Think of **${topic}** like assembling furniture with modular Lego blocks:\n\nInstead of dealing with one large, complicated structure all at once, you find the identical connecting pieces (common factors) and separate them into neat, predictable units.\n\nLooking at your expression, what "matching pieces" do you notice across the terms?`;
+    case "step_by_step":
+      return `Let's break down **${topic}** into 3 manageable steps:\n\n1. **Inspect for Common Factors**: Look at all numerical coefficients and variable powers.\n2. **Identify the Pattern**: Determine if it matches standard forms (like $(a+b)^2$, difference of squares, or quadratic trinomials).\n3. **Group and Simplify**: Factor out terms systematically.\n\nWhich of these 3 steps would you like to execute first on your problem?`;
+    case "practice":
+      return `Here is a calibrated practice problem for **${topic}** (Mastery: ${input.score}%):\n\n> **Solve/Factor:** $x^2 + 8x + 15 = 0$\n\n**Coaching Nudge:** Look for two integers that multiply to $15$ and add up to $8$.\n\nWhat pair of numbers comes to mind first?`;
+    case "socratic":
+    default:
+      return `That's a thoughtful question about **${topic}**!\n\nTo build your intuition here: if you were to expand an expression like $(x + 2)(x + 3)$, what would the middle term look like?\n\nWorking backwards from that expansion is the secret to factoring. What do you observe?`;
+  }
 }
 
 export interface QuizQuestion {
@@ -455,17 +472,18 @@ Respond ONLY with valid JSON array:
       correctAnswer: typeof q.correctAnswer === "number" && q.correctAnswer >= 0 && q.correctAnswer < 4 ? q.correctAnswer : 0,
     }));
   } catch {
-    // Curated high quality adaptive fallbacks
+    // Curated high quality adaptive fallbacks across all subjects
     return generateFallbackQuiz(topics, questionCount, difficultyPreference);
   }
 }
 
-function generateFallbackQuiz(
+export function generateFallbackQuiz(
   topics: { topicName: string; mastery: number }[],
   questionCount: number,
   difficultyPref: "adaptive" | "easy" | "medium" | "hard"
 ): QuizQuestion[] {
   const pool: Record<string, QuizQuestion[]> = {
+    // Mathematics
     Factorisation: [
       {
         id: "f1",
@@ -494,24 +512,6 @@ function generateFallbackQuiz(
         difficulty: "easy",
         topic: "Factorisation",
       },
-      {
-        id: "f4",
-        question: "Factor the non-monic quadratic: $2x^2 + 7x + 3$",
-        options: ["$(2x + 1)(x + 3)$", "$(2x + 3)(x + 1)$", "$(2x - 1)(x - 3)$", "$(x + 1)(2x + 3)$"],
-        correctAnswer: 0,
-        explanation: "$a \\cdot c = 2 \\times 3 = 6$. The factors of $6$ adding to $7$ are $6$ and $1$. Splitting gives $(2x + 1)(x + 3)$.",
-        difficulty: "hard",
-        topic: "Factorisation",
-      },
-      {
-        id: "f5",
-        question: "Factor by grouping: $x^3 + 4x^2 + 3x + 12$",
-        options: ["$(x^2 + 3)(x + 4)$", "$(x^2 + 4)(x + 3)$", "$(x + 3)(x^2 + 12)$", "$(x - 4)(x^2 + 3)$"],
-        correctAnswer: 0,
-        explanation: "Group terms: $x^2(x + 4) + 3(x + 4) = (x^2 + 3)(x + 4)$.",
-        difficulty: "hard",
-        topic: "Factorisation",
-      },
     ],
     "Quadratic Equations": [
       {
@@ -532,34 +532,159 @@ function generateFallbackQuiz(
         difficulty: "medium",
         topic: "Quadratic Equations",
       },
+    ],
+
+    // Python Programming
+    "Functions & Scope": [
       {
-        id: "q3",
-        question: "For what values of $k$ does $x^2 + kx + 16 = 0$ have equal real roots?",
-        options: ["$k = \\pm 8$", "$k = 4$", "$k = \\pm 16$", "$k = 0$"],
+        id: "py_fn_1",
+        question: "What will `func(1); print(func(2))` output given `def func(a, b=[]): b.append(a); return b`?",
+        options: ["[1, 2] (mutable defaults persist across calls)", "[2] (new list on each call)", "TypeError", "None"],
         correctAnswer: 0,
-        explanation: "For equal roots, $\\Delta = 0 \\implies k^2 - 4(1)(16) = 0 \\implies k^2 = 64 \\implies k = \\pm 8$.",
+        explanation: "Default parameters in Python are evaluated once at function definition time, so mutable default arguments persist.",
+        difficulty: "medium",
+        topic: "Functions & Scope",
+      },
+      {
+        id: "py_fn_2",
+        question: "Which keyword modifies a variable in an outer non-global enclosing function in Python?",
+        options: ["nonlocal", "global", "outer", "super"],
+        correctAnswer: 0,
+        explanation: "The nonlocal keyword binds a variable to the nearest enclosing scope that is not global.",
+        difficulty: "easy",
+        topic: "Functions & Scope",
+      },
+    ],
+    "Lambda Functions": [
+      {
+        id: "py_lam_1",
+        question: "Which lambda correctly sorts a list of pairs `[(1, 'b'), (2, 'a')]` by the second element?",
+        options: ["sorted(items, key=lambda x: x[1])", "sorted(items, key=lambda x: x[0])", "items.sort(1)", "filter(lambda x: x[1], items)"],
+        correctAnswer: 0,
+        explanation: "key=lambda x: x[1] extracts the second element as the comparison key.",
+        difficulty: "easy",
+        topic: "Lambda Functions",
+      },
+    ],
+
+    // Data Structures & Algorithms
+    "Binary Search Trees": [
+      {
+        id: "dsa_bst_1",
+        question: "Which traversal of a Binary Search Tree (BST) visits nodes in strictly increasing sorted order?",
+        options: ["In-order Traversal (Left, Root, Right)", "Pre-order Traversal", "Post-order Traversal", "Level-order (BFS)"],
+        correctAnswer: 0,
+        explanation: "Because Left < Root < Right, an in-order traversal recursively visits keys in ascending sorted order.",
+        difficulty: "easy",
+        topic: "Binary Search Trees",
+      },
+      {
+        id: "dsa_bst_2",
+        question: "When deleting a node with 2 children from a BST, what replaces it to maintain the invariant?",
+        options: ["In-order Successor or In-order Predecessor", "Root of the entire tree", "Deepest leaf node", "Immediate left child"],
+        correctAnswer: 0,
+        explanation: "The in-order successor is the smallest node in the right subtree and preserves all BST inequalities.",
+        difficulty: "medium",
+        topic: "Binary Search Trees",
+      },
+    ],
+    "Dynamic Programming": [
+      {
+        id: "dsa_dp_1",
+        question: "Which two core structural properties are strictly required to solve a problem with Dynamic Programming?",
+        options: [
+          "Optimal Substructure and Overlapping Subproblems",
+          "Greedy Choice Property and Divide & Conquer",
+          "Linearity and Convexity",
+          "Independence of all states",
+        ],
+        correctAnswer: 0,
+        explanation: "Optimal substructure means optimal solutions contain optimal sub-solutions; overlapping subproblems means sub-instances are reused repeatedly.",
+        difficulty: "medium",
+        topic: "Dynamic Programming",
+      },
+    ],
+
+    // Database Systems
+    Normalization: [
+      {
+        id: "dbms_norm_1",
+        question: "Which normal form specifically requires the complete removal of partial functional dependencies on composite candidate keys?",
+        options: ["Second Normal Form (2NF)", "First Normal Form (1NF)", "Third Normal Form (3NF)", "Boyce-Codd Normal Form (BCNF)"],
+        correctAnswer: 0,
+        explanation: "2NF requires 1NF plus eliminating partial dependencies where a non-key attribute depends on part of a composite key.",
+        difficulty: "medium",
+        topic: "Normalization",
+      },
+    ],
+    "Concurrency Control": [
+      {
+        id: "dbms_concurr_1",
+        question: "What does Strict Two-Phase Locking (Strict 2PL) guarantee that standard 2PL does not?",
+        options: ["Freedom from cascading aborts", "Deadlock-free execution", "Higher concurrency throughput", "No lock overhead"],
+        correctAnswer: 0,
+        explanation: "Strict 2PL holds exclusive locks until transaction commit/abort, ensuring dirty data is never read by other transactions.",
         difficulty: "hard",
-        topic: "Quadratic Equations",
+        topic: "Concurrency Control",
+      },
+    ],
+
+    // Operating Systems
+    Deadlocks: [
+      {
+        id: "os_dead_1",
+        question: "Which of the following is NOT one of the four necessary Coffman conditions for deadlocks?",
+        options: ["Preemption Allowed", "Mutual Exclusion", "Hold and Wait", "Circular Wait"],
+        correctAnswer: 0,
+        explanation: "No preemption is required for deadlocks; allowing preemption eliminates deadlocks by reclaiming resources.",
+        difficulty: "medium",
+        topic: "Deadlocks",
+      },
+    ],
+    "Process Scheduling": [
+      {
+        id: "os_sched_1",
+        question: "In Round Robin CPU scheduling, if the time quantum is extremely large, the algorithm behaves identically to:",
+        options: ["First-Come, First-Served (FCFS)", "Shortest Job First (SJF)", "Priority Preemptive", "Multilevel Feedback Queue"],
+        correctAnswer: 0,
+        explanation: "As time quantum approaches infinity, no process is preempted before completing, which matches FCFS exactly.",
+        difficulty: "easy",
+        topic: "Process Scheduling",
+      },
+    ],
+
+    // Computer Networks
+    "IP Addressing & Subnetting": [
+      {
+        id: "cn_sub_1",
+        question: "How many usable host IP addresses are available in a subnet with a /26 CIDR prefix?",
+        options: ["62", "64", "30", "126"],
+        correctAnswer: 0,
+        explanation: "32 - 26 = 6 host bits. 2^6 = 64 total addresses. Subtracting network ID and broadcast address gives 62 usable hosts.",
+        difficulty: "medium",
+        topic: "IP Addressing & Subnetting",
       },
     ],
   };
 
   const results: QuizQuestion[] = [];
   const primaryTopic = topics[0]?.topicName || "Factorisation";
-  const topicList = pool[primaryTopic] || pool["Factorisation"];
+  const matchedPool = Object.keys(pool).find(k => k.toLowerCase() === primaryTopic.toLowerCase() || primaryTopic.toLowerCase().includes(k.toLowerCase()));
+  const topicList = (matchedPool ? pool[matchedPool] : null) || pool[primaryTopic] || pool["Factorisation"];
 
   for (let i = 0; i < Math.min(questionCount, topicList.length); i++) {
     results.push(topicList[i]);
   }
 
-  // If more questions needed, fill from secondary topics
-  while (results.length < questionCount) {
-    const extra = pool["Quadratic Equations"]?.[results.length % 3];
-    if (extra) {
-      results.push({ ...extra, id: `extra_${results.length + 1}` });
-    } else {
-      break;
+  // If more questions needed, fill from other topics
+  const allPoolQuestions = Object.values(pool).flatMap(qs => qs);
+  let poolIdx = 0;
+  while (results.length < questionCount && poolIdx < allPoolQuestions.length) {
+    const candidate = allPoolQuestions[poolIdx];
+    if (!results.some(r => r.id === candidate.id)) {
+      results.push({ ...candidate, id: `extra_${results.length + 1}` });
     }
+    poolIdx++;
   }
 
   return results;

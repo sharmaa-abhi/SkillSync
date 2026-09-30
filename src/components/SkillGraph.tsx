@@ -994,7 +994,7 @@ export function getSubjectGraphData(subject: string) {
   if (norm.includes("cn") || norm.includes("network")) {
     return { skills: CN_SKILLS, edges: CN_EDGES, defaultSelected: "ip-subnet" };
   }
-  if (norm.includes("dbms") || norm.includes("data") || norm.includes("sql")) {
+  if (norm.includes("dbms") || norm.includes("database") || (norm.includes("data") && !norm.includes("struct") && !norm.includes("algo")) || norm.includes("sql")) {
     return { skills: DBMS_SKILLS, edges: DBMS_EDGES, defaultSelected: "normalization" };
   }
   if (norm.includes("math")) {
