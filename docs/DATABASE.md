@@ -532,39 +532,162 @@ erDiagram
 
 ---
 
-## Prisma Schema (Planned)
+## Connection Pooling & Production Architecture
 
-The complete Prisma schema will be located at `prisma/schema.prisma`.
-
-### Database Connection
-
-```prisma
-datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
-}
-
-generator client {
-  provider = "prisma-client-js"
-}
-```
+### Dual Connection URLs
+SkillSync AI uses a dual-URL strategy to safely operate on serverless infrastructure:
+1. **Runtime Connection (`DATABASE_URL`):** Connects to Supabase PgBouncer pooler on **port 6543** with transaction pooling enabled:
+   ```
+   postgresql://postgres.[ref]:[encoded-password]@aws-0-[region].pooler.supabase.com:6543/postgres?pgbouncer=true&connection_limit=1&connect_timeout=30&pool_timeout=30
+   ```
+2. **Migration & CLI Connection (`DIRECT_URL`):** Connects directly to the PostgreSQL engine on **port 5432** (session mode) for DDL migrations and schema changes:
+   ```
+   postgresql://postgres.[ref]:[encoded-password]@aws-0-[region].pooler.supabase.com:5432/postgres
+   ```
 
 ---
 
-## Seed Data Strategy
+## Future Schema Evolution (Phase 3 & 4 Planned Models)
 
-The seed script (`prisma/seed.ts`) will populate:
+To support Multimodal Voice, FSRS Memory Modeling, Collaborative Study Squads, and Institutional Portals, the following schema extensions are designed:
 
-1. **Subjects:** DBMS (initial subject)
-2. **Topics:** 6-8 topics per subject with descriptions and ordering
-3. **Questions:** 5-10 questions per topic for the diagnostic assessment
+### 1. FsrsCardState (Phase 3 — Next-Gen Spaced Repetition)
+```prisma
+model FsrsCardState {
+  id              String    @id @default(cuid())
+  userId          String
+  topicId         String
+  stability       Float     @default(2.0)     // Memory stability in days
+  difficulty      Float     @default(5.0)     // Topic difficulty (1.0 to 10.0)
+  reps            Int       @default(0)       // Consecutive successful reviews
+  lapses          Int       @default(0)       // Forgetting occurrences
+  state           String    @default("learning") // "learning" | "review" | "relearning"
+  lastReviewDate  DateTime?
+  nextDueDate     DateTime  @default(now())
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
 
-Seed data is essential for the demo — without it, there are no subjects, topics, or assessment questions.
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  topic           Topic     @relation(fields: [topicId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, topicId])
+  @@index([userId, nextDueDate])
+}
+```
+
+### 2. VoiceSession (Phase 3 — Gemini 2.0 Multimodal Audio)
+```prisma
+model VoiceSession {
+  id              String    @id @default(cuid())
+  userId          String
+  subjectId       String
+  durationSeconds Int       @default(0)
+  interruptions   Int       @default(0)
+  language        String    @default("en")     // "en" | "hi" | "hinglish" | "ta" | "te"
+  transcription   Json?                       // Full timestamped transcript
+  summaryNotes    String?   @db.Text          // Markdown summary generated post-call
+  createdAt       DateTime  @default(now())
+
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  subject         Subject   @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+}
+```
+
+### 3. StudySquad & SquadMember (Phase 3 — Peer Collaboration)
+```prisma
+model StudySquad {
+  id              String        @id @default(cuid())
+  name            String
+  subjectId       String
+  joinCode        String        @unique
+  maxMembers      Int           @default(6)
+  createdAt       DateTime      @default(now())
+
+  subject         Subject       @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+  members         SquadMember[]
+}
+
+model SquadMember {
+  id        String     @id @default(cuid())
+  squadId   String
+  userId    String
+  role      String     @default("member") // "host" | "member"
+  joinedAt  DateTime   @default(now())
+
+  squad     StudySquad @relation(fields: [squadId], references: [id], onDelete: Cascade)
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([squadId, userId])
+}
+```
+
+### 4. Institution & Classroom (Phase 4 — Enterprise & Educator Intelligence)
+```prisma
+model Institution {
+  id          String      @id @default(cuid())
+  name        String
+  domain      String      @unique            // e.g. "stanford.edu" or "iitb.ac.in"
+  ssoProvider String?                        // "okta" | "azure_ad" | "google"
+  classrooms  Classroom[]
+  createdAt   DateTime    @default(now())
+}
+
+model Classroom {
+  id            String            @id @default(cuid())
+  institutionId String
+  name          String            // e.g. "CS202: Relational Databases — Fall 2027"
+  instructorId  String
+  subjectId     String
+  createdAt     DateTime          @default(now())
+
+  institution   Institution       @relation(fields: [institutionId], references: [id], onDelete: Cascade)
+  subject       Subject           @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+  enrollments   ClassEnrollment[]
+
+  @@index([institutionId])
+  @@index([instructorId])
+}
+
+model ClassEnrollment {
+  id          String    @id @default(cuid())
+  classroomId String
+  studentId   String
+  enrolledAt  DateTime  @default(now())
+
+  classroom   Classroom @relation(fields: [classroomId], references: [id], onDelete: Cascade)
+  student     User      @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@unique([classroomId, studentId])
+}
+```
+
+### 5. CurriculumPassageEmbedding (Phase 3 — pgvector HNSW Search)
+```sql
+-- Phase 3 Migration: Enable pgvector extension on Supabase
+CREATE EXTENSION IF NOT EXISTS vector;
+
+CREATE TABLE "CurriculumPassageEmbedding" (
+  "id" TEXT PRIMARY KEY,
+  "subjectId" TEXT NOT NULL REFERENCES "Subject"("id") ON DELETE CASCADE,
+  "topicId" TEXT REFERENCES "Topic"("id") ON DELETE SET NULL,
+  "sourceTextbook" TEXT NOT NULL,
+  "content" TEXT NOT NULL,
+  "embedding" vector(768), -- Gemini text-embedding-004
+  "createdAt" TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- High-performance HNSW index for sub-10ms nearest neighbor queries
+CREATE INDEX curriculum_embedding_hnsw_idx 
+ON "CurriculumPassageEmbedding" 
+USING hnsw (embedding vector_cosine_ops);
+```
 
 ---
 
 ## Migration Strategy
 
-- Use `npx prisma db push` during development (quick iteration)
-- Use `npx prisma migrate dev` for tracked migrations before production
-- Always run `npx prisma generate` after schema changes
+- **Development:** Use `npx prisma db push` for non-destructive rapid prototyping.
+- **Production Migrations:** Execute `npx prisma migrate dev` strictly against `DIRECT_URL` (direct port 5432).
+- **Client Generation:** Always execute `npx prisma generate` after modifying `prisma/schema.prisma`.

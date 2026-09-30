@@ -76,6 +76,18 @@ NODE_ENV=development
 | `GEMINI_MODEL` | No | AI model identifier | Defaults to `gemini-1.5-flash` |
 | `NODE_ENV` | No | Execution environment | `development` or `production` |
 
+### Future Environment Variables (Phase 3 & Phase 4)
+
+| Variable | Target Phase | Description | Purpose |
+|---|:---:|---|---|
+| `UPSTASH_REDIS_REST_URL` | Phase 3 | Edge Redis REST endpoint | AI response caching & sliding-window rate limiting |
+| `UPSTASH_REDIS_REST_TOKEN` | Phase 3 | Edge Redis REST auth token | Authentication for distributed cache |
+| `LIVEKIT_URL` | Phase 3 | LiveKit WebRTC server URL (`wss://...`) | Real-time bidirectional voice tutoring audio pipeline |
+| `LIVEKIT_API_KEY` | Phase 3 | LiveKit project API key | Token generation for voice sessions |
+| `LIVEKIT_API_SECRET` | Phase 3 | LiveKit project API secret | Secure room creation & token signing |
+| `NEXT_PUBLIC_SENTRY_DSN` | Phase 3 | Sentry error tracking DSN | Production frontend & server error telemetry |
+| `LTI_ISSUER` | Phase 4 | LTI 1.3 platform issuer identifier | LMS deep-linking for Canvas/Blackboard |
+| `LTI_KEYSET_URL` | Phase 4 | LTI 1.3 public JWKS keyset URL | University LMS authentication handshake |
 
 ---
 

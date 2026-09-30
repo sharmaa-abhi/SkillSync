@@ -895,24 +895,137 @@ Get dashboard summary data.
 ## API Summary
 
 | Method | Route | Purpose | Status |
-|---|---|---|---|
-| POST | `/api/auth/register` | Register new user | PLANNED |
-| POST | `/api/auth/[...nextauth]` | NextAuth handlers | PLANNED |
-| GET | `/api/users/me` | Get current user | PLANNED |
-| PUT | `/api/users/onboarding` | Complete onboarding | PLANNED |
-| GET | `/api/subjects` | List subjects | PLANNED |
-| GET | `/api/subjects/:id/topics` | List topics | PLANNED |
-| POST | `/api/assessment/start` | Start assessment | PLANNED |
-| POST | `/api/assessment/:id/submit` | Submit assessment | PLANNED |
-| GET | `/api/assessment/:id/results` | Get results | PLANNED |
-| POST | `/api/analysis/generate` | Run AI analysis | PLANNED |
-| GET | `/api/analysis/profile` | Get learning profile | PLANNED |
-| POST | `/api/learning-plan/generate` | Generate plan | PLANNED |
-| GET | `/api/learning-plan/current` | Get active plan | PLANNED |
-| POST | `/api/tutor/session` | Start tutor session | PLANNED |
-| POST | `/api/tutor/session/:id/message` | Send message | PLANNED |
-| POST | `/api/tutor/session/:id/end` | End session | PLANNED |
-| POST | `/api/quiz/generate` | Generate quiz | PLANNED |
-| POST | `/api/quiz/:id/submit` | Submit quiz | PLANNED |
-| GET | `/api/progress` | Get progress | PLANNED |
-| GET | `/api/progress/dashboard` | Dashboard data | PLANNED |
+|---|---|---|:---:|
+| POST | `/api/auth/register` | Register new user into Supabase Auth & PostgreSQL with retry | ACTIVE |
+| POST | `/api/auth/[...nextauth]` | NextAuth session authentication handlers | ACTIVE |
+| GET | `/api/health` | System health check & environment configuration inspection | ACTIVE |
+| GET | `/api/subjects` | List all curriculum tracks & active topics | ACTIVE |
+| POST | `/api/assessment/start` | Start diagnostic assessment (zero answer leakage) | ACTIVE |
+| POST | `/api/assessment/submit` | Submit assessment answers & compute topic scores | ACTIVE |
+| POST | `/api/analysis` | Run Gemini AI analysis & detect prerequisite gaps | ACTIVE |
+| POST | `/api/learning-plan` | Generate personalized study milestones | ACTIVE |
+| POST | `/api/tutor` | Socratic conversational AI tutoring with student context | ACTIVE |
+| POST | `/api/tutor/summarize` | Generate structured markdown study notes & revision cards | ACTIVE |
+| POST | `/api/quiz` | Adaptive practice question generation & mastery sync | ACTIVE |
+| GET | `/api/review` | Spaced repetition card queue based on SM-2 forgetting curve | ACTIVE |
+| GET | `/api/analytics/cohort` | Benchmark student mastery against cohort historical bottlenecks | ACTIVE |
+
+---
+
+## Future API Specifications (Phase 3 & 4 — v2 Endpoints)
+
+The following endpoints represent the v2 API contract planned for Multimodal Voice, Vision, FSRS, and Institutional scaling.
+
+### 1. WebSocket /api/v2/voice/stream (Phase 3)
+Full-duplex bidirectional audio streaming with Gemini 2.0 Live.
+
+| Property | Value |
+|---|---|
+| Protocol | WebSocket (`wss://`) |
+| Auth | Bearer Token in connection handshake (`Sec-WebSocket-Protocol`) |
+| Direction | Bidirectional PCM 16kHz / Opus audio chunks |
+
+**Inbound Client Frame:**
+```json
+{
+  "type": "audio_chunk",
+  "data": "base64_encoded_pcm_or_opus...",
+  "timestamp": 1727712000000
+}
+```
+
+**Outbound Server Frame:**
+```json
+{
+  "type": "tutor_audio",
+  "data": "base64_encoded_audio...",
+  "interrupted": false,
+  "transcript": "Let's check your base case first. What happens when n = 0?"
+}
+```
+
+---
+
+### 2. POST /api/v2/vision/solve (Phase 3)
+Processes uploaded student handwritten notes, math formulas, or circuit diagrams.
+
+| Property | Value |
+|---|---|
+| Method | POST (Multipart / Form-Data or JSON Base64) |
+| Auth | Required (Bearer Session) |
+| Purpose | Extract equations, detect step-by-step errors, generate Socratic hints |
+
+**Request Body:**
+```json
+{
+  "image": "data:image/jpeg;base64,...",
+  "topic": "Quadratic Equations",
+  "problemContext": "Factorise 2x^2 + 5x + 3"
+}
+```
+
+**Response (200 OK):**
+```json
+{
+  "detectedWorking": [
+    { "step": 1, "latex": "2x^2 + 5x + 3 = 0", "isCorrect": true },
+    { "step": 2, "latex": "ac = 2 \\times 3 = 6;\\quad p+q = 5 \\implies p=2, q=3", "isCorrect": true },
+    { "step": 3, "latex": "2x^2 + 2x + 3x + 3", "isCorrect": true },
+    { "step": 4, "latex": "2x(x + 1) + 3(x - 1)", "isCorrect": false, "errorType": "Sign distribution error" }
+  ],
+  "socraticHint": "Look closely at step 4 when factoring out +3 from (3x + 3). Does +3 * (-1) equal +3?",
+  "recommendedAction": "review_distributive_law"
+}
+```
+
+---
+
+### 3. POST /api/v2/fsrs/review (Phase 3)
+Calculates personalized retention intervals using FSRS v4 memory parameters.
+
+**Request Body:**
+```json
+{
+  "cardId": "card_9812",
+  "grade": 3,
+  "elapsedDays": 4.2
+}
+```
+
+**Response (200 OK):**
+```json
+{
+  "stability": 8.45,
+  "difficulty": 4.12,
+  "retrievability": 0.91,
+  "nextReviewDays": 8,
+  "nextDueDate": "2026-10-08T15:30:00.000Z"
+}
+```
+
+---
+
+### 4. GET /api/v2/educator/classrooms/:id/bottlenecks (Phase 4)
+Returns aggregate class knowledge distribution and detected syllabus bottlenecks for faculty.
+
+**Response (200 OK):**
+```json
+{
+  "classroomId": "class_gate_2027",
+  "totalStudents": 64,
+  "activeSubject": "DBMS",
+  "criticalBottlenecks": [
+    {
+      "topic": "Normalization",
+      "weakPercentage": 68.75,
+      "prerequisiteGaps": ["Functional Dependencies"],
+      "recommendedAction": "Schedule 30-min live review on BCNF decomposition before Exam 2"
+    }
+  ],
+  "masteryDistribution": {
+    "weak": 24,
+    "medium": 28,
+    "strong": 12
+  }
+}
+```

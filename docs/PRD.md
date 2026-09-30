@@ -118,44 +118,52 @@ These are explicitly **not** in scope for the MVP but are planned for future pha
 
 ## Core Features
 
-### MVP Scope
+### Core System Scope (Current Implementation)
 
-| # | Feature | Priority | Status |
-|---|---|---|---|
-| 1 | Registration & Login | P0 | ✅ IMPLEMENTED |
-| 2 | Student Onboarding | P0 | ✅ IMPLEMENTED |
-| 3 | Subject Selection | P0 | ✅ IMPLEMENTED |
-| 4 | Diagnostic Assessment | P0 | ✅ IMPLEMENTED |
-| 5 | Topic-Level Scoring | P0 | ✅ IMPLEMENTED |
-| 6 | AI Learning Analysis | P0 | ✅ IMPLEMENTED |
-| 7 | Student Learning Profile | P0 | ✅ IMPLEMENTED |
-| 8 | Personalized Learning Plan | P0 | 🔧 IN PROGRESS |
-| 9 | Context-Aware AI Tutor | P0 | 🔧 IN PROGRESS |
-| 10 | Adaptive Quiz | P0 | 🔧 IN PROGRESS |
-| 11 | Progress Tracking | P0 | 🔧 IN PROGRESS |
-| 12 | Learning Profile Update | P0 | 📋 PLANNED |
+| # | Feature | Priority | Status | Verification & Coverage |
+|---|---|:---:|:---:|---|
+| 1 | Registration & Login | P0 | ✅ IMPLEMENTED | NextAuth credentials + Supabase Auth sync, exponential retry |
+| 2 | Student Onboarding | P0 | ✅ IMPLEMENTED | Goal setting, education level, multi-track curriculum alignment |
+| 3 | Subject Track Selection | P0 | ✅ IMPLEMENTED | 6 tracks (Python, Maths, DBMS, OS, CN, DSA) with global switcher |
+| 4 | Diagnostic Assessment | P0 | ✅ IMPLEMENTED | 5-question adaptive assessment with zero client-side answer leakage |
+| 5 | Topic-Level Scoring | P0 | ✅ IMPLEMENTED | Real-time percentage scoring with weak (<40%), medium, strong tiers |
+| 6 | AI Learning Analysis | P0 | ✅ IMPLEMENTED | Gemini AI evaluation with Zod schema validation & gap diagnosis |
+| 7 | Student Learning Profile | P0 | ✅ IMPLEMENTED | Dynamic profile HUD, mastery breakdowns, append-only history |
+| 8 | Personalized Learning Plan | P0 | ✅ IMPLEMENTED | Prioritized micro-pathway with estimated durations & task completion |
+| 9 | Context-Aware AI Tutor | P0 | ✅ IMPLEMENTED | Socratic hints, student context injection, STT voice input, audio TTS |
+| 10 | Adaptive Practice & Quiz | P0 | ✅ IMPLEMENTED | Adaptive difficulty scaling (easy ↔ med ↔ hard) with closed-loop sync |
+| 11 | Progress & Trend Tracking | P0 | ✅ IMPLEMENTED | `ProgressRecord` timeline snapshots, study streak, weekly time targets |
+| 12 | Interactive Skill Graph | P0 | ✅ IMPLEMENTED | Dependency network graph with real-time mastery color indicators |
+| 13 | RAG Curriculum Grounding | P1 | ✅ IMPLEMENTED | University textbook and lecture passage retrieval (`src/lib/rag.ts`) |
+| 14 | Spaced Repetition (SM-2) | P1 | ✅ IMPLEMENTED | Ebbinghaus curve modeling, retention risk triage (`src/lib/spacedRepetition.ts`) |
+| 15 | Cohort Bottleneck Analytics | P1 | ✅ IMPLEMENTED | Benchmark-driven bottleneck prediction (`src/lib/cohortAnalytics.ts`) |
+| 16 | Multilingual & Accessibility | P1 | ✅ IMPLEMENTED | Bilingual English/Hindi toggle & high-contrast accessibility theme |
 
-### Future Scope
+---
 
-| # | Feature | Priority | Target Phase |
-|---|---|---|---|
-| 1 | Voice AI Tutor | P1 | Phase 4 — Q3 2027 |
-| 2 | Multilingual Support | P2 | Phase 4 — Q3 2027 |
-| 3 | Teacher Dashboard | P1 | Phase 4 — Q3 2027 |
-| 4 | Parent Dashboard | P3 | Phase 4 — 2028 |
-| 5 | Advanced Analytics | P1 | Phase 3 — Q2 2027 |
-| 6 | RAG-Based Curriculum Knowledge | P1 | Phase 3 — Q1 2027 |
-| 7 | Spaced Repetition Engine | P1 | Phase 3 — Q1 2027 |
-| 8 | Learning Difficulty Prediction | P2 | Phase 3 — Q2 2027 |
-| 9 | Offline Learning | P3 | Phase 4 — Q4 2027 |
-| 10 | Mobile Application | P2 | Phase 4 — Q4 2027 |
-| 11 | Gamification & Certificates | P2 | Phase 4 — Q4 2027 |
-| 12 | LMS Integration (Canvas/Moodle) | P3 | Phase 4 — 2028 |
-| 13 | Collaborative Study Rooms | P3 | Phase 3 — Q3 2027 |
-| 14 | Session Summarization | P2 | Phase 3 — Q2 2027 |
-| 15 | AI Assessment Item Bank | P2 | Phase 3 — Q2 2027 |
-| 16 | Enterprise SSO (SAML/OAuth) | P3 | Phase 4 — 2028 |
-| 17 | Public API Platform | P3 | Phase 4 — 2028 |
+### Future Scope & Evolution
+
+#### Phase 3 — Multimodal AI & Mobile Ecosystem (Target: Q1 – Q3 2027)
+
+| # | Feature | Priority | Target Phase | Functional Requirement Specification |
+|---|---|:---:|---|---|
+| 1 | **Bidirectional Live Voice Tutor** | P0 | Phase 3 — Q1 2027 | Ultra-low latency (<400ms) full-duplex conversational voice tutoring powered by Gemini 2.0 Multimodal Live API over WebSockets. Supports interruptions, emotional modulation, and regional languages (Hindi, Hinglish, Tamil, Telugu). |
+| 2 | **Multimodal Vision Problem Solver** | P0 | Phase 3 — Q1 2027 | Camera "Snap & Solve" interface for complex STEM handwritten calculations, circuit schematics, and ER diagrams. Analyzes student work line-by-line and highlights exact algebraic or logical mistakes with Socratic hints. |
+| 3 | **Cross-Platform Mobile Application** | P1 | Phase 3 — Q2 2027 | React Native & Expo app for iOS and Android. Features local offline database caching (SQLite), background review push notifications, and lock-screen interactive flashcards. |
+| 4 | **FSRS v4 Memory Engine Upgrade** | P1 | Phase 3 — Q2 2027 | Migration from SuperMemo SM-2 to Free Spaced Repetition Scheduler (FSRS v4). Adapts memory stability ($S$) and difficulty ($D$) for 30% reduction in review load while maintaining >90% target retention. |
+| 5 | **Collaborative Live Study Squads** | P2 | Phase 3 — Q3 2027 | Virtual real-time study rooms with LiveKit WebRTC audio, synchronized collaborative whiteboard, and an embedded Socratic AI tutor capable of facilitating group discussions. |
+| 6 | **Gamification & Social Quests** | P2 | Phase 3 — Q3 2027 | Daily streak freezes, XP bounty rewards, verifiable digital mastery certificates, and opt-in college cohort leaderboards. |
+
+#### Phase 4 — Institutional Enterprise & Educator Intelligence (Target: Q3 2027 – 2028)
+
+| # | Feature | Priority | Target Phase | Functional Requirement Specification |
+|---|---|:---:|---|---|
+| 7 | **Educator & Professor Command Portal** | P0 | Phase 4 — Q3 2027 | Class-wide knowledge graph heatmaps for faculty. Auto-detects prerequisite bottlenecks prior to midterm exams, exports accreditation reports, and auto-dispatches remedial assignments. |
+| 8 | **LTI 1.3 / 1.4 Advantage LMS Standard** | P1 | Phase 4 — Q4 2027 | Complete LMS interoperability with Canvas, Blackboard, Moodle, and Google Classroom. Supports single sign-on, deep linking of learning plans, and automated grade passback. |
+| 9 | **Psychometric Mock Exam Synthesizer** | P1 | Phase 4 — Q4 2027 | Generates standardized full-length exam simulations calibrated to national competitive exams (e.g. GATE CS, JEE, University finals) using Item Response Theory (IRT) difficulty modeling. |
+| 10 | **Enterprise Multi-Tenant Isolation & SSO** | P1 | Phase 4 — 2028 | University-wide deployments featuring SAML 2.0 / Okta / Azure AD single sign-on, strict tenant schema isolation, and compliance with FERPA, GDPR-K, and COPPA data privacy frameworks. |
+| 11 | **Local On-Device Edge SLM Inference** | P2 | Phase 4 — 2028 | Edge model fallback (Gemini Nano, Microsoft Phi-3, Qwen 2.5) running via WebGPU / ONNX runtime for offline, zero-latency, completely private on-device tutoring. |
+| 12 | **Curriculum Knowledge Marketplace** | P3 | Phase 4 — 2028 | Verified educator authoring portal where university departments can publish calibrated question sets, proprietary textbook corpora, and customized syllabi. |
 
 ---
 

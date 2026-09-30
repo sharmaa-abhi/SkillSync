@@ -453,33 +453,95 @@ graph TB
 
 ---
 
-## Deployment Architecture (Planned)
+## Deployment & Infrastructure Architecture
 
 ```mermaid
 graph LR
-    Browser["Browser"] --> Vercel["Vercel Edge Network"]
-    Vercel --> App["Next.js Application"]
-    App --> DB["PostgreSQL (Managed)"]
-    App --> Gemini["Google Gemini API"]
+    subgraph Clients["Clients"]
+        Browser["Desktop & Mobile Web"]
+        NativeMobile["React Native App (Future)"]
+    end
+
+    subgraph Edge["Vercel Edge Network"]
+        CDN["Global Edge Cache & Middleware"]
+        AuthCheck["NextAuth JWT Session Gate"]
+    end
+
+    subgraph Compute["Vercel Serverless Compute"]
+        AppRouter["Next.js 16 App Router"]
+        RouteHandlers["API Route Handlers (Zod Validated)"]
+        Services["Core Services Layer (RAG, SM-2, Cohort)"]
+    end
+
+    subgraph Data["Database & External Services"]
+        Pooler["Supabase PgBouncer (Port 6543)"]
+        DirectDB["PostgreSQL Primary (Port 5432)"]
+        Gemini["Google Gemini 1.5 Flash"]
+    end
+
+    Clients --> CDN
+    CDN --> AuthCheck
+    AuthCheck --> AppRouter
+    AppRouter --> RouteHandlers
+    RouteHandlers --> Services
+    Services --> Pooler
+    Services --> Gemini
+    Pooler --> DirectDB
 ```
 
-### Deployment Targets
-
-- **Application:** Vercel (serverless functions)
-- **Database:** Vercel Postgres, Supabase, or Neon
-- **Environment:** Environment variables via Vercel dashboard
+### Production Deployment Configuration
+- **Application Runtime:** Vercel Serverless (Node.js runtime, zero cold-start footprint).
+- **Database Engine:** Supabase PostgreSQL with pooled runtime connections (`DATABASE_URL` pointing to PgBouncer port 6543 with `pgbouncer=true&connection_limit=1&connect_timeout=30&pool_timeout=30`).
+- **Direct Database:** Migrations and schema pushes target direct port 5432 (`DIRECT_URL`).
+- **Health Verification:** Monitored via `/api/health` diagnostic reporting.
 
 ---
 
-## Architecture Gaps
+## Future Architecture Evolution & Enterprise Scaling Strategy
 
-Since this is a greenfield project, the following represent design decisions that need to be finalized during implementation:
+### 1. Multimodal Live Voice WebRTC/WebSocket Gateway (Phase 3)
+To achieve sub-400ms conversational tutoring, a stateful WebSocket/WebRTC gateway will be deployed alongside serverless handlers:
+- **Transport:** WebSocket connections routed through a dedicated LiveKit or Cloudflare Workers WebSocket gateway.
+- **Audio Codec:** Bidirectional Opus audio streaming directly to the Gemini 2.0 Multimodal Live API.
+- **Client Fallback:** Automatic degradation to HTTP Server-Sent Events (SSE) and client-side Web Speech API when network bandwidth drops below 128 kbps.
 
-| Area | Gap | Decision Needed |
-|---|---|---|
-| Caching | No caching strategy defined | Decide if/where to cache AI responses |
-| Rate Limiting | No rate limiting implemented | Decide on API rate limiting approach |
-| File Storage | No file storage needed for MVP | Confirm no file upload requirements |
-| WebSockets | Not planned for MVP | Decide if real-time features are needed |
-| Background Jobs | No job queue planned | Decide if AI analysis should be async |
-| Logging | No structured logging planned | Choose a logging approach |
+```mermaid
+sequenceDiagram
+    participant Student as Student App (Web/Mobile)
+    participant Gateway as WebSocket Gateway (LiveKit)
+    participant Gemini as Gemini 2.0 Live Voice API
+    participant DB as PostgreSQL (Supabase)
+
+    Student->>Gateway: Connect WebSocket Audio Stream
+    Gateway->>Gemini: Establish Bidirectional Session (System Prompt + Student Profile)
+    Student->>Gateway: Stream PCM Audio (Voice question)
+    Gateway->>Gemini: Stream Chunked Audio
+    Gemini-->>Gateway: Stream Audio Responses (Socratic hint)
+    Gateway-->>Student: Play Audio Chunk (<400ms latency)
+    Gemini->>Gateway: Session Transcription & Turn Summary
+    Gateway->>DB: Append Progress & Tutor Session Record
+```
+
+### 2. Hybrid Vector Search RAG Pipeline (Phase 3)
+Upgrades the current in-memory curriculum matching (`src/lib/rag.ts`) to an enterprise-grade vector pipeline:
+- **Storage:** PostgreSQL `pgvector` extension hosted directly in Supabase.
+- **Indexing:** HNSW (Hierarchical Navigable Small World) index with cosine distance metric for sub-10ms similarity queries across 500,000+ textbook passages.
+- **Hybrid Retrieval:** Reciprocal Rank Fusion (RRF) combining dense vector embeddings (`text-embedding-004`) with PostgreSQL full-text search (`tsvector` / BM25).
+
+### 3. Distributed Caching & Token-Bucket Rate Limiting (Phase 3)
+- **Engine:** Upstash Redis with globally distributed edge endpoints.
+- **AI Response Caching:** Cache common diagnostic explanations and textbook passage embeddings with 24-hour TTL, slashing external API costs by 45%.
+- **Rate Limiting:** Sliding-window token-bucket algorithm per authenticated student (`userId`) and unauthenticated IP address to prevent denial-of-wallet attacks on Gemini endpoints.
+
+### 4. Asynchronous Task Queue & Event Bus (Phase 3 – 4)
+- **Engine:** Inngest or BullMQ on serverless infrastructure.
+- **Workloads:** Offloads long-running AI batch evaluations, full-length psychometric mock exam generation, weekly parent progress digests, and nightly forgetting curve decay updates out of the synchronous request-response path.
+
+### 5. Mobile Offline-First Data Synchronization Protocol (Phase 3)
+- **Engine:** React Native with local SQLite (WatermelonDB).
+- **Sync Architecture:** Two-way sync engine tracking logical vector clocks (`lastSyncedAt`, `version`). Students can review flashcards, solve practice sets, and take mock tests completely offline in low-connectivity areas; mutations queue in local storage and atomically synchronize when connectivity resumes.
+
+### 6. Multi-Tenant Enterprise & LMS LTI 1.3 Architecture (Phase 4)
+- **Data Isolation:** Row-Level Security (RLS) policies enforcing multi-tenant isolation by `institutionId` and `classroomId`.
+- **SSO Federation:** SAML 2.0 and OIDC integration with university identity providers (Okta, Azure AD, Google Workspace for Education).
+- **LTI 1.3 Tool Provider:** Certified 1EdTech LTI 1.3 Advantage integration, supporting Deep Linking 2.0 (embedding SkillSync topics directly inside Canvas assignments) and Assignment and Grade Services (AGS 2.0) for automated gradebook synchronization.

@@ -969,3 +969,44 @@ export async function POST(request: Request) {
 | Using `any` | Create explicit TypeScript types in `src/types/` |
 | Raw unhandled errors in UI | Map API errors to human-friendly feedback |
 
+---
+
+## 7. Next-Gen AI Capabilities & Future Intelligence Roadmap
+
+### 7.1 Gemini 2.0 Multimodal Live Voice Pipeline (Phase 3)
+The future tutoring engine upgrades from turn-based text HTTP calls to a full-duplex conversational audio pipeline using the **Gemini 2.0 Multimodal Live API**:
+- **Bidirectional WebSocket Streaming:** Audio chunks (16kHz PCM / Opus) are streamed continuously from the client microphone over WebSockets.
+- **Natural Voice Activity Detection (VAD):** Detects user pauses, hesitations, and voice pitch without requiring push-to-talk.
+- **Graceful Interruptibility:** If the student starts speaking while the AI is mid-sentence, the AI instantly stops its audio generation and listens, mimicking a real human tutor.
+- **Multilingual Dialect Adaptability:** Seamless code-switching between English, Hindi, and regional Hinglish idioms for contextual Indian educational nuances.
+
+### 7.2 Multimodal Vision Problem Solver (Phase 3)
+Allows students to point their mobile camera or upload screenshots of handwritten homework:
+- **Vision Pipeline:** Images are processed via Gemini 1.5/2.0 Vision with structured OCR extraction into LaTeX representations:
+  $$\text{Input Image} \xrightarrow{\text{Gemini Vision}} \text{LaTeX Equation} \xrightarrow{\text{Step-by-Step Solver}} \text{Misconception Pinpoint} \xrightarrow{\text{Socratic Clue}}$$
+- **Pedagogical Boundary:** The vision solver never outputs the direct numerical answer. Instead, it extracts the student's step-by-step working, identifies the exact line where an algebraic mistake or misapplied rule occurred, and poses a targeted diagnostic question:
+  > *"Take a look at step 3 where you factored $x^2 - 5x + 6$. Check your signs: does $(-2) \times (-3) = +6$ and $(-2) + (-3) = -5$?"*
+
+### 7.3 Free Spaced Repetition Scheduler (FSRS v4) Engine (Phase 3)
+The current SuperMemo SM-2 algorithm will be upgraded to the state-of-the-art **FSRS v4** memory retention model. FSRS replaces fixed heuristics with individualized memory parameters:
+
+$$\text{Retrievability: } R(t, S) = \left(1 + \text{factor} \times \frac{t}{S}\right)^{-w}$$
+
+- **Stability ($S$):** Days required for retrievability to drop from 100% to 90%.
+- **Difficulty ($D$):** Intrinsic topic resistance ranging from 1 (easy) to 10 (hardest).
+- **Personalized Weights:** Machine-learned retention curve parameters adjusted automatically per student based on their historical practice outcomes, reducing review fatigue by ~30%.
+
+### 7.4 Psychometric Item Response Theory (IRT) Calibration (Phase 4)
+To generate university-standard mock tests (GATE CS, JEE, University finals), questions will be calibrated using the **2-Parameter Logistic (2PL) IRT Model**:
+
+$$P(Y_{ij} = 1 \mid \theta_i, \alpha_j, \beta_j) = \frac{1}{1 + e^{-\alpha_j (\theta_i - \beta_j)}}$$
+
+- $\theta_i$: Student $i$'s latent ability estimate.
+- $\beta_j$: Question $j$'s intrinsic difficulty threshold.
+- $\alpha_j$: Question $j$'s discrimination power (how cleanly it separates high vs low ability students).
+- Enables accurate percentile forecasting and dynamically selects questions that maximize test information Fisher metric $I(\theta)$.
+
+### 7.5 Local On-Device Edge SLMs (Phase 4)
+- **Engine:** Gemini Nano (via Chrome Built-in AI) and quantized Microsoft Phi-3 / Qwen 2.5 via ONNX Web runtime.
+- **Offline Tutoring:** Operates completely client-side when no internet connection is available, providing instant zero-cost Socratic feedback without sending data off-device.
+

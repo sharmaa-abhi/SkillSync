@@ -524,3 +524,30 @@ Every data-driven component has an empty state:
 **Empty State:** "No progress data yet. Complete activities to see your improvement."
 **Error State:** Retry button on chart load failure
 **Mobile Behavior:** Full-width charts (scrollable), stacked sections
+
+---
+
+## Future UI/UX Design System Evolution (Phase 3 & Phase 4)
+
+### 1. Interactive Ambient Voice HUD (Phase 3)
+- **Orb Animation:** Fluid Three.js / WebGL glowing sphere reacting to student audio volume and Gemini voice output cadence.
+- **Micro-Interactions:** Subtle pulsating blue/purple ripples during listening mode, shifting to emerald during Socratic insight delivery.
+- **Real-Time Speech Captions:** Live scrolling subtitles beneath the orb with interactive word tap-to-explain.
+
+### 2. Real-Time Collaborative Canvas & Whiteboard (Phase 3)
+- **Engine:** Collaborative infinite canvas (tldraw / Excalidraw integration).
+- **Multiplayer Cursors:** Real-time peer avatar pointers with color-coded student tags.
+- **AI Co-Drawing:** AI tutor dynamically sketches mathematical Venn diagrams, ER relationship cardinality lines, and binary search trees on the shared canvas during discussion.
+
+### 3. Native Dark Mode Design Tokens (Phase 3)
+- **Base Background:** `bg-slate-950` with subtle radial mesh gradient (`from-indigo-950/30 to-transparent`).
+- **Surface Elevation:** `bg-slate-900/80` with `border-slate-800/80` and `backdrop-blur-md` glassmorphism.
+- **Accent Glows:** Neon indigo (`#6366f1`) and emerald (`#10b981`) badges with soft drop-shadow halos.
+
+### 4. Mobile Gestures & Touch Architecture (Phase 3)
+- **Flashcard Swipe Mechanics:** Tinder-style left/right swipe for spaced repetition self-evaluation (Again, Hard, Good, Easy).
+- **Haptic Feedback:** iOS `UIImpactFeedbackGenerator` / Android `HapticFeedbackConstants` triggered on correct quiz answers, streak milestones, and task completions.
+
+### 5. Professor / Educator Command HUD (Phase 4)
+- **Data-Dense Layout:** High-information-density matrices for class-wide mastery inspection.
+- **Prerequisite Bottleneck Heatmap:** Color-graded matrix highlighting which specific foundational concepts (e.g. Lambda closures or BCNF dependencies) are blocking exam readiness across 500+ enrolled students.

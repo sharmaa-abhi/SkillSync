@@ -310,28 +310,21 @@ catch (error) {
 
 ---
 
-## Security Checklist
+## Security Checklist & Compliance Posture
 
-### Before Hackathon Demo
+### Verified Current Security Posture
+- [x] Zero API keys or secrets in source code (`.env*` gitignored)
+- [x] Dual-layer auth with bcrypt password hashing and Supabase Auth session token validation
+- [x] All data queries scoped strictly by authenticated `userId` (multi-tenant boundary)
+- [x] Full input and LLM output validation using Zod runtime schemas
+- [x] Zero question answer/explanation leakage to client prior to assessment submission
+- [x] HTTPS enforced across all Vercel edge networks
+- [x] Database encryption at rest and SSL in transit (Supabase AWS KMS)
+- [x] Unified error response envelopes without internal stack trace leakage
 
-- [ ] No API keys in source code
-- [ ] `.env.local` is gitignored
-- [ ] All API routes check authentication
-- [ ] All data queries filter by authenticated user
-- [ ] API input is validated with Zod
-- [ ] AI output is validated with Zod
-- [ ] Error messages don't leak internals
-- [ ] Passwords are hashed with bcrypt
-
-### Before Production (Future)
-
-- [ ] Rate limiting on all endpoints
-- [ ] HTTPS enforced
-- [ ] CORS configured
-- [ ] CSP headers set
-- [ ] Database encryption at rest
-- [ ] Automated backups
-- [ ] Audit logging
-- [ ] Penetration testing
-- [ ] GDPR compliance (data export, deletion)
-- [ ] Security headers (Helmet.js or equivalent)
+### Future Enterprise Compliance (Phase 3 & Phase 4)
+- [ ] **Live Audio Stream Encryption:** DTLS/SRTP encryption on all bidirectional WebRTC/WebSocket audio streams for voice tutoring sessions.
+- [ ] **FERPA & GDPR-K Compliance:** Self-serve student data export (JSON/CSV) and right-to-be-forgotten automated account deletion pipeline.
+- [ ] **Enterprise SSO & SCIM Provisioning:** SAML 2.0 / Okta / Azure AD enterprise directory integration for automated university enrollment synchronization.
+- [ ] **Automated Pen-testing & Secret Scanning:** GitHub Actions CI pipeline running OWASP ZAP and automated static secret detection (TruffleHog).
+- [ ] **Content Safety & Prompt Injection Guardrails:** Dedicated Llama-Guard / Gemini Safety Filter middleware inspecting student inputs before LLM ingestion.

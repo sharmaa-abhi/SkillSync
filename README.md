@@ -33,13 +33,15 @@ SkillSync AI transforms passive exam preparation into an active, adaptive learni
 
 ## Tech Stack
 
-- **Framework**: Next.js 15 (App Router, React 19)
+## Tech Stack
+
+- **Framework**: Next.js 16 (App Router, React 19)
 - **Database**: PostgreSQL (hosted on Supabase)
-- **ORM**: Prisma (with connection pooler tuning for serverless execution)
-- **Authentication**: Dual-layer Supabase Auth (`@supabase/supabase-js`) + NextAuth.js
-- **AI Engine**: Google Gemini Flash (`gemini-1.5-flash`) via Google Generative AI SDK
-- **Styling**: Tailwind CSS & Lucide React
-- **Validation**: Zod (runtime validation for API routes and LLM output)
+- **ORM**: Prisma Client (with PgBouncer connection pooler tuning on port 6543)
+- **Authentication**: Dual-layer Supabase Auth (`@supabase/supabase-js`) + NextAuth.js JWT sessions
+- **AI Engine**: Google Gemini (`gemini-1.5-flash` with structured JSON output & Zod validation)
+- **Styling & UI**: Tailwind CSS v4 & Lucide React
+- **Data Analytics**: Recharts
 - **Deployment**: Vercel (serverless)
 
 ---
@@ -75,27 +77,39 @@ Open [http://localhost:3000](http://localhost:3000) to view the application.
 
 ---
 
-## Implementation Roadmap
+## Implementation Roadmap & Future Vision
 
-### Phase 1 — Complete MVP (✅ Complete)
-- [x] Personalized learning plan generation with AI
-- [x] Closed-loop mastery recalculation after quizzes
-- [x] Full AI tutor context injection (student profile + history)
-- [x] Adaptive quiz difficulty scaling
+### Phase 1 — Complete Core Adaptive Loop (✅ Complete)
+- [x] Diagnostic assessment engine with server-side answer evaluation
+- [x] Automated AI weakness detection & prerequisite gap identification
+- [x] Personalized learning pathway generation with prioritized study milestones
+- [x] Closed-loop profile mastery recalculation after smart quizzes
+- [x] Socratic AI Tutor with context injection (student profile + mastery history)
+- [x] Six curriculum tracks: Python, Mathematics, DBMS, OS, Computer Networks, and DSA
 
-### Phase 2 — Advanced AI Features (✅ Complete)
-- [x] RAG-based curriculum grounding (university textbooks & lectures)
-- [x] Spaced repetition engine (Ebbinghaus forgetting curve)
-- [x] Multi-subject expansion (OS, Computer Networks, DSA)
-- [x] Session summarization (auto-generate notes from tutor chats)
-- [x] Difficulty prediction using cohort learning patterns
+### Phase 2 — Hackathon Polish & Intelligent Automation (✅ Complete)
+- [x] Multi-subject quick switcher across headers, sidebar, and profile
+- [x] RAG-based curriculum grounding service (`src/lib/rag.ts`)
+- [x] Spaced repetition retention engine (`src/lib/spacedRepetition.ts`) with SM-2 calculations
+- [x] Cohort bottleneck prediction engine (`src/lib/cohortAnalytics.ts`)
+- [x] Interactive topic dependency Knowledge Graph
+- [x] Bilingual English / Hindi localization toggle and high-contrast accessibility mode
+- [x] Serverless PgBouncer pooler production hardening
 
-### Phase 3 — Platform Expansion
-- [ ] Voice AI Tutor (speech-to-speech in Hindi, Tamil, etc.)
-- [ ] Teacher/Educator Portal with cohort analytics
-- [ ] Mobile native apps (React Native) with offline study
-- [ ] Gamification engine (streaks, XP, badges, leaderboards)
-- [ ] LMS integrations (Canvas, Moodle, Blackboard)
+### Phase 3 — Multimodal AI & Mobile Ecosystem (🔮 Target: Q1 – Q3 2027)
+- [ ] **Bidirectional Live Voice Tutor**: Low-latency (<400ms) voice dialogues with Gemini 2.0 Multimodal Live API over WebSockets (English, Hindi, Hinglish, Tamil, Telugu).
+- [ ] **Multimodal Vision Problem Solver**: "Snap & Solve" camera scanner for handwritten equations, circuit schematics, and ER diagrams.
+- [ ] **Cross-Platform Mobile App (iOS & Android)**: React Native + Expo with offline-first SQLite synchronization, background review push notifications, and haptic feedback.
+- [ ] **FSRS v4 Memory Algorithm Upgrade**: Advanced Free Spaced Repetition Scheduler replacing SM-2 for 30% faster review cycles at 90% target retention.
+- [ ] **Collaborative Live Study Squads**: WebRTC audio study rooms with synchronized real-time whiteboards and a shared Socratic AI tutor.
+- [ ] **Gamification & Mastery Quests**: Study streaks, XP multipliers, proof-of-mastery badges, and university cohort leaderboards.
+
+### Phase 4 — Institutional Enterprise & Educator Intelligence (🚀 Target: Q3 2027 – 2028)
+- [ ] **Educator & Professor Dashboard**: Aggregate class knowledge graph heatmaps, prerequisite bottleneck alerts before exams, and automated assignment dispatch.
+- [ ] **LTI 1.3 / 1.4 Advantage LMS Standard**: Direct integration and grade sync for Canvas, Blackboard, Moodle, and Google Classroom.
+- [ ] **Psychometric Mock Exam Synthesizer**: AI exam paper generator calibrated to standardized exam blueprints (GATE, JEE, University finals) using Item Response Theory (IRT).
+- [ ] **Enterprise Multi-Tenant Isolation & SSO**: SAML 2.0, Okta, and Azure AD single sign-on with strict student data privacy controls (FERPA / GDPR-K).
+- [ ] **Edge Pedagogical SLMs**: Low-latency, privacy-first local fallback models (Gemini Nano / Microsoft Phi-3) executing directly on user devices via WebGPU.
 
 ---
 
